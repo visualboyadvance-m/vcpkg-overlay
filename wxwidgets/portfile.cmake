@@ -52,12 +52,8 @@ endif()
 vcpkg_find_acquire_program(PKGCONFIG)
 
 # This may be set to ON by users in a custom triplet.
-# The use of 'wxUSE_STL' and 'WXWIDGETS_USE_STD_CONTAINERS' (ON or OFF) are not API compatible
-# which is why they must be set in a custom triplet rather than a port feature.
-if(NOT DEFINED WXWIDGETS_USE_STL)
-    set(WXWIDGETS_USE_STL OFF)
-endif()
-
+# The use of 'WXWIDGETS_USE_STD_CONTAINERS' (ON or OFF) is not API compatible
+# which is why it must be set in a custom triplet rather than a port feature.
 if(NOT DEFINED WXWIDGETS_USE_STD_CONTAINERS)
     set(WXWIDGETS_USE_STD_CONTAINERS OFF)
 endif()
@@ -123,7 +119,6 @@ vcpkg_cmake_configure(
         -DwxUSE_GLCANVAS=ON
         -DwxUSE_LIBGNOMEVFS=OFF
         -DwxUSE_LIBNOTIFY=OFF
-        -DwxUSE_STL=${WXWIDGETS_USE_STL}
         -DwxUSE_STD_CONTAINERS=${WXWIDGETS_USE_STD_CONTAINERS}
         -DwxUSE_UIACTIONSIMULATOR=OFF
         -DCMAKE_DISABLE_FIND_PACKAGE_GSPELL=ON
