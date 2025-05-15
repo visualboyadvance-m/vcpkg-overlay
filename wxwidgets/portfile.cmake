@@ -77,6 +77,10 @@ vcpkg_execute_build_process(
     LOGNAME wxwidgets-submodule-clone
     COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/pcre.git  .)
 vcpkg_execute_build_process(
+    WORKING_DIRECTORY "${SOURCE_PATH}/3rdparty/libwebp"
+    LOGNAME wxwidgets-submodule-clone
+    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/libwebp.git  .)
+vcpkg_execute_build_process(
     WORKING_DIRECTORY "${SOURCE_PATH}/src/expat"
     LOGNAME wxwidgets-submodule-clone
     COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/libexpat.git  .)
