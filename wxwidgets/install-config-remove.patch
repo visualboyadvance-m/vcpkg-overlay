@@ -1,0 +1,37 @@
+--- a/build/cmake/install.cmake	1900-01-00 00:00:00 +0000
++++ b/build/cmake/install.cmake	1900-01-00 00:00:00 +0000
+@@ -46,21 +46,21 @@
+         DIRECTORY "${wxSETUP_HEADER_PATH}"
+         DESTINATION "lib/wx/include")
+ 
+-    install(
+-        FILES "${wxOUTPUT_DIR}/wx/config/${wxBUILD_FILE_ID}"
+-        DESTINATION "lib/wx/config"
+-        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+-                    GROUP_EXECUTE GROUP_READ
+-                    WORLD_EXECUTE WORLD_READ
+-        )
++    #    install(
++    #        FILES "${wxOUTPUT_DIR}/wx/config/${wxBUILD_FILE_ID}"
++    #        DESTINATION "lib/wx/config"
++    #        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
++    #                    GROUP_EXECUTE GROUP_READ
++    #                    WORLD_EXECUTE WORLD_READ
++    #        )
+ 
+     install(DIRECTORY DESTINATION "bin")
+-    install(CODE "execute_process( \
+-        COMMAND ${CMAKE_COMMAND} -E copy \
+-        \"${CMAKE_INSTALL_PREFIX}/lib/wx/config/${wxBUILD_FILE_ID}\" \
+-        \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/wx-config\" \
+-        )"
+-    )
++    #    install(CODE "execute_process( \
++    #        COMMAND ${CMAKE_COMMAND} -E copy \
++    #        \"${CMAKE_INSTALL_PREFIX}/lib/wx/config/${wxBUILD_FILE_ID}\" \
++    #        \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/wx-config\" \
++    #        )"
++    #    )
+ endif()
+ 
+ install(EXPORT wxWidgetsTargets NAMESPACE wx:: DESTINATION "lib/cmake/wxWidgets/${wxPLATFORM_LIB_DIR}")
