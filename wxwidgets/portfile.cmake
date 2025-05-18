@@ -120,11 +120,11 @@ vcpkg_cmake_configure(
         -DwxUSE_LIBJPEG=sys
         -DwxUSE_LIBPNG=sys
         -DwxUSE_LIBTIFF=sys
+        -DwxUSE_LIBWEBP=sys
         -DwxUSE_NANOSVG=sys
         -DwxUSE_GLCANVAS=ON
         -DwxUSE_LIBGNOMEVFS=OFF
         -DwxUSE_LIBNOTIFY=OFF
-        -DwxUSE_LIBWEBP=builtin
         -DwxUSE_STD_CONTAINERS=${WXWIDGETS_USE_STD_CONTAINERS}
         -DwxUSE_UIACTIONSIMULATOR=OFF
         -DwxBUILD_INSTALL_RUNTIME_DIR:PATH=bin
