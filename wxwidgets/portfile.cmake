@@ -11,6 +11,7 @@ vcpkg_from_github(
         fix-libs-export.patch
         fix-pcre2.patch
         gtk3-link-libraries.patch
+        winxp-compat.patch
 )
 
 vcpkg_check_features(
@@ -56,7 +57,7 @@ vcpkg_find_acquire_program(PKGCONFIG)
 # The use of 'WXWIDGETS_USE_STD_CONTAINERS' (ON or OFF) is not API compatible
 # which is why it must be set in a custom triplet rather than a port feature.
 if(NOT DEFINED WXWIDGETS_USE_STD_CONTAINERS)
-    set(WXWIDGETS_USE_STD_CONTAINERS OFF)
+    set(WXWIDGETS_USE_STD_CONTAINERS ON)
 endif()
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")

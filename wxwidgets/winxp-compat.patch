@@ -1,0 +1,13 @@
+--- a/src/msw/registry.cpp 1900-01-00 00:00:00 +0000
++++ b/src/msw/registry.cpp 1900-01-00 00:00:00 +0000
+@@ -745,9 +745,7 @@
+   Close();
+
+   // deleting a key which doesn't exist is not considered an error
+-  m_dwLastError = ::RegDeleteKeyEx((HKEY) m_hRootKey, m_strKey.t_str(),
+-                                   GetMSWViewFlags(m_viewMode),
+-                                   wxRESERVED_PARAM);
++  m_dwLastError = ::RegDeleteKey((HKEY) m_hRootKey, m_strKey.t_str());
+
+   if ( m_dwLastError != ERROR_SUCCESS &&
+           m_dwLastError != ERROR_FILE_NOT_FOUND ) {
