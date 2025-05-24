@@ -31,3 +31,130 @@
              );
 
          switch ( ret )
+--- a/misc/languages/util/showlocales.c
++++ b/misc/languages/util/showlocales.c
+@@ -49,11 +49,11 @@ BOOL CALLBACK MyFuncLocaleEx(LPWSTR pStr, DWORD dwFlags, LPARAM lparam)
+   int iResult;
+   int i;
+
+-  // Loop through all specified LCTYPES and do GetLocaleInfoEx on them
++  // Loop through all specified LCTYPES and do GetLocaleInfo on them
+   for (i = 0; i < sizeof(winLocaleTypes) / sizeof(winLocaleTypes[0]); i++)
+   {
+     // Get this LCTYPE result for this locale
+-    iResult = GetLocaleInfoEx(pStr, winLocaleTypes[i], wcBuffer, BUFFER_SIZE);
++    iResult = GetLocaleInfo(pStr, winLocaleTypes[i], wcBuffer, BUFFER_SIZE);
+
+     // If it succeeds, print it out
+     if (i != 0) printf("|");
+--- a/src/msw/uilocale.cpp
++++ b/src/msw/uilocale.cpp
+@@ -157,13 +157,13 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+     if (lctype != 0)
+     {
+         wchar_t buf[256];
+-        if (::GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
++        if (::GetLocaleInfo(name, lctype, buf, WXSIZEOF(buf)))
+         {
+             format = buf;
+         }
+         else
+         {
+-            wxLogLastError(wxT("GetLocaleInfoEx"));
++            wxLogLastError(wxT("GetLocaleInfo"));
+         }
+     }
+     return format;
+@@ -375,7 +375,7 @@ public:
+     {
+         // Getting the locale name seems to be the simplest way to see if it's
+         // really supported: unknown locale result in an error here.
+-        if ( !::GetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0) )
++        if ( !::GetLocaleInfo(name, LOCALE_SNAME, nullptr, 0) )
+             return nullptr;
+
+         // Unfortunately under Windows 10 the call above only fails if the given
+@@ -399,7 +399,7 @@ public:
+             // Windows header file). However, for now constructed locales will
+             // be rejected here.
+             int isConstructed = 0;
+-            if (!::GetLocaleInfoEx
++            if (!::GetLocaleInfo
+                  (
+                     name,
+                     LOCALE_ICONSTRUCTEDLOCALE | LOCALE_RETURN_NUMBER,
+@@ -659,9 +659,9 @@ private:
+     wxString DoGetInfo(LCTYPE lctype) const
+     {
+         wchar_t buf[256];
+-        if ( !::GetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )
++        if ( !::GetLocaleInfo(m_name, lctype, buf, WXSIZEOF(buf)) )
+         {
+-            wxLogLastError(wxT("GetLocaleInfoEx"));
++            wxLogLastError(wxT("GetLocaleInfo"));
+             return wxString();
+         }
+
+--- a/src/msw/uilocale.cpp
++++ b/src/msw/uilocale.cpp
+@@ -313,6 +313,7 @@ public:
+     static wxVector<wxString> GetPreferredUILanguages()
+     {
+         wxVector<wxString> preferred;
++        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
+
+         // Check if Windows supports preferred UI languages.
+         // Note: Windows 8.x might support them as well, but Windows 7
+@@ -323,10 +324,14 @@ public:
+
+             ULONG numberOfLanguages = 0;
+             ULONG bufferSize = 0;
+-            if (::GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
++
++            BOOL (*pfnGetUserPreferredUILanguage)(DWORD, PULONG, PZZWSTR, PULONG) =
++                (BOOL (*)(DWORD, PULONG, PZZWSTR, PULONG))kernel32.GetSymbol(wxT("GetUserPreferredUILanguages"));
++
++            if (pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
+             {
+                 wxScopedArray<WCHAR> languages(bufferSize);
+-                if (::GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, languages.get(), &bufferSize))
++                if (pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, languages.get(), &bufferSize))
+                 {
+                     WCHAR* buf = languages.get();
+                     for (unsigned k = 0; k < numberOfLanguages; ++k)
+@@ -346,11 +351,13 @@ public:
+                 wxLogLastError(wxT("GetUserPreferredUILanguages"));
+             }
+         }
+-        else
++        else if (wxGetWinVersion() >= wxWinVersion_7)
+         {
+             // Use the default user locale for Windows 7 resp Windows 8.x and below
+             wchar_t buf[LOCALE_NAME_MAX_LENGTH];
+-            if (::GetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH))
++            int (*pfnGetUserDefaultLocaleName)(LPWSTR, int) =
++                (int (*)(LPWSTR, int))kernel32.GetSymbol(wxT("GetUserDefaultLocaleName"));
++            if (pfnGetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH))
+             {
+                 preferred.push_back(buf);
+             }
+@@ -359,6 +366,19 @@ public:
+                 wxLogLastError(wxT("GetUserDefaultLocaleName"));
+             }
+         }
++        else // Windows XP and below
++        {
++            LCID localeId = ::GetUserDefaultLCID();
++            wchar_t buf[LOCALE_NAME_MAX_LENGTH];
++            if (::GetLocaleInfo(localeId, LOCALE_SNAME, buf, WXSIZEOF(buf)))
++            {
++                preferred.push_back(buf);
++            }
++            else
++            {
++                wxLogLastError(wxT("GetLocaleInfo"));
++            }
++    <S-Del>    }
+
+         return preferred;
+     }

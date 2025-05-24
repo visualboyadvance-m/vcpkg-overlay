@@ -1,0 +1,14 @@
+--- a/include/wx/msw/private/filedialog.h
++++ b/include/wx/msw/private/filedialog.h
+@@ -18,8 +18,9 @@
+ // Using IFileOpenDialog requires a compiler providing declarations and
+ // definitions of interfaces available in Windows Vista.
+ // And it needs OLE support to actually use these interfaces.
+-#if (wxUSE_DIRDLG || wxUSE_FILEDLG) && wxUSE_OLE && \
+-    defined(__IFileOpenDialog_INTERFACE_DEFINED__)
++#if ((wxUSE_DIRDLG || wxUSE_FILEDLG) && wxUSE_OLE && \
++    defined(__IFileOpenDialog_INTERFACE_DEFINED__)) \
++    || _WIN32_WINNT >= 0x0600 // Vista
+     #define wxUSE_IFILEOPENDIALOG 1
+ #else
+     #define wxUSE_IFILEOPENDIALOG 0

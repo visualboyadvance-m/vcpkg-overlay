@@ -12,6 +12,7 @@ vcpkg_from_github(
         fix-pcre2.patch
         gtk3-link-libraries.patch
         winxp-compat.patch
+        winxp-compat-andy.patch
 )
 
 vcpkg_check_features(
@@ -111,6 +112,11 @@ vcpkg_execute_build_process(
     LOGNAME wxwidgets-submodule-clone
     COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/zlib.git  .)
 
+set(cxx_flags "${CMAKE_CXX_FLAGS} ${VCPKG_CXX_FLAGS}")
+if(VCPKG_TARGET_IS_MINGW)
+    set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
+endif()
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
@@ -134,6 +140,7 @@ vcpkg_cmake_configure(
         # The minimum cmake version requirement for Cotire is 2.8.12.
         # however, we need to declare that the minimum cmake version requirement is at least 3.1 to use CMAKE_PREFIX_PATH as the path to find .pc.
         -DPKG_CONFIG_USE_CMAKE_PREFIX_PATH=ON
+        -DCMAKE_CXX_FLAGS=${cxx_flags}
     OPTIONS_RELEASE
         ${OPTIONS_RELEASE}
     MAYBE_UNUSED_VARIABLES
