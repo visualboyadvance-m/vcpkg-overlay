@@ -1,0 +1,12 @@
+diff -Nur ffmpeg-7.1.1/libavutil/wchar_filename.h ffmpeg-7.1.1-XP/libavutil/wchar_filename.h
+--- ffmpeg-7.1.1/libavutil/wchar_filename.h	2025-03-02 22:08:21
++++ ffmpeg-7.1.1-XP/libavutil/wchar_filename.h	2025-05-23 12:58:40
+@@ -49,7 +49,7 @@
+ static inline int wchartocp(unsigned int code_page, const wchar_t *filename_w,
+                             char **filename)
+ {
+-    DWORD flags = code_page == CP_UTF8 ? WC_ERR_INVALID_CHARS : 0;
++    DWORD flags = 0;
+     int num_chars = WideCharToMultiByte(code_page, flags, filename_w, -1,
+                                         NULL, 0, NULL, NULL);
+     if (num_chars <= 0) {

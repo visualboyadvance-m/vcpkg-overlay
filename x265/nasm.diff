@@ -1,0 +1,12 @@
+diff -Nur 4.1-b7ff46ca77.clean/source/CMakeLists.txt 4.1-b7ff46ca77.clean_patched/source/CMakeLists.txt
+--- 4.1-b7ff46ca77.clean/source/CMakeLists.txt	2025-05-24 12:54:53.475255900 +0200
++++ 4.1-b7ff46ca77.clean_patched/source/CMakeLists.txt	2025-05-24 12:59:11.665028900 +0200
+@@ -504,7 +504,7 @@
+     execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE CC_VERSION)
+ endif(GCC)
+ 
+-find_package(Nasm)
++find_package(nasm)
+ if(ARM OR CROSS_COMPILE_ARM OR ARM64 OR CROSS_COMPILE_ARM64)
+     option(ENABLE_ASSEMBLY "Enable use of assembly coded primitives" ON)
+     # Force ENABLE_ASSEMBLY to be OFF when all SIMD extensions are disabled.
