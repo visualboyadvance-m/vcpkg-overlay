@@ -813,3 +813,36 @@ diff -Nur master-5d36349708.clean/src/msw/window.cpp master-5d36349708.clean_pat
  }
  
  // ---------------------------------------------------------------------------
+--- master-d724c6b5c3.clean/src/msw/darkmode.cpp	2025-05-27 19:36:29.041953200 +0200
++++ master-d724c6b5c3.clean_patched/src/msw/darkmode.cpp	2025-05-27 20:58:06.912195100 +0200
+@@ -28,7 +28,7 @@
+ // Allow predefining this as 0 to disable dark mode support completely.
+ #ifndef wxUSE_DARK_MODE
+     // Otherwise enable it by default.
+-    #define wxUSE_DARK_MODE 0
++    #define wxUSE_DARK_MODE 1
+ #endif
+ 
+ #if wxUSE_DARK_MODE
+@@ -682,19 +682,13 @@
+                 // We have to specify the text colour explicitly as by default
+                 // black would be used, making the menu label unreadable on the
+                 // (almost) black background.
+-                DTTOPTS textOpts;
+-                textOpts.dwSize = sizeof(textOpts);
+-                textOpts.dwFlags = DTT_TEXTCOLOR;
+-                textOpts.crText = wxColourToRGB(GetMenuColour(colText));
+-
+                 DWORD drawTextFlags = DT_CENTER | DT_SINGLELINE | DT_VCENTER;
+                 if ( itemState & ODS_NOACCEL)
+                     drawTextFlags |= DT_HIDEPREFIX;
+ 
+                 wxUxThemeHandle menuTheme(w, L"Menu");
+-                ::DrawThemeTextEx(menuTheme, dis.hDC, MENU_BARITEM, partState,
+-                                  buf, mii.cch, drawTextFlags, rcItem,
+-                                  &textOpts);
++                ::DrawThemeText(menuTheme, dis.hDC, 0, partState,
++                                  buf, mii.cch, drawTextFlags, 0, rcItem);
+             }
+             return true;
+     }
