@@ -2353,3 +2353,33 @@ diff -Nur master-0db0e17733.clean/src/msw/window.cpp master-ea316f385b.clean_pat
  #endif // wxUSE_INTL
  
      // Override to indicate whether we can have no date at all.
+diff -Nur master-6d0218a996.clean/src/msw/datectrl.cpp master-6d0218a996.clean_patched/src/msw/datectrl.cpp
+--- master-6d0218a996.clean/src/msw/datectrl.cpp	2025-05-26 18:04:50.000000000 +0200
++++ master-6d0218a996.clean_patched/src/msw/datectrl.cpp	2025-05-28 13:40:53.946790000 +0200
+@@ -62,12 +62,6 @@
+     bool ok = MSWCreateDateTimePicker(parent, id, dt,
+                                       pos, size, style,
+                                       validator, name);
+-#if wxUSE_INTL
+-    if (ok)
+-    {
+-        MSWSetTimeFormat(wxLOCALE_SHORT_DATE_FMT);
+-    }
+-#endif
+     return ok;
+ }
+ 
+diff -Nur master-6d0218a996.clean/src/msw/timectrl.cpp master-6d0218a996.clean_patched/src/msw/timectrl.cpp
+--- master-6d0218a996.clean/src/msw/timectrl.cpp	2025-05-26 18:04:50.000000000 +0200
++++ master-6d0218a996.clean_patched/src/msw/timectrl.cpp	2025-05-28 13:41:39.633220900 +0200
+@@ -50,10 +50,6 @@
+                                   validator, name) )
+         return false;
+ 
+-#if wxUSE_INTL
+-    MSWSetTimeFormat(wxLOCALE_TIME_FMT);
+-#endif
+-
+     return true;
+ }
+ 
