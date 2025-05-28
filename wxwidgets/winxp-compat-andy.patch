@@ -887,7 +887,7 @@ diff -Nur master-0db0e17733.clean/include/wx/datetimectrl.h master-ea316f385b.cl
  #if wxUSE_DATEPICKCTRL || wxUSE_TIMEPICKCTRL
  
 -#undef wxNEEDS_DATETIMEPICKCTRL
-+
++#define wxNEEDS_DATETIMEPICKCTRL 1
  
  #include "wx/control.h"         // the base class
  
