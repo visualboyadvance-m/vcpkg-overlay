@@ -139,7 +139,7 @@ diff -Nur master-5d36349708.clean/include/wx/msw/setup.h master-5d36349708.clean
  // Set to 0 to disable the use of the native progress dialog (currently only
  // available under MSW and suffering from some bugs there, hence this option).
 -#define wxUSE_NATIVE_PROGRESSDLG 1
-+#define wxUSE_NATIVE_PROGRESSDLG 0
++#define wxUSE_NATIVE_PROGRESSDLG 1
  
  // support for startup tips (wxShowTip &c)
  #define wxUSE_STARTUP_TIPS 1
@@ -151,12 +151,12 @@ diff -Nur master-5d36349708.clean/include/wx/setup_inc.h master-5d36349708.clean
  
  // progress dialog class for lengthy operations
 -#define wxUSE_PROGRESSDLG 1
-+#define wxUSE_PROGRESSDLG 0
++#define wxUSE_PROGRESSDLG 1
  
  // Set to 0 to disable the use of the native progress dialog (currently only
  // available under MSW and suffering from some bugs there, hence this option).
 -#define wxUSE_NATIVE_PROGRESSDLG 1
-+#define wxUSE_NATIVE_PROGRESSDLG 0
++#define wxUSE_NATIVE_PROGRESSDLG 1
  
  // support for startup tips (wxShowTip &c)
  #define wxUSE_STARTUP_TIPS 1
@@ -168,7 +168,7 @@ diff -Nur master-5d36349708.clean/include/wx/univ/setup.h master-5d36349708.clea
  
  // progress dialog class for lengthy operations
 -#define wxUSE_PROGRESSDLG 1
-+#define wxUSE_PROGRESSDLG 0
++#define wxUSE_PROGRESSDLG 1
  
  // Set to 0 to disable the use of the native progress dialog (currently only
  // available under MSW and suffering from some bugs there, hence this option).
@@ -1035,14 +1035,14 @@ diff -Nur master-0db0e17733.clean/include/wx/msw/setup.h master-ea316f385b.clean
  #define wxUSE_MSGDLG        1
  
 -// progress dialog class for lenghy operations
--#define wxUSE_PROGRESSDLG 0
+-#define wxUSE_PROGRESSDLG 1
 +// progress dialog class for lenghy operations
-+#define wxUSE_PROGRESSDLG 0
++#define wxUSE_PROGRESSDLG 1
  
  // Set to 0 to disable the use of the native progress dialog (currently only
  // available under MSW and suffering from some bugs there, hence this option).
 -#define wxUSE_NATIVE_PROGRESSDLG 0
-+#define wxUSE_NATIVE_PROGRESSDLG 0
++#define wxUSE_NATIVE_PROGRESSDLG 1
  
  // support for startup tips (wxShowTip &c)
  #define wxUSE_STARTUP_TIPS 1
@@ -1053,13 +1053,13 @@ diff -Nur master-0db0e17733.clean/include/wx/setup_inc.h master-ea316f385b.clean
  #define wxUSE_MSGDLG        1
  
  // progress dialog class for lengthy operations
--#define wxUSE_PROGRESSDLG 0
-+#define wxUSE_PROGRESSDLG 0
+-#define wxUSE_PROGRESSDLG 1
++#define wxUSE_PROGRESSDLG 1
  
  // Set to 0 to disable the use of the native progress dialog (currently only
  // available under MSW and suffering from some bugs there, hence this option).
--#define wxUSE_NATIVE_PROGRESSDLG 0
-+#define wxUSE_NATIVE_PROGRESSDLG 0
+-#define wxUSE_NATIVE_PROGRESSDLG 1
++#define wxUSE_NATIVE_PROGRESSDLG 1
  
  // support for startup tips (wxShowTip &c)
  #define wxUSE_STARTUP_TIPS 1
@@ -1070,13 +1070,13 @@ diff -Nur master-0db0e17733.clean/include/wx/univ/setup.h master-ea316f385b.clea
  #define wxUSE_MSGDLG        1
  
  // progress dialog class for lengthy operations
--#define wxUSE_PROGRESSDLG 0
-+#define wxUSE_PROGRESSDLG 0
+-#define wxUSE_PROGRESSDLG 1
++#define wxUSE_PROGRESSDLG 1
  
  // Set to 0 to disable the use of the native progress dialog (currently only
  // available under MSW and suffering from some bugs there, hence this option).
--#define wxUSE_NATIVE_PROGRESSDLG 0
-+#define wxUSE_NATIVE_PROGRESSDLG 0
+-#define wxUSE_NATIVE_PROGRESSDLG 1
++#define wxUSE_NATIVE_PROGRESSDLG 1
  
  // support for startup tips (wxShowTip &c)
  #define wxUSE_STARTUP_TIPS 1
