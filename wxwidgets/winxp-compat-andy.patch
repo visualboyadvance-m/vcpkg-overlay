@@ -3989,3 +3989,23 @@ diff -Nur master-6d0218a996.clean/src/msw/timectrl.cpp master-6d0218a996.clean_p
 +#endif // wxHAS_MSW_TASKDIALOG
 +
  #endif // wxUSE_PROGRESSDLG && wxUSE_THREADS
+--- master-4b5cb6d586.clean/src/msw/uilocale.cpp	2025-05-28 14:59:28.250182800 +0200
++++ master-4b5cb6d586.clean_patched/src/msw/uilocale.cpp	2025-05-28 18:31:18.551739500 +0200
+@@ -441,7 +441,8 @@
+     void Use() override
+     {
+         wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
+-	BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
++        if (wxGetWinVersion() >= wxWinVersion_7) {
++	    BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
+              (BOOL (*)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
+ 
+         // Construct a double NUL-terminated buffer.
+@@ -456,6 +457,7 @@
+ 
+         if (pfnSetThreadPreferredUILanguages)
+             pfnSetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, buf, &num);
++        }
+     }
+ 
+     wxString GetName() const override
