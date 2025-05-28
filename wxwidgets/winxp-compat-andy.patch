@@ -879,3 +879,1052 @@ diff -Nur master-5d36349708.clean/src/msw/window.cpp master-5d36349708.clean_pat
  #if wxUSE_LOG_TRACE
  static const char* TRACE_DARKMODE = "msw-darkmode";
  #endif // wxUSE_LOG_TRACE
+diff -Nur master-0db0e17733.clean/include/wx/datetimectrl.h master-ea316f385b.clean_patched/include/wx/datetimectrl.h
+--- master-0db0e17733.clean/include/wx/datetimectrl.h	2025-05-28 11:22:44.307425000 +0200
++++ master-ea316f385b.clean_patched/include/wx/datetimectrl.h	2025-05-28 09:28:45.976992400 +0200
+@@ -14,7 +14,7 @@
+ 
+ #if wxUSE_DATEPICKCTRL || wxUSE_TIMEPICKCTRL
+ 
+-#undef wxNEEDS_DATETIMEPICKCTRL
++#undef wxNEEDS_DATETIMEPICKCTRL
+ 
+ #include "wx/control.h"         // the base class
+ 
+diff -Nur master-0db0e17733.clean/include/wx/msw/msgdlg.h master-ea316f385b.clean_patched/include/wx/msw/msgdlg.h
+--- master-0db0e17733.clean/include/wx/msw/msgdlg.h	2025-05-28 11:22:44.307425000 +0200
++++ master-ea316f385b.clean_patched/include/wx/msw/msgdlg.h	2025-05-28 09:28:45.976992400 +0200
+@@ -2,7 +2,7 @@
+ // Name:        wx/msw/msgdlg.h
+ // Purpose:     wxMessageDialog class
+ // Author:      Julian Smart
+-// Modified by:
++// Modified by:
+ // Created:     01/02/97
+ // Copyright:   (c) Julian Smart
+ // Licence:     wxWindows licence
+@@ -21,12 +21,12 @@
+                     const wxPoint& WXUNUSED(pos) = wxDefaultPosition)
+         : wxMessageDialogBase(parent, message, caption, style)
+     {
+-        m_hook = NULL;
++        m_hook = NULL;
+     }
+ 
+-    virtual int ShowModal() wxOVERRIDE;
++    virtual int ShowModal() wxOVERRIDE;
+ 
+-    virtual long GetEffectiveIcon() const wxOVERRIDE;
++    virtual long GetEffectiveIcon() const wxOVERRIDE;
+ 
+     // implementation-specific
+ 
+@@ -35,7 +35,7 @@
+ 
+ protected:
+     // Override this as task dialogs are always centered on parent.
+-    virtual void DoCentre(int dir) wxOVERRIDE;
++    virtual void DoCentre(int dir) wxOVERRIDE;
+ 
+ private:
+     // hook procedure used to adjust the message box beyond what the standard
+diff -Nur master-0db0e17733.clean/include/wx/msw/private/msgdlg.h master-ea316f385b.clean_patched/include/wx/msw/private/msgdlg.h
+--- master-0db0e17733.clean/include/wx/msw/private/msgdlg.h	2025-05-28 11:22:44.307425000 +0200
++++ master-ea316f385b.clean_patched/include/wx/msw/private/msgdlg.h	2025-05-28 09:28:45.976992400 +0200
+@@ -13,19 +13,19 @@
+ #include "wx/msw/wrapcctl.h"
+ #include "wx/scopedarray.h"
+ 
+-// Macro to help identify if task dialogs are available: we rely on
+-// TD_WARNING_ICON being defined in the headers for this as this symbol is used
+-// by the task dialogs only. Also notice that task dialogs are available for
+-// Unicode applications only.
+-#if defined(TD_WARNING_ICON) && wxUSE_UNICODE
+-    #define wxHAS_MSW_TASKDIALOG
+-#endif
+-
++// Macro to help identify if task dialogs are available: we rely on
++// TD_WARNING_ICON being defined in the headers for this as this symbol is used
++// by the task dialogs only. Also notice that task dialogs are available for
++// Unicode applications only.
++#if defined(TD_WARNING_ICON) && wxUSE_UNICODE
++    #define wxHAS_MSW_TASKDIALOG
++#endif
++
+ // Provides methods for creating a task dialog.
+ namespace wxMSWMessageDialog
+ {
+ 
+-#ifdef wxHAS_MSW_TASKDIALOG
++#ifdef wxHAS_MSW_TASKDIALOG
+     class wxMSWTaskDialogConfig
+     {
+     public:
+@@ -33,7 +33,7 @@
+ 
+         wxMSWTaskDialogConfig()
+             : buttons(new TASKDIALOG_BUTTON[MAX_BUTTONS]),
+-              parent(NULL),
++              parent(NULL),
+               iconId(0),
+               style(0),
+               useCustomLabels(false)
+@@ -74,15 +74,15 @@
+     typedef HRESULT (WINAPI *TaskDialogIndirect_t)(const TASKDIALOGCONFIG *,
+                                                    int *, int *, BOOL *);
+ 
+-    // Return the pointer to TaskDialogIndirect(). This should only be called
+-    // if HasNativeTaskDialog() returned true and is normally guaranteed to
+-    // succeed in this case.
++    // Return the pointer to TaskDialogIndirect(). This should only be called
++    // if HasNativeTaskDialog() returned true and is normally guaranteed to
++    // succeed in this case.
+     TaskDialogIndirect_t GetTaskDialogIndirectFunc();
+-#endif // wxHAS_MSW_TASKDIALOG
+-
++#endif // wxHAS_MSW_TASKDIALOG
++
+ 
+-    // Check if the task dialog is available: this simply checks the OS version
+-    // as we know that it's only present in Vista and later.
++    // Check if the task dialog is available: this simply checks the OS version
++    // as we know that it's only present in Vista and later.
+     bool HasNativeTaskDialog();
+ 
+     // Translates standard MSW button IDs like IDCANCEL into an equivalent
+diff -Nur master-0db0e17733.clean/include/wx/msw/richmsgdlg.h master-ea316f385b.clean_patched/include/wx/msw/richmsgdlg.h
+--- master-0db0e17733.clean/include/wx/msw/richmsgdlg.h	2025-05-26 18:04:50.000000000 +0200
++++ master-ea316f385b.clean_patched/include/wx/msw/richmsgdlg.h	2025-05-28 11:19:53.005649800 +0200
+@@ -13,15 +13,16 @@
+ class WXDLLIMPEXP_CORE wxRichMessageDialog : public wxGenericRichMessageDialog
+ {
+ public:
+-    wxRichMessageDialog(wxWindow *parent,
+-                        const wxString& message,
+-                        const wxString& caption = wxASCII_STR(wxMessageBoxCaptionStr),
+-                        long style = wxOK | wxCENTRE)
++    wxRichMessageDialog(wxWindow* parent,
++        const wxString& message,
++        const wxString& caption = wxASCII_STR(wxMessageBoxCaptionStr),
++        long style = wxOK | wxCENTRE)
+         : wxGenericRichMessageDialog(parent, message, caption, style)
+-        { }
++    {
++    }
+ 
+     // overridden base class method showing the native task dialog if possible
+-    virtual int ShowModal() override;
++    virtual int ShowModal() wxOVERRIDE;
+ 
+ private:
+     wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxRichMessageDialog);
+diff -Nur master-0db0e17733.clean/include/wx/msw/setup.h master-ea316f385b.clean_patched/include/wx/msw/setup.h
+--- master-0db0e17733.clean/include/wx/msw/setup.h	2025-05-28 11:22:44.307425000 +0200
++++ master-ea316f385b.clean_patched/include/wx/msw/setup.h	2025-05-28 11:19:15.467832300 +0200
+@@ -843,7 +843,7 @@
+ #define wxUSE_LISTCTRL      1   // wxListCtrl
+ #define wxUSE_RADIOBOX      1   // wxRadioBox
+ #define wxUSE_RADIOBTN      1   // wxRadioButton
+-#define wxUSE_RICHMSGDLG    0   // wxRichMessageDialog
++#define wxUSE_RICHMSGDLG    1   // wxRichMessageDialog
+ #define wxUSE_SCROLLBAR     1   // wxScrollBar
+ #define wxUSE_SEARCHCTRL    1   // wxSearchCtrl
+ #define wxUSE_SLIDER        1   // wxSlider
+@@ -1218,12 +1218,12 @@
+ // Recommended setting: 1 (used in the library itself)
+ #define wxUSE_MSGDLG        1
+ 
+-// progress dialog class for lenghy operations
+-#define wxUSE_PROGRESSDLG 0
++// progress dialog class for lenghy operations
++#define wxUSE_PROGRESSDLG 0
+ 
+ // Set to 0 to disable the use of the native progress dialog (currently only
+ // available under MSW and suffering from some bugs there, hence this option).
+-#define wxUSE_NATIVE_PROGRESSDLG 0
++#define wxUSE_NATIVE_PROGRESSDLG 0
+ 
+ // support for startup tips (wxShowTip &c)
+ #define wxUSE_STARTUP_TIPS 1
+diff -Nur master-0db0e17733.clean/include/wx/setup_inc.h master-ea316f385b.clean_patched/include/wx/setup_inc.h
+--- master-0db0e17733.clean/include/wx/setup_inc.h	2025-05-28 11:22:44.307425000 +0200
++++ master-ea316f385b.clean_patched/include/wx/setup_inc.h	2025-05-28 09:28:45.976992400 +0200
+@@ -1215,11 +1215,11 @@
+ #define wxUSE_MSGDLG        1
+ 
+ // progress dialog class for lengthy operations
+-#define wxUSE_PROGRESSDLG 0
++#define wxUSE_PROGRESSDLG 0
+ 
+ // Set to 0 to disable the use of the native progress dialog (currently only
+ // available under MSW and suffering from some bugs there, hence this option).
+-#define wxUSE_NATIVE_PROGRESSDLG 0
++#define wxUSE_NATIVE_PROGRESSDLG 0
+ 
+ // support for startup tips (wxShowTip &c)
+ #define wxUSE_STARTUP_TIPS 1
+diff -Nur master-0db0e17733.clean/include/wx/univ/setup.h master-ea316f385b.clean_patched/include/wx/univ/setup.h
+--- master-0db0e17733.clean/include/wx/univ/setup.h	2025-05-28 11:22:44.311530500 +0200
++++ master-ea316f385b.clean_patched/include/wx/univ/setup.h	2025-05-28 09:28:45.976992400 +0200
+@@ -1219,11 +1219,11 @@
+ #define wxUSE_MSGDLG        1
+ 
+ // progress dialog class for lengthy operations
+-#define wxUSE_PROGRESSDLG 0
++#define wxUSE_PROGRESSDLG 0
+ 
+ // Set to 0 to disable the use of the native progress dialog (currently only
+ // available under MSW and suffering from some bugs there, hence this option).
+-#define wxUSE_NATIVE_PROGRESSDLG 0
++#define wxUSE_NATIVE_PROGRESSDLG 0
+ 
+ // support for startup tips (wxShowTip &c)
+ #define wxUSE_STARTUP_TIPS 1
+diff -Nur master-0db0e17733.clean/src/msw/darkmode.cpp master-ea316f385b.clean_patched/src/msw/darkmode.cpp
+--- master-0db0e17733.clean/src/msw/darkmode.cpp	2025-05-28 11:22:44.323601600 +0200
++++ master-ea316f385b.clean_patched/src/msw/darkmode.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -28,7 +28,7 @@
+ // Allow predefining this as 0 to disable dark mode support completely.
+ #ifndef wxUSE_DARK_MODE
+     // Otherwise enable it by default.
+-    #define wxUSE_DARK_MODE 1
++    #define wxUSE_DARK_MODE 1
+ #endif
+ 
+ #if wxUSE_DARK_MODE
+@@ -53,22 +53,22 @@
+ 
+ #include <memory>
+ 
+-#ifndef MBI_NORMAL
+-#define MBI_NORMAL 1
+-#endif
+-
+-#ifndef MBI_HOT
+-#define MBI_HOT 2
+-#endif
+-
+-#ifndef MBI_DISABLED
+-#define MBI_DISABLED 4
+-#endif
+-
+-#ifndef MBI_DISABLEDHOT
+-#define MBI_DISABLEDHOT 5
+-#endif
+-
++#ifndef MBI_NORMAL
++#define MBI_NORMAL 1
++#endif
++
++#ifndef MBI_HOT
++#define MBI_HOT 2
++#endif
++
++#ifndef MBI_DISABLED
++#define MBI_DISABLED 4
++#endif
++
++#ifndef MBI_DISABLEDHOT
++#define MBI_DISABLEDHOT 5
++#endif
++
+ #if wxUSE_LOG_TRACE
+ static const char* TRACE_DARKMODE = "msw-darkmode";
+ #endif // wxUSE_LOG_TRACE
+@@ -702,8 +702,8 @@
+                     drawTextFlags |= DT_HIDEPREFIX;
+ 
+                 wxUxThemeHandle menuTheme(w, L"Menu");
+-                ::DrawThemeText(menuTheme, dis.hDC, 0, partState,
+-                                  buf, mii.cch, drawTextFlags, 0, rcItem);
++                ::DrawThemeText(menuTheme, dis.hDC, 0, partState,
++                                  buf, mii.cch, drawTextFlags, 0, rcItem);
+             }
+             return true;
+     }
+diff -Nur master-0db0e17733.clean/src/msw/dirdlg.cpp master-ea316f385b.clean_patched/src/msw/dirdlg.cpp
+--- master-0db0e17733.clean/src/msw/dirdlg.cpp	2025-05-28 11:22:44.313556800 +0200
++++ master-ea316f385b.clean_patched/src/msw/dirdlg.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -29,7 +29,7 @@
+ #endif
+ 
+ #include "wx/msw/private/filedialog.h"
+-#include "wx/msw/private/gethwnd.h"
++#include "wx/msw/private/gethwnd.h"
+ 
+ #if wxUSE_IFILEOPENDIALOG
+ 
+diff -Nur master-0db0e17733.clean/src/msw/hyperlink.cpp master-ea316f385b.clean_patched/src/msw/hyperlink.cpp
+--- master-0db0e17733.clean/src/msw/hyperlink.cpp	2025-05-28 11:22:44.313556800 +0200
++++ master-ea316f385b.clean_patched/src/msw/hyperlink.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -174,11 +174,11 @@
+ 
+ bool wxHyperlinkCtrl::MSWAreCustomColoursEnabled() const
+ {
+-#if _WIN32_WINNT >= 0x0600
++#if _WIN32_WINNT >= 0x0600
+     LITEM litem = { };
+     litem.mask = LIF_ITEMINDEX | LIF_STATE;
+     litem.stateMask = LIS_DEFAULTCOLORS;
+-
++
+     if ( !::SendMessage(GetHwnd(), LM_GETITEM, 0, (LPARAM)&litem) )
+     {
+         wxLogDebug("LM_GETITEM(LIS_DEFAULTCOLORS) unexpectedly failed");
+@@ -186,14 +186,14 @@
+     }
+ 
+     return (litem.state & LIS_DEFAULTCOLORS) != 0;
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ void wxHyperlinkCtrl::MSWEnableCustomColours()
+ {
+-#if _WIN32_WINNT >= 0x0600
++#if _WIN32_WINNT >= 0x0600
+     // By default, the native control ignores the colours we set for it, so we
+     // need to explicitly enable this for them to be used.
+     if ( !MSWAreCustomColoursEnabled() )
+@@ -205,7 +205,7 @@
+         if ( !::SendMessage(GetHwnd(), LM_SETITEM, 0, (LPARAM)&litem) )
+             wxLogDebug("LM_SETITEM(LIS_DEFAULTCOLORS) unexpectedly failed");
+     }
+-#endif
++#endif
+ }
+ 
+ wxColour wxHyperlinkCtrl::GetHoverColour() const
+diff -Nur master-0db0e17733.clean/src/msw/msgdlg.cpp master-ea316f385b.clean_patched/src/msw/msgdlg.cpp
+--- master-0db0e17733.clean/src/msw/msgdlg.cpp	2025-05-28 11:22:44.313556800 +0200
++++ master-ea316f385b.clean_patched/src/msw/msgdlg.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -2,7 +2,7 @@
+ // Name:        src/msw/msgdlg.cpp
+ // Purpose:     wxMessageDialog
+ // Author:      Julian Smart
+-// Modified by:
++// Modified by:
+ // Created:     04/01/98
+ // Copyright:   (c) Julian Smart
+ // Licence:     wxWindows licence
+@@ -20,7 +20,7 @@
+     #include "wx/intl.h"
+     #include "wx/utils.h"
+     #include "wx/msw/private.h"
+-    #include "wx/hashmap.h"
++    #include "wx/hashmap.h"
+ #endif
+ 
+ #include "wx/ptr_scpd.h"
+@@ -44,14 +44,14 @@
+ 
+ wxIMPLEMENT_CLASS(wxMessageDialog, wxDialog);
+ 
+-// there can potentially be one message box per thread so we use a hash map
+-// with thread ids as keys and (currently shown) message boxes as values
+-//
+-// TODO: replace this with wxTLS once it's available
+-WX_DECLARE_HASH_MAP(unsigned long, wxMessageDialog *,
+-                    wxIntegerHash, wxIntegerEqual,
+-                    wxMessageDialogMap);
+-
++// there can potentially be one message box per thread so we use a hash map
++// with thread ids as keys and (currently shown) message boxes as values
++//
++// TODO: replace this with wxTLS once it's available
++WX_DECLARE_HASH_MAP(unsigned long, wxMessageDialog *,
++                    wxIntegerHash, wxIntegerEqual,
++                    wxMessageDialogMap);
++
+ // the order in this array is the one in which buttons appear in the
+ // message box
+ const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
+@@ -65,12 +65,12 @@
+ namespace
+ {
+ 
+-wxMessageDialogMap& HookMap()
+-{
+-    static wxMessageDialogMap s_Map;
+-
+-    return s_Map;
+-}
++wxMessageDialogMap& HookMap()
++{
++    static wxMessageDialogMap s_Map;
++
++    return s_Map;
++}
+ 
+ /*
+     All this code is used for adjusting the message box layout when we mess
+@@ -86,10 +86,10 @@
+ void ScreenRectToClient(HWND hwnd, RECT& rc)
+ {
+     // map from desktop (i.e. screen) coordinates to ones of this window
+-    //
+-    // notice that a RECT is laid out as 2 consecutive POINTs so the cast is
+-    // valid
+-    ::MapWindowPoints(HWND_DESKTOP, hwnd, reinterpret_cast<POINT *>(&rc), 2);
++    //
++    // notice that a RECT is laid out as 2 consecutive POINTs so the cast is
++    // valid
++    ::MapWindowPoints(HWND_DESKTOP, hwnd, reinterpret_cast<POINT *>(&rc), 2);
+ }
+ 
+ // set window position to the given rect
+@@ -116,13 +116,13 @@
+ WXLRESULT wxCALLBACK
+ wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
+ {
+-    // Find the thread-local instance of wxMessageDialog
+-    const DWORD tid = ::GetCurrentThreadId();
+-    wxMessageDialogMap::iterator node = HookMap().find(tid);
+-    wxCHECK_MSG( node != HookMap().end(), false,
+-                    wxT("bogus thread id in wxMessageDialog::Hook") );
+-
+-    wxMessageDialog *  const wnd = node->second;
++    // Find the thread-local instance of wxMessageDialog
++    const DWORD tid = ::GetCurrentThreadId();
++    wxMessageDialogMap::iterator node = HookMap().find(tid);
++    wxCHECK_MSG( node != HookMap().end(), false,
++                    wxT("bogus thread id in wxMessageDialog::Hook") );
++
++    wxMessageDialog *  const wnd = node->second;
+ 
+     const HHOOK hhook = (HHOOK)wnd->m_hook;
+     const LRESULT rc = ::CallNextHookEx(hhook, code, wParam, lParam);
+@@ -131,8 +131,8 @@
+     {
+         // we won't need this hook any longer
+         ::UnhookWindowsHookEx(hhook);
+-        wnd->m_hook = NULL;
+-        HookMap().erase(tid);
++        wnd->m_hook = NULL;
++        HookMap().erase(tid);
+ 
+         TempHWNDSetter set(wnd, (WXHWND)wParam);
+ 
+@@ -169,9 +169,9 @@
+     // find the static control to replace: normally there are two of them, the
+     // icon and the text itself so search for all of them and ignore the icon
+     // ones
+-    HWND hwndStatic = ::FindWindowEx(GetHwnd(), NULL, wxT("STATIC"), NULL);
++    HWND hwndStatic = ::FindWindowEx(GetHwnd(), NULL, wxT("STATIC"), NULL);
+     if ( ::GetWindowLong(hwndStatic, GWL_STYLE) & SS_ICON )
+-        hwndStatic = ::FindWindowEx(GetHwnd(), hwndStatic, wxT("STATIC"), NULL);
++        hwndStatic = ::FindWindowEx(GetHwnd(), hwndStatic, wxT("STATIC"), NULL);
+ 
+     if ( !hwndStatic )
+     {
+@@ -236,9 +236,9 @@
+                         rc.left, rc.top,
+                         rc.right - rc.left, rc.bottom - rc.top,
+                         GetHwnd(),
+-                        NULL,
++                        NULL,
+                         wxGetInstance(),
+-                        NULL
++                        NULL
+                       );
+ 
+     if ( !hwndEdit )
+@@ -415,7 +415,7 @@
+ 
+     // use the top level window as parent if none specified
+     m_parent = GetParentForModalDialog();
+-    HWND hWnd = m_parent ? GetHwndOf(m_parent) : NULL;
++    HWND hWnd = m_parent ? GetHwndOf(m_parent) : NULL;
+ 
+ #if wxUSE_INTL
+     // native message box always uses the current user locale but the program
+@@ -521,8 +521,8 @@
+     // control with an edit one)
+     const DWORD tid = ::GetCurrentThreadId();
+     m_hook = ::SetWindowsHookEx(WH_CBT,
+-                                &wxMessageDialog::HookFunction, NULL, tid);
+-    HookMap()[tid] = this;
++                                &wxMessageDialog::HookFunction, NULL, tid);
++    HookMap()[tid] = this;
+ 
+     // do show the dialog
+     const int msAns = MessageBox
+@@ -542,18 +542,18 @@
+ 
+     wxWindowDisabler disableOthers(this, GetParentForModalDialog());
+ 
+-#ifdef wxHAS_MSW_TASKDIALOG
+-    if ( HasNativeTaskDialog() )
++#ifdef wxHAS_MSW_TASKDIALOG
++    if ( HasNativeTaskDialog() )
+     {
+-        TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc();
+-        wxCHECK_MSG( taskDialogIndirect, wxID_CANCEL, wxS("no task dialog?") );
+-
++        TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc();
++        wxCHECK_MSG( taskDialogIndirect, wxID_CANCEL, wxS("no task dialog?") );
++
+         WinStruct<TASKDIALOGCONFIG> tdc;
+         wxMSWTaskDialogConfig wxTdc( *this );
+         wxTdc.MSWCommonTaskDialogInit( tdc );
+ 
+         int msAns;
+-        HRESULT hr = taskDialogIndirect( &tdc, &msAns, NULL, NULL );
++        HRESULT hr = taskDialogIndirect( &tdc, &msAns, NULL, NULL );
+         if ( FAILED(hr) )
+         {
+             wxLogApiError( "TaskDialogIndirect", hr );
+@@ -572,7 +572,7 @@
+ 
+         return MSWTranslateReturnCode( msAns );
+     }
+-#endif // wxHAS_MSW_TASKDIALOG
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return ShowMessageBox();
+ }
+@@ -591,13 +591,13 @@
+ 
+ void wxMessageDialog::DoCentre(int dir)
+ {
+-#ifdef wxHAS_MSW_TASKDIALOG
++#ifdef wxHAS_MSW_TASKDIALOG
+     // Task dialog is always centered on its parent window and trying to center
+     // it manually doesn't work because its HWND is not created yet so don't
+     // even try as this would only result in (debug) error messages.
+     if ( HasNativeTaskDialog() )
+         return;
+-#endif // wxHAS_MSW_TASKDIALOG
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxMessageDialogBase::DoCentre(dir);
+ }
+@@ -606,7 +606,7 @@
+ // Helpers of the wxMSWMessageDialog namespace
+ // ----------------------------------------------------------------------------
+ 
+-#ifdef wxHAS_MSW_TASKDIALOG
++#ifdef wxHAS_MSW_TASKDIALOG
+ 
+ wxMSWTaskDialogConfig::wxMSWTaskDialogConfig(const wxMessageDialogBase& dlg)
+                      : buttons(new TASKDIALOG_BUTTON[MAX_BUTTONS])
+@@ -662,7 +662,7 @@
+     tdc.pszWindowTitle = caption.t_str();
+ 
+     // use the top level window as parent if none specified
+-    tdc.hwndParent = parent ? GetHwndOf(parent) : NULL;
++    tdc.hwndParent = parent ? GetHwndOf(parent) : NULL;
+ 
+     if ( wxApp::MSWGetDefaultLayout(parent) == wxLayout_RightToLeft )
+         tdc.dwFlags |= TDF_RTL_LAYOUT;
+@@ -789,7 +789,7 @@
+ 
+ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
+ {
+-    // Initialize the function pointer to an invalid value different from NULL
++    // Initialize the function pointer to an invalid value different from NULL
+     // to avoid reloading comctl32.dll and trying to resolve it every time
+     // we're called if task dialog is not available (notice that this may
+     // happen even under Vista+ if we don't use comctl32.dll v6).
+@@ -808,19 +808,19 @@
+     return s_TaskDialogIndirect;
+ }
+ 
+-#endif // wxHAS_MSW_TASKDIALOG
+-
++#endif // wxHAS_MSW_TASKDIALOG
++
+ bool wxMSWMessageDialog::HasNativeTaskDialog()
+ {
+-#ifdef wxHAS_MSW_TASKDIALOG
+-    if ( wxGetWinVersion() >= wxWinVersion_6 )
+-    {
+-        if ( wxMSWMessageDialog::GetTaskDialogIndirectFunc() )
+-            return true;
+-    }
+-#endif // wxHAS_MSW_TASKDIALOG
+-
+-    return false;
++#ifdef wxHAS_MSW_TASKDIALOG
++    if ( wxGetWinVersion() >= wxWinVersion_6 )
++    {
++        if ( wxMSWMessageDialog::GetTaskDialogIndirectFunc() )
++            return true;
++    }
++#endif // wxHAS_MSW_TASKDIALOG
++
++    return false;
+ }
+ 
+ int wxMSWMessageDialog::MSWTranslateReturnCode(int msAns)
+diff -Nur master-0db0e17733.clean/src/msw/progdlg.cpp master-ea316f385b.clean_patched/src/msw/progdlg.cpp
+--- master-0db0e17733.clean/src/msw/progdlg.cpp	2025-05-28 11:22:44.313556800 +0200
++++ master-ea316f385b.clean_patched/src/msw/progdlg.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -18,7 +18,7 @@
+ // For compilers that support precompilation, includes "wx.h".
+ #include "wx/wxprec.h"
+ 
+-#undef wxUSE_PROGRESSDLG
++#undef wxUSE_PROGRESSDLG
+ 
+ #if wxUSE_PROGRESSDLG && wxUSE_THREADS && wxUSE_NATIVE_PROGRESSDLG
+ 
+diff -Nur master-0db0e17733.clean/src/msw/renderer.cpp master-ea316f385b.clean_patched/src/msw/renderer.cpp
+--- master-0db0e17733.clean/src/msw/renderer.cpp	2025-05-28 11:22:44.313556800 +0200
++++ master-ea316f385b.clean_patched/src/msw/renderer.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -1169,8 +1169,8 @@
+                 break;
+         }
+ 
+-        ::DrawThemeText(hTheme, dc.GetHDC(), LVP_LISTITEM, itemState,
+-                            drawText->wchar_str(), -1, textFlags, 0, &rc);
++        ::DrawThemeText(hTheme, dc.GetHDC(), LVP_LISTITEM, itemState,
++                            drawText->wchar_str(), -1, textFlags, 0, &rc);
+     }
+     else
+     {
+diff -Nur master-0db0e17733.clean/src/msw/richmsgdlg.cpp master-ea316f385b.clean_patched/src/msw/richmsgdlg.cpp
+--- master-0db0e17733.clean/src/msw/richmsgdlg.cpp	2025-05-28 11:22:44.317574600 +0200
++++ master-ea316f385b.clean_patched/src/msw/richmsgdlg.cpp	2025-05-28 11:18:29.523897900 +0200
+@@ -10,18 +10,18 @@
+ // For compilers that support precompilation, includes "wx.h".
+ #include "wx/wxprec.h"
+ 
+-#undef wxUSE_RICHMSGDLG
+-
+ #if wxUSE_RICHMSGDLG
+ 
+ #include "wx/richmsgdlg.h"
+ #include "wx/modalhook.h"
+ 
+ #ifndef WX_PRECOMP
+-    #include "wx/msw/private.h"
+-    #include "wx/utils.h"                   // for wxWindowDisabler
++#include "wx/msw/private.h"
++#include "wx/utils.h"                   // for wxWindowDisabler
+ #endif
+ 
++// This will define wxHAS_MSW_TASKDIALOG if we have support for it in the
++// headers we use.
+ #include "wx/msw/private/msgdlg.h"
+ 
+ // ----------------------------------------------------------------------------
+@@ -32,9 +32,10 @@
+ {
+     WX_HOOK_MODAL_DIALOG();
+ 
++#ifdef wxHAS_MSW_TASKDIALOG
+     using namespace wxMSWMessageDialog;
+ 
+-    if ( HasNativeTaskDialog() )
++    if (HasNativeTaskDialog())
+     {
+         wxWindowDisabler disableOthers(this, GetParentForModalDialog());
+ 
+@@ -42,52 +43,52 @@
+         WinStruct<TASKDIALOGCONFIG> tdc;
+         wxMSWTaskDialogConfig wxTdc(*this);
+ 
+-        wxTdc.MSWCommonTaskDialogInit( tdc );
++        wxTdc.MSWCommonTaskDialogInit(tdc);
+ 
+         // add a checkbox
+-        if ( !m_checkBoxText.empty() )
++        if (!m_checkBoxText.empty())
+         {
+             tdc.pszVerificationText = m_checkBoxText.t_str();
+-            if ( m_checkBoxValue )
++            if (m_checkBoxValue)
+                 tdc.dwFlags |= TDF_VERIFICATION_FLAG_CHECKED;
+         }
+ 
+         // add collapsible footer
+-        if ( !m_detailedText.empty() )
++        if (!m_detailedText.empty())
+             tdc.pszExpandedInformation = m_detailedText.t_str();
+ 
+         // Add footer text
+-        if ( !m_footerText.empty() )
++        if (!m_footerText.empty())
+         {
+             tdc.pszFooter = m_footerText.t_str();
+-            switch ( m_footerIcon )
++            switch (m_footerIcon)
+             {
+-                case wxICON_INFORMATION:
+-                    tdc.pszFooterIcon = TD_INFORMATION_ICON;
+-                    break;
+-                case wxICON_WARNING:
+-                    tdc.pszFooterIcon = TD_WARNING_ICON;
+-                    break;
+-                case wxICON_ERROR:
+-                    tdc.pszFooterIcon = TD_ERROR_ICON;
+-                    break;
+-                case wxICON_AUTH_NEEDED:
+-                    tdc.pszFooterIcon = TD_SHIELD_ICON;
+-                    break;
++            case wxICON_INFORMATION:
++                tdc.pszFooterIcon = TD_INFORMATION_ICON;
++                break;
++            case wxICON_WARNING:
++                tdc.pszFooterIcon = TD_WARNING_ICON;
++                break;
++            case wxICON_ERROR:
++                tdc.pszFooterIcon = TD_ERROR_ICON;
++                break;
++            case wxICON_AUTH_NEEDED:
++                tdc.pszFooterIcon = TD_SHIELD_ICON;
++                break;
+             }
+         }
+ 
+         TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc();
+-        if ( !taskDialogIndirect )
++        if (!taskDialogIndirect)
+             return wxID_CANCEL;
+ 
+         // create the task dialog, process the answer and return it.
+         BOOL checkBoxChecked;
+         int msAns;
+-        HRESULT hr = taskDialogIndirect( &tdc, &msAns, nullptr, &checkBoxChecked );
+-        if ( FAILED(hr) )
++        HRESULT hr = taskDialogIndirect(&tdc, &msAns, NULL, &checkBoxChecked);
++        if (FAILED(hr))
+         {
+-            wxLogApiError( "TaskDialogIndirect", hr );
++            wxLogApiError("TaskDialogIndirect", hr);
+             return wxID_CANCEL;
+         }
+         m_checkBoxValue = checkBoxChecked != FALSE;
+@@ -96,14 +97,15 @@
+         // "Cancel" button (see comment in MSWCommonTaskDialogInit). This
+         // results in msAns being IDCANCEL while we want IDOK (just like
+         // how the native MessageBox function does with only an "OK" button).
+-        if ( (msAns == IDCANCEL)
+-            && !(GetMessageDialogStyle() & (wxYES_NO|wxCANCEL)) )
++        if ((msAns == IDCANCEL)
++            && !(GetMessageDialogStyle() & (wxYES_NO | wxCANCEL)))
+         {
+             msAns = IDOK;
+         }
+ 
+-        return MSWTranslateReturnCode( msAns );
++        return MSWTranslateReturnCode(msAns);
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     // use the generic version when task dialog is't available at either
+     // compile or run-time.
+diff -Nur master-0db0e17733.clean/src/msw/taskbar.cpp master-ea316f385b.clean_patched/src/msw/taskbar.cpp
+--- master-0db0e17733.clean/src/msw/taskbar.cpp	2025-05-28 11:22:44.317574600 +0200
++++ master-ea316f385b.clean_patched/src/msw/taskbar.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -251,9 +251,9 @@
+     if ( icon.IsOk() )
+     {
+         m_balloonIcon = icon.GetIconFor(m_win);
+-#if _WIN32_WINNT >= 0x0600
++#if _WIN32_WINNT >= 0x0600
+         notifyData.hBalloonIcon = GetHiconOf(m_balloonIcon);
+-#endif
++#endif
+         notifyData.dwInfoFlags |= NIIF_USER | NIIF_LARGE_ICON;
+     }
+     else if ( flags & wxICON_INFORMATION )
+diff -Nur master-0db0e17733.clean/src/msw/toolbar.cpp master-ea316f385b.clean_patched/src/msw/toolbar.cpp
+--- master-0db0e17733.clean/src/msw/toolbar.cpp	2025-05-28 11:22:44.317574600 +0200
++++ master-ea316f385b.clean_patched/src/msw/toolbar.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -1702,9 +1702,9 @@
+ 
+                 *result = CDRF_DODEFAULT |
+                           CDRF_NOTIFYPOSTPAINT |
+-#if _WIN32_WINNT >= 0x0600
++#if _WIN32_WINNT >= 0x0600
+                           TBCDRF_USECDCOLORS |
+-#endif
++#endif
+                           TBCDRF_HILITEHOTTRACK;
+ 
+                 // Draw custom checked button background when it is not hot:
+diff -Nur master-0db0e17733.clean/src/msw/uilocale.cpp master-ea316f385b.clean_patched/src/msw/uilocale.cpp
+--- master-0db0e17733.clean/src/msw/uilocale.cpp	2025-05-28 11:22:44.319584000 +0200
++++ master-ea316f385b.clean_patched/src/msw/uilocale.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -325,7 +325,7 @@
+             ULONG numberOfLanguages = 0;
+             ULONG bufferSize = 0;
+ 
+-            BOOL (*pfnGetUserPreferredUILanguages)(DWORD, PULONG, PZZWSTR, PULONG) =
++            BOOL (*pfnGetUserPreferredUILanguages)(DWORD, PULONG, PZZWSTR, PULONG) =
+                 (BOOL (*)(DWORD, PULONG, PZZWSTR, PULONG))kernel32.GetSymbol(wxT("GetUserPreferredUILanguages"));
+ 
+             if (pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
+@@ -378,7 +378,7 @@
+             {
+                 wxLogLastError(wxT("GetLocaleInfo"));
+             }
+-        }
++        }
+ 
+         return preferred;
+     }
+@@ -440,10 +440,10 @@
+ 
+     void Use() override
+     {
+-        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
+-	BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
+-             (BOOL (*)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
+-
++        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++	BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
++             (BOOL (*)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
++
+         // Construct a double NUL-terminated buffer.
+         wchar_t buf[256];
+         if ( m_name )
+@@ -454,8 +454,8 @@
+ 
+         ULONG num = 1;
+ 
+-        if (pfnSetThreadPreferredUILanguages)
+-            pfnSetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, buf, &num);
++        if (pfnSetThreadPreferredUILanguages)
++            pfnSetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, buf, &num);
+     }
+ 
+     wxString GetName() const override
+@@ -605,8 +605,8 @@
+               LOCALE_SDAYNAME4, LOCALE_SDAYNAME5, LOCALE_SDAYNAME6 },
+             { LOCALE_SABBREVDAYNAME7, LOCALE_SABBREVDAYNAME1, LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
+               LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5, LOCALE_SABBREVDAYNAME6 },
+-            { LOCALE_SABBREVDAYNAME7, LOCALE_SABBREVDAYNAME1, LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
+-              LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5, LOCALE_SABBREVDAYNAME6 }
++            { LOCALE_SABBREVDAYNAME7, LOCALE_SABBREVDAYNAME1, LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
++              LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5, LOCALE_SABBREVDAYNAME6 }
+         };
+ 
+         const int idx = ArrayIndexFromFlag(form.GetFlags());
+diff -Nur master-0db0e17733.clean/src/msw/utilsgui.cpp master-ea316f385b.clean_patched/src/msw/utilsgui.cpp
+--- master-0db0e17733.clean/src/msw/utilsgui.cpp	2025-05-28 11:22:44.319584000 +0200
++++ master-ea316f385b.clean_patched/src/msw/utilsgui.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -279,13 +279,13 @@
+             break;
+ 
+         case UseType::Peak:
+-#if _WIN32_WINNT >= 0x0600
++#if _WIN32_WINNT >= 0x0600
+             flagsGDI = GR_GDIOBJECTS_PEAK;
+             flagsUSER = GR_USEROBJECTS_PEAK;
+-#else
+-            flagsGDI = GR_GDIOBJECTS;
+-            flagsUSER = GR_USEROBJECTS;
+-#endif
++#else
++            flagsGDI = GR_GDIOBJECTS;
++            flagsUSER = GR_USEROBJECTS;
++#endif
+             break;
+     }
+ 
+diff -Nur master-0db0e17733.clean/src/msw/window.cpp master-ea316f385b.clean_patched/src/msw/window.cpp
+--- master-0db0e17733.clean/src/msw/window.cpp	2025-05-28 11:22:44.321592200 +0200
++++ master-ea316f385b.clean_patched/src/msw/window.cpp	2025-05-28 09:28:45.976992400 +0200
+@@ -286,14 +286,14 @@
+ // This only works for the current (i.e. last received) mouse event.
+ static bool wxIsTouchEventMSW()
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     // From https://learn.microsoft.com/en-us/windows/win32/tablet/system-events-and-mouse-messages
+     const LONG_PTR MI_WP_SIGNATURE = 0xFF515700;
+     const LONG_PTR SIGNATURE_MASK = 0xFFFFFF00;
+     return (::GetMessageExtraInfo() & SIGNATURE_MASK) == MI_WP_SIGNATURE;
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ // ---------------------------------------------------------------------------
+@@ -893,7 +893,7 @@
+ 
+ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     // Static struct used when we need to use just a single configuration.
+     GESTURECONFIG config = {0, 0, 0};
+ 
+@@ -1011,9 +1011,9 @@
+     }
+ 
+     return true;
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ void wxWindowMSW::MSWUpdateUIState(int action, int state)
+@@ -3489,7 +3489,7 @@
+             }
+             break;
+ 
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+         case WM_GESTURE:
+         {
+             HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
+@@ -3568,7 +3568,7 @@
+             // handled, otherwise we still pass them to DefWindowProc().
+             processed = HandleTouch(wParam, lParam);
+             break;
+-#endif
++#endif
+ 
+         // CTLCOLOR messages are sent by children to query the parent for their
+         // colors
+@@ -6215,7 +6215,7 @@
+                                    const wxPoint& pt,
+                                    WXDWORD flags)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     event.SetEventObject(this);
+     event.SetTimestamp(::GetMessageTime());
+     event.SetPosition(pt);
+@@ -6227,14 +6227,14 @@
+         event.SetGestureEnd();
+ 
+     return (flags & GF_BEGIN) != 0;
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandlePanGesture(const wxPoint& pt, WXDWORD flags)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_GESTURE_PAN
+     wxPanGestureEvent event(GetId());
+ 
+@@ -6255,16 +6255,16 @@
+     s_previousLocation = pt;
+ 
+     return HandleWindowEvent(event);
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleZoomGesture(const wxPoint& pt,
+                                     WXDWORD fingerDistance,
+                                     WXDWORD flags)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_GESTURE_ZOOM
+     wxZoomGestureEvent event(GetId());
+ 
+@@ -6297,16 +6297,16 @@
+     s_previousLocation = pt;
+ 
+     return HandleWindowEvent(event);
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleRotateGesture(const wxPoint& pt,
+                                       WXDWORD angleArgument,
+                                       WXDWORD flags)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_GESTURE_ROTATE
+     wxRotateGestureEvent event(GetId());
+ 
+@@ -6335,41 +6335,41 @@
+     }
+ 
+     return HandleWindowEvent(event);
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleTwoFingerTap(const wxPoint& pt, WXDWORD flags)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_TWO_FINGER_TAP
+     wxTwoFingerTapEvent event(GetId());
+ 
+     InitGestureEvent(event, pt, flags);
+ 
+     return HandleWindowEvent(event);
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandlePressAndTap(const wxPoint& pt, WXDWORD flags)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     wxPressAndTapEvent event(GetId());
+ 
+     InitGestureEvent(event, pt, flags);
+ 
+     return HandleWindowEvent(event);
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+ {
+-#if _WIN32_WINNT >= 0x0601
++#if _WIN32_WINNT >= 0x0601
+     const unsigned count = LOWORD(wParam);
+     const HTOUCHINPUT hTouchInput = (HTOUCHINPUT)lParam;
+     wxVector<TOUCHINPUT> info(count);
+@@ -6411,9 +6411,9 @@
+     }
+ 
+     return allHandled;
+-#else
+-    return false;
+-#endif
++#else
++    return false;
++#endif
+ }
+ 
+ // ---------------------------------------------------------------------------
