@@ -4009,3 +4009,14 @@ diff -Nur master-6d0218a996.clean/src/msw/timectrl.cpp master-6d0218a996.clean_p
      }
  
      wxString GetName() const override
+--- master-4b5cb6d586.clean/src/msw/app.cpp	2025-05-26 18:04:50.000000000 +0200
++++ master-4b5cb6d586.clean_patched/src/msw/app.cpp	2025-05-28 18:46:24.732457600 +0200
+@@ -497,7 +497,7 @@
+ 
+     if ( !wxSystemOptions::GetOptionInt("msw.no-manifest-check") )
+     {
+-        if ( GetComCtl32Version() < 610 )
++        if ( GetComCtl32Version() < 500 )
+         {
+             // Check if we have wx resources in this program: this is not
+             // mandatory, but recommended and could be the simplest way to
