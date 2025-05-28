@@ -8,6 +8,7 @@ vcpkg_from_github(
         0002-cmake-config.patch
         0003-simd.patch
         0008-sdl.patch
+        0009-winxp.patch
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -35,6 +36,8 @@ vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         ${FEATURE_OPTIONS}
+        -DCMAKE_C_FLAGS=-D_WIN32_WINNT=0x0501
+        -DWEBP_USE_THREAD=OFF
     OPTIONS_DEBUG
         -DWEBP_BUILD_ANIM_UTILS=OFF
         -DWEBP_BUILD_CWEBP=OFF
@@ -45,9 +48,6 @@ vcpkg_cmake_configure(
         -DWEBP_BUILD_VWEBP=OFF
         -DWEBP_BUILD_WEBPINFO=OFF
         -DWEBP_BUILD_WEBPMUX=OFF
-        -DWEBP_USE_THREAD=OFF
-        -DCMAKE_C_FLAGS=-D_WIN32_WINNT=0x0501
-        -DCMAKE_CXX_FLAGS=-D_WIN32_WINNT=0x0501
     MAYBE_UNUSED_VARIABLES
         CMAKE_DISABLE_FIND_PACKAGE_SDL
         CMAKE_REQUIRE_FIND_PACKAGE_SDL

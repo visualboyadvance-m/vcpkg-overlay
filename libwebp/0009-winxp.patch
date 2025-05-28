@@ -1,0 +1,20 @@
+diff -Nur v1.5.0-9ee206ccc1.clean/CMakeLists.txt v1.5.0-9ee206ccc1.clean_patched/CMakeLists.txt
+--- v1.5.0-9ee206ccc1.clean/CMakeLists.txt	2025-05-28 17:29:49.239397100 +0200
++++ v1.5.0-9ee206ccc1.clean_patched/CMakeLists.txt	2025-05-28 17:36:52.699802700 +0200
+@@ -46,7 +46,7 @@
+ option(WEBP_BUILD_EXTRAS "Build extras." ON)
+ option(WEBP_BUILD_WEBP_JS "Emscripten build of webp.js." OFF)
+ option(WEBP_BUILD_FUZZTEST "Build the fuzztest tests." OFF)
+-option(WEBP_USE_THREAD "Enable threading support" ON)
++option(WEBP_USE_THREAD "Enable threading support" OFF)
+ option(WEBP_NEAR_LOSSLESS "Enable near-lossless encoding" ON)
+ option(WEBP_ENABLE_SWAP_16BIT_CSP "Enable byte swap for 16 bit colorspaces."
+        OFF)
+@@ -153,6 +153,7 @@
+ else()
+   set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+ endif()
++set(CMAKE_THREAD_LIBS_INIT -lpthread)
+ set(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+ set(INSTALLED_LIBRARIES)
+ 
