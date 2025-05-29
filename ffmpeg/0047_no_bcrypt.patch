@@ -1,0 +1,62 @@
+diff -Nur n7.1.1-b116121da9.clean/configure n7.1.1-b116121da9.clean_patched/configure
+--- n7.1.1-b116121da9.clean/configure	2025-05-25 15:55:12.024995500 +0200
++++ n7.1.1-b116121da9.clean_patched/configure	2025-05-26 07:51:03.294230500 +0200
+@@ -2421,7 +2421,6 @@
+ "
+ 
+ SYSTEM_LIBRARIES="
+-    bcrypt
+     vaapi_drm
+     vaapi_x11
+     vaapi_win32
+@@ -4034,7 +4033,7 @@
+ avfilter_suggest="libm stdatomic"
+ avformat_deps="avcodec avutil"
+ avformat_suggest="libm network zlib stdatomic"
+-avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia bcrypt stdatomic"
++avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia stdatomic"
+ postproc_deps="avutil gpl"
+ postproc_suggest="libm stdatomic"
+ swresample_deps="avutil"
+@@ -6669,8 +6668,6 @@
+ done
+ 
+ check_lib advapi32 "windows.h"            RegCloseKey          -ladvapi32
+-check_lib bcrypt   "windows.h bcrypt.h"   BCryptGenRandom      -lbcrypt &&
+-    check_cpp_condition bcrypt bcrypt.h "defined BCRYPT_RNG_ALGORITHM"
+ check_lib ole32    "windows.h objbase.h"  CoTaskMemFree        -lole32
+ check_lib shell32  "windows.h shellapi.h" CommandLineToArgvW   -lshell32
+ check_lib psapi    "windows.h psapi.h"    GetProcessMemoryInfo -lpsapi
+diff -Nur n7.1.1-b116121da9.clean/libavutil/random_seed.c n7.1.1-b116121da9.clean_patched/libavutil/random_seed.c
+--- n7.1.1-b116121da9.clean/libavutil/random_seed.c	2025-03-03 01:17:09.000000000 +0100
++++ n7.1.1-b116121da9.clean_patched/libavutil/random_seed.c	2025-05-26 07:52:09.259778300 +0200
+@@ -26,10 +26,6 @@
+ #if HAVE_IO_H
+ #include <io.h>
+ #endif
+-#if HAVE_BCRYPT
+-#include <windows.h>
+-#include <bcrypt.h>
+-#endif
+ #if CONFIG_GCRYPT
+ #include <gcrypt.h>
+ #elif CONFIG_OPENSSL
+@@ -131,18 +127,6 @@
+ {
+     int err;
+ 
+-#if HAVE_BCRYPT
+-    BCRYPT_ALG_HANDLE algo_handle;
+-    NTSTATUS ret = BCryptOpenAlgorithmProvider(&algo_handle, BCRYPT_RNG_ALGORITHM,
+-                                               MS_PRIMITIVE_PROVIDER, 0);
+-    if (BCRYPT_SUCCESS(ret)) {
+-        NTSTATUS ret = BCryptGenRandom(algo_handle, (PUCHAR)buf, len, 0);
+-        BCryptCloseAlgorithmProvider(algo_handle, 0);
+-        if (BCRYPT_SUCCESS(ret))
+-            return 0;
+-    }
+-#endif
+-
+ #if HAVE_ARC4RANDOM_BUF
+     arc4random_buf(buf, len);
+     return 0;
