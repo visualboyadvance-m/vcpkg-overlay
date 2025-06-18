@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO wxWidgets/wxWidgets
     REF master
-    SHA512 d9ffc9f723335d60f1b861a5e2d77a30a614bfa59ec533636f99cbd16ceb25aa88db6ae1360f7b96b618b09ae83dda405f01fef887fb7ec83303fa6aabac426f
+    SHA512 daa1a7d7d7050addd06026d9e420dd1c7c0163f43df40df765f871e7738788d3cbd8eb35ac230812e36beb27f4c885de0f8cd22c04fa32887c58b8a45f1663bd
     PATCHES
         install-layout.patch
         install-config-remove.patch
