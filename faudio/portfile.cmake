@@ -7,8 +7,8 @@ vcpkg_from_github(
 )
 
 set(options "")
-if(VCPKG_TARGET_IS_WINDOWS)
-    list(APPEND options -DPLATFORM_WIN32=OFF -DBUILD_SDL3=ON)
+if(VCPKG_TARGET_IS_WINDOWS AND (NOT CMAKE_C_SIZEOF_DATA_PTR EQUAL 4))
+    list(APPEND options -DPLATFORM_WIN32=ON)
 endif()
 
 vcpkg_cmake_configure(
