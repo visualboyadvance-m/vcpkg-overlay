@@ -12,6 +12,7 @@ vcpkg_from_github(
         gtk3-link-libraries.patch
         winxp-compat.patch
         winxp-compat-andy.patch
+        more-xp-compat.patch
 )
 
 vcpkg_check_features(
