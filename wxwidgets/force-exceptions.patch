@@ -81,3 +81,18 @@ diff -Nur master-521928699e.clean/src/msw/app.cpp master-521928699e.clean_patche
  
  // ----------------------------------------------------------------------------
  // Layout direction
+diff -Nur master-fdc95c86a7.clean/include/wx/msw/app.h master-fdc95c86a7.clean_patched/include/wx/msw/app.h
+--- master-fdc95c86a7.clean/include/wx/msw/app.h	2025-06-26 12:55:09.000000000 +0200
++++ master-fdc95c86a7.clean_patched/include/wx/msw/app.h	2025-06-28 20:43:58.080658800 +0200
+@@ -56,9 +56,9 @@
+     void OnEndSession(wxCloseEvent& event);
+     void OnQueryEndSession(wxCloseEvent& event);
+ 
+-#if wxUSE_EXCEPTIONS
++//#if wxUSE_EXCEPTIONS
+     virtual bool OnExceptionInMainLoop() override;
+-#endif // wxUSE_EXCEPTIONS
++//#endif // wxUSE_EXCEPTIONS
+ 
+     // MSW-specific from now on
+     // ------------------------
