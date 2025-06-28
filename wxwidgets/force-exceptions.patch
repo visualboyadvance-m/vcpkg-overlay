@@ -60,3 +60,24 @@ diff -Nur master-a28f08d511.clean/src/common/appbase.cpp master-a28f08d511.clean
  
  // ----------------------------------------------------------------------------
  // cmd line parsing
+diff -Nur master-521928699e.clean/src/msw/app.cpp master-521928699e.clean_patched/src/msw/app.cpp
+--- master-521928699e.clean/src/msw/app.cpp	2025-06-28 18:59:06.181718900 +0200
++++ master-521928699e.clean_patched/src/msw/app.cpp	2025-06-28 20:34:12.308616700 +0200
+@@ -892,7 +892,7 @@
+     return s_verComCtl32;
+ }
+ 
+-#if wxUSE_EXCEPTIONS
++//#if wxUSE_EXCEPTIONS
+ 
+ // ----------------------------------------------------------------------------
+ // exception handling
+@@ -931,7 +931,7 @@
+     }
+ }
+ 
+-#endif // wxUSE_EXCEPTIONS
++//#endif // wxUSE_EXCEPTIONS
+ 
+ // ----------------------------------------------------------------------------
+ // Layout direction
