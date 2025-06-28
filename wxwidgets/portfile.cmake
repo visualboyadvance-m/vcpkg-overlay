@@ -13,6 +13,7 @@ vcpkg_from_github(
         winxp-compat.patch
         winxp-compat-andy.patch
         more-xp-compat.patch
+        force-exceptions.patch
 )
 
 vcpkg_check_features(

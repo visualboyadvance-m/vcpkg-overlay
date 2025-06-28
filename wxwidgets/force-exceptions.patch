@@ -1,0 +1,62 @@
+diff -Nur master-a28f08d511.clean/include/wx/app.h master-a28f08d511.clean_patched/include/wx/app.h
+--- master-a28f08d511.clean/include/wx/app.h	2025-06-26 12:55:09.000000000 +0200
++++ master-a28f08d511.clean_patched/include/wx/app.h	2025-06-28 18:53:02.797768800 +0200
+@@ -281,7 +281,7 @@
+     // (already) be dispatched
+     static bool IsMainLoopRunning();
+ 
+-#if wxUSE_EXCEPTIONS
++//#if wxUSE_EXCEPTIONS
+     // execute the functor to handle the given event
+     //
+     // this is a generalization of HandleEvent() below and the base class
+@@ -339,11 +339,11 @@
+     // The default version does nothing when using C++98 and uses
+     // std::rethrow_exception() in C++11.
+     virtual void RethrowStoredException();
+-#else // !wxUSE_EXCEPTIONS
++/*#else // !wxUSE_EXCEPTIONS
+     // For convenience, still define this to allow the code using it to avoid
+     // checking for wxUSE_EXCEPTIONS.
+     static void CallOnUnhandledException() { }
+-#endif // wxUSE_EXCEPTIONS/!wxUSE_EXCEPTIONS
++#endif // wxUSE_EXCEPTIONS/!wxUSE_EXCEPTIONS*/
+ 
+ 
+     // pending events
+diff -Nur master-a28f08d511.clean/src/common/appbase.cpp master-a28f08d511.clean_patched/src/common/appbase.cpp
+--- master-a28f08d511.clean/src/common/appbase.cpp	2025-06-26 12:55:09.000000000 +0200
++++ master-a28f08d511.clean_patched/src/common/appbase.cpp	2025-06-28 18:51:47.665433800 +0200
+@@ -45,12 +45,12 @@
+ 
+ #include "wx/private/safecall.h"
+ 
+-#if wxUSE_EXCEPTIONS
++//#if wxUSE_EXCEPTIONS
+     #include <exception>        // for std::current_exception()
+     #include <utility>          // for std::swap()
+ 
+     #include <typeinfo>
+-#endif // wxUSE_EXCEPTIONS
++//#endif // wxUSE_EXCEPTIONS
+ 
+ #if !defined(__WINDOWS__)
+   #include  <signal.h>      // for SIGTRAP used by wxTrap()
+@@ -652,7 +652,7 @@
+ // exception handling
+ // ----------------------------------------------------------------------------
+ 
+-#if wxUSE_EXCEPTIONS
++//#if wxUSE_EXCEPTIONS
+ 
+ void
+ wxAppConsoleBase::HandleEvent(wxEvtHandler *handler,
+@@ -764,7 +764,7 @@
+     }
+ }
+ 
+-#endif // wxUSE_EXCEPTIONS
++//#endif // wxUSE_EXCEPTIONS
+ 
+ // ----------------------------------------------------------------------------
+ // cmd line parsing
