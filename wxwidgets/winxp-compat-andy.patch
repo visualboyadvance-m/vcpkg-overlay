@@ -535,7 +535,7 @@ diff -Nur master-5d36349708.clean/src/msw/uilocale.cpp master-5d36349708.clean_p
      void Use() override
      {
 +        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+	BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
++	BOOL (WINAPI *pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
 +             (BOOL (*)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
 +
          // Construct a double NUL-terminated buffer.
@@ -1529,11 +1529,11 @@ diff -Nur master-0db0e17733.clean/src/msw/uilocale.cpp master-ea316f385b.clean_p
      void Use() override
      {
 -        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
--	BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
+-	BOOL (WINAPI *pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
 -             (BOOL (*)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
 -
 +        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+	BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
++	BOOL (WINAPI *pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
 +             (BOOL (*)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
 +
          // Construct a double NUL-terminated buffer.
@@ -2334,7 +2334,7 @@ diff -Nur master-6d0218a996.clean/src/msw/timectrl.cpp master-6d0218a996.clean_p
      void Use() override
      {
          wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
--	BOOL (*pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
+-	BOOL (WINAPI *pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
 +        if (wxGetWinVersion() >= wxWinVersion_7) {
 +	    BOOL (WINAPI *pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
               (BOOL (*)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
