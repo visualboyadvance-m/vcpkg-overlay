@@ -162,3 +162,24 @@
          }
  
          return buf;
+diff -Nur master-728625ea4a.clean/src/msw/app.cpp master-728625ea4a.clean_patched/src/msw/app.cpp
+--- master-728625ea4a.clean/src/msw/app.cpp	2025-06-29 11:38:00.894613200 +0200
++++ master-728625ea4a.clean_patched/src/msw/app.cpp	2025-06-29 11:52:57.739781700 +0200
+@@ -501,7 +501,16 @@
+     const wxString className(wxTheApp->GetClassName());
+     if ( !className.empty() )
+     {
+-        SetCurrentProcessExplicitAppUserModelID(className.wc_str());
++        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++        typedef HRESULT(WINAPI* SetCurrentProcessExplicitAppUserModelID_t)(PCWSTR);
++
++        if (wxGetWinVersion() >= wxWinVersion_7) {
++            SetCurrentProcessExplicitAppUserModelID_t pfnSetCurrentProcessExplicitAppUserModelID =
++                (SetCurrentProcessExplicitAppUserModelID_t)
++                kernel32.GetSymbol(wxT("SetCurrentProcessExplicitAppUserModelID"));
++            if (pfnSetCurrentProcessExplicitAppUserModelID)
++                pfnSetCurrentProcessExplicitAppUserModelID(className.wc_str());
++        }
+     }
+ 
+     if ( !wxSystemOptions::GetOptionInt("msw.no-manifest-check") )
