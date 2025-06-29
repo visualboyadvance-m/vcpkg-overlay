@@ -33,7 +33,7 @@
 +        }
 +
 +        const wchar_t* name = localeName.wc_str();
-+        int (*pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++        int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +            (int (*)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
 +
 +        if (pfnGetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
@@ -66,7 +66,7 @@
 -            return nullptr;
 +        if (wxGetWinVersion() >= wxWinVersion_Vista) {
 +            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+            int (*pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +                (int (*)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
 +
 +            if (!pfnGetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0))
@@ -80,7 +80,7 @@
              // Windows header file). However, for now constructed locales will
              // be rejected here.
 +            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+            int (*pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +                (int (*)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
              int isConstructed = 0;
 -            if (!::GetLocaleInfo
@@ -103,7 +103,7 @@
 +        if (wxGetWinVersion() >= wxWinVersion_Vista)
 +        {
 +            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+            int (*pfnCompareStringEx)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM) =
++            int (WINAPI *pfnCompareStringEx)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM) =
 +                (int (*)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM))kernel32.GetSymbol(wxT("CompareStringEx"));
 +
 +            ret = pfnCompareStringEx
@@ -142,7 +142,7 @@
 -            wxLogLastError(wxT("GetLocaleInfo"));
 -            return wxString();
 +            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+            int (*pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +                (int (*)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
 +
 +            if ( !pfnGetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )

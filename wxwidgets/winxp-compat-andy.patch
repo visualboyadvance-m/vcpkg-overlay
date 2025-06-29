@@ -516,8 +516,8 @@ diff -Nur master-5d36349708.clean/src/msw/uilocale.cpp master-5d36349708.clean_p
              ULONG numberOfLanguages = 0;
              ULONG bufferSize = 0;
  
--            BOOL (*pfnGetUserPreferredUILanguage)(DWORD, PULONG, PZZWSTR, PULONG) =
-+            BOOL (*pfnGetUserPreferredUILanguages)(DWORD, PULONG, PZZWSTR, PULONG) =
+-            BOOL (WINAPI *pfnGetUserPreferredUILanguage)(DWORD, PULONG, PZZWSTR, PULONG) =
++            BOOL (WINAPI *pfnGetUserPreferredUILanguages)(DWORD, PULONG, PZZWSTR, PULONG) =
                  (BOOL (*)(DWORD, PULONG, PZZWSTR, PULONG))kernel32.GetSymbol(wxT("GetUserPreferredUILanguages"));
  
              if (pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))

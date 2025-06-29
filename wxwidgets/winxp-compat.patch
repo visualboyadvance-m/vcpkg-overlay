@@ -111,7 +111,7 @@
              ULONG bufferSize = 0;
 -            if (::GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
 +
-+            BOOL (*pfnGetUserPreferredUILanguage)(DWORD, PULONG, PZZWSTR, PULONG) =
++            BOOL (WINAPI *pfnGetUserPreferredUILanguage)(DWORD, PULONG, PZZWSTR, PULONG) =
 +                (BOOL (*)(DWORD, PULONG, PZZWSTR, PULONG))kernel32.GetSymbol(wxT("GetUserPreferredUILanguages"));
 +
 +            if (pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
