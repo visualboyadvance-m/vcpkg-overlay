@@ -1,9 +1,13 @@
 diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_d3d9on12/src/video/windows/SDL_windowsvideo.c
 --- SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c	2025-05-19 23:16:25
-+++ SDL3-3.2.16_d3d9on12/src/video/windows/SDL_windowsvideo.c	2025-06-30 16:18:39
-@@ -587,6 +587,19 @@
++++ SDL3-3.2.16_d3d9on12/src/video/windows/SDL_windowsvideo.c	2025-06-30 17:25:27
+@@ -586,7 +586,23 @@
+ #if !defined(SDL_PLATFORM_XBOXONE) && !defined(SDL_PLATFORM_XBOXSERIES)
  #define D3D_DEBUG_INFO
  #include <d3d9.h>
++#include <d3d12.h>
++#include <dxgi.h>
++#include <dxgi1_4.h>
  
 +#ifndef MAX_D3D9ON12_QUEUES
 +#define MAX_D3D9ON12_QUEUES 2
@@ -21,7 +25,13 @@ diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_d3d9on12/
  #ifdef D3D_DEBUG_INFO
  #ifndef D3D_SDK_VERSION
  #define D3D_SDK_VERSION (32 | 0x80000000)
-@@ -609,13 +622,36 @@
+@@ -606,16 +622,69 @@
+ bool D3D_LoadDLL(void **pD3DDLL, IDirect3D9 **pDirect3D9Interface)
+ {
+     *pD3DDLL = SDL_LoadObject("D3D9.DLL");
++    void *pD3D12DLL = SDL_LoadObject("D3D12.DLL");
++    void *pDXGIDLL = SDL_LoadObject("DXGI.DLL");
++
      if (*pD3DDLL) {
          /* *INDENT-OFF* */ // clang-format off
          typedef IDirect3D9 *(WINAPI *Direct3DCreate9_t)(UINT SDKVersion);
@@ -30,27 +40,54 @@ diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_d3d9on12/
          typedef HRESULT (WINAPI* Direct3DCreate9Ex_t)(UINT SDKVersion, IDirect3D9Ex** ppD3D);
 +        typedef HRESULT (WINAPI* Direct3DCreate9Ex_t)(UINT SDKVersion, IDirect3D9Ex** ppD3D);
 +        typedef HRESULT (WINAPI *Direct3DCreate9On12Ex_t)(UINT SDKVersion, D3D9ON12_ARGS *pOverrideList, UINT NumOverrideEntries, IDirect3D9Ex** ppOutputInterface);
++        typedef HRESULT (WINAPI *D3D12CreateDevice_t)(IUnknown *adapter, D3D_FEATURE_LEVEL feature_level, REFIID iid, void **device);
++        typedef HRESULT (WINAPI *CreateDXGIFactory2_t)(UINT flags, REFIID iid, void **factory);
++
          /* *INDENT-ON* */ // clang-format on
          Direct3DCreate9_t Direct3DCreate9Func;
 +        Direct3DCreate9On12_t Direct3D9On12Func;
-+        D3D9ON12_ARGS Direct3D9On12args;
-+        Direct3D9On12args.Enable9On12 = TRUE;
++        D3D12CreateDevice_t D3D12CreateDeviceFunc;
++        CreateDXGIFactory2_t CreateDXGIFactory2Func;
++        IDXGIAdapter *adapter = NULL;
++        IDXGIFactory4 *factory = NULL;
  
++        D3D9ON12_ARGS Direct3D9On12args;
++        memset(&Direct3D9On12args, 0, sizeof(Direct3D9On12args));
++        Direct3D9On12args.Enable9On12 = TRUE;
++
++        if ((pD3D12DLL) && (pDXGIDLL)) {
++            D3D12CreateDeviceFunc = (D3D12CreateDevice_t)SDL_LoadFunction(pD3D12DLL, "D3D12CreateDevice");
++            CreateDXGIFactory2Func = (CreateDXGIFactory2_t)SDL_LoadFunction(pDXGIDLL, "CreateDXGIFactory2");
++
++            if (CreateDXGIFactory2Func) {
++                HRESULT hr = CreateDXGIFactory2Func(0, &IID_IDXGIFactory4, (void **)&factory);
++                if (SUCCEEDED(hr)) {
++                    IDXGIFactory4_EnumAdapters(factory, 0, &adapter);
++                }
++            }
++
++            if (D3D12CreateDeviceFunc) {
++                D3D12CreateDeviceFunc((IUnknown *)adapter, D3D_FEATURE_LEVEL_11_0, &IID_ID3D12Device, (void **)&Direct3D9On12args.pD3D12Device);
++            }
++        }
++
          if (SDL_GetHintBoolean(SDL_HINT_WINDOWS_USE_D3D9EX, false)) {
              Direct3DCreate9Ex_t Direct3DCreate9ExFunc;
 +            Direct3DCreate9On12Ex_t Direct3D9On12ExFunc;
  
-+            Direct3D9On12ExFunc = (Direct3DCreate9On12Ex_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9On12Ex");
-+
-+            if (Direct3D9On12ExFunc) {
-+                IDirect3D9Ex *pDirect3D9ExInterface;
-+                HRESULT hr = Direct3D9On12ExFunc(D3D_SDK_VERSION, &Direct3D9On12args, 1, &pDirect3D9ExInterface);
-+                if (SUCCEEDED(hr)) {
-+                    const GUID IDirect3D9_GUID = { 0x81bdcbca, 0x64d4, 0x426d, { 0xae, 0x8d, 0xad, 0x1, 0x47, 0xf4, 0x27, 0x5c } };
-+                    hr = IDirect3D9Ex_QueryInterface(pDirect3D9ExInterface, &IDirect3D9_GUID, (void **)pDirect3D9Interface);
-+                    IDirect3D9Ex_Release(pDirect3D9ExInterface);
++            if ((pD3D12DLL) && (pDXGIDLL) && (D3D12CreateDeviceFunc)) {
++                Direct3D9On12ExFunc = (Direct3DCreate9On12Ex_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9On12Ex");
++                
++                if (Direct3D9On12ExFunc) {
++                    IDirect3D9Ex *pDirect3D9ExInterface;
++                    HRESULT hr = Direct3D9On12ExFunc(D3D_SDK_VERSION, &Direct3D9On12args, 1, &pDirect3D9ExInterface);
 +                    if (SUCCEEDED(hr)) {
-+                        return true;
++                        const GUID IDirect3D9_GUID = { 0x81bdcbca, 0x64d4, 0x426d, { 0xae, 0x8d, 0xad, 0x1, 0x47, 0xf4, 0x27, 0x5c } };
++                        hr = IDirect3D9Ex_QueryInterface(pDirect3D9ExInterface, &IDirect3D9_GUID, (void **)pDirect3D9Interface);
++                        IDirect3D9Ex_Release(pDirect3D9ExInterface);
++                        if (SUCCEEDED(hr)) {
++                            return true;
++                        }
 +                    }
 +                }
 +            }
@@ -58,19 +95,36 @@ diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_d3d9on12/
              Direct3DCreate9ExFunc = (Direct3DCreate9Ex_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9Ex");
              if (Direct3DCreate9ExFunc) {
                  IDirect3D9Ex *pDirect3D9ExInterface;
-@@ -628,6 +664,15 @@
-                         return true;
-                     }
-                 }
-+            }
-+        }
-+
-+        Direct3D9On12Func = (Direct3DCreate9On12_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9On12");
-+
-+        if (Direct3D9On12Func) {
-+            *pDirect3D9Interface = Direct3D9On12Func(D3D_SDK_VERSION, &Direct3D9On12args, 1);
-+            if (*pDirect3D9Interface) {
-+                return true;
+@@ -631,15 +700,27 @@
              }
          }
  
+-        Direct3DCreate9Func = (Direct3DCreate9_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9");
+-        if (Direct3DCreate9Func) {
+-            *pDirect3D9Interface = Direct3DCreate9Func(D3D_SDK_VERSION);
+-            if (*pDirect3D9Interface) {
+-                return true;
++        if ((pD3D12DLL) && (pDXGIDLL) && (D3D12CreateDeviceFunc)) {
++            Direct3D9On12Func = (Direct3DCreate9On12_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9On12");
++            
++            if (Direct3D9On12Func) {
++                *pDirect3D9Interface = Direct3D9On12Func(D3D_SDK_VERSION, &Direct3D9On12args, 1);
++                if (*pDirect3D9Interface) {
++                    return true;
++                }
+             }
++            
++            Direct3DCreate9Func = (Direct3DCreate9_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9");
++            if (Direct3DCreate9Func) {
++                *pDirect3D9Interface = Direct3DCreate9Func(D3D_SDK_VERSION);
++                if (*pDirect3D9Interface) {
++                    return true;
++                }
++            }
+         }
+ 
+         SDL_UnloadObject(*pD3DDLL);
++        SDL_UnloadObject(pD3D12DLL);
+         *pD3DDLL = NULL;
+     }
+     *pDirect3D9Interface = NULL;
