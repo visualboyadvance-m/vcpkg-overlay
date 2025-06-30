@@ -1,68 +1,76 @@
-diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_d3d9on12/src/render/direct3d/SDL_render_d3d.c
---- SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c	2025-03-18 17:55:46
-+++ SDL3-3.2.16_d3d9on12/src/render/direct3d/SDL_render_d3d.c	2025-06-30 10:15:21
-@@ -32,6 +32,11 @@
+diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_d3d9on12/src/video/windows/SDL_windowsvideo.c
+--- SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c	2025-05-19 23:16:25
++++ SDL3-3.2.16_d3d9on12/src/video/windows/SDL_windowsvideo.c	2025-06-30 16:18:39
+@@ -587,6 +587,19 @@
  #define D3D_DEBUG_INFO
  #include <d3d9.h>
  
-+#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
-+#include <windows.h>
-+#include <d3d9on12.h>
++#ifndef MAX_D3D9ON12_QUEUES
++#define MAX_D3D9ON12_QUEUES 2
 +#endif
 +
- #include "SDL_shaders_d3d.h"
- 
- typedef struct
-@@ -52,6 +56,11 @@
- 
- typedef struct
- {
-+#if _WIN32_WINNT >= 0x0603
-+    PFN_Direct3DCreate9On12 d3d9on12;
-+    D3D9ON12_ARGS d3d9on12args;
-+    HMODULE d3d9on12dll;
-+#endif
-     void *d3dDLL;
-     IDirect3D9 *d3d;
-     IDirect3DDevice9 *device;
-@@ -1491,6 +1500,12 @@
-             IDirect3DDevice9_Release(data->device);
-             data->device = NULL;
-         }
-+#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
-+        data->d3d9on12 = NULL;
-+        if (data->d3d9on12dll) {
-+            FreeLibrary(data->d3d9on12dll);
-+        } else
-+#endif
-         if (data->d3d) {
-             IDirect3D9_Release(data->d3d);
-             SDL_UnloadObject(data->d3dDLL);
-@@ -1649,10 +1664,23 @@
-         return false;
-     }
- 
--    if (!D3D_LoadDLL(&data->d3dDLL, &data->d3d)) {
--        SDL_free(data);
--        return SDL_SetError("Unable to create Direct3D interface");
-+#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
-+    data->d3d9on12dll = LoadLibraryW(L"d3d9.dll");
-+    data->d3d9on12 = (PFN_Direct3DCreate9On12)GetProcAddress(data->d3d9on12dll, "Direct3DCreate9On12");
-+    if (data->d3d9on12 != NULL) {
-+        data->d3d9on12args.Enable9On12 = TRUE;
-+        data->d3d = data->d3d9on12(D3D_SDK_VERSION, &data->d3d9on12args, 1);
-     }
++typedef struct _D3D9ON12_ARGS
++{
++    BOOL Enable9On12;
++    IUnknown *pD3D12Device;
++    IUnknown *ppD3D12Queues[MAX_D3D9ON12_QUEUES];
++    UINT NumQueues;
++    UINT NodeMask;
++} D3D9ON12_ARGS;
 +
-+    if (data->d3d == NULL) {
-+#endif
-+        if (!D3D_LoadDLL(&data->d3dDLL, &data->d3d)) {
-+            SDL_free(data);
-+            return SDL_SetError("Unable to create Direct3D interface");
+ #ifdef D3D_DEBUG_INFO
+ #ifndef D3D_SDK_VERSION
+ #define D3D_SDK_VERSION (32 | 0x80000000)
+@@ -609,13 +622,36 @@
+     if (*pD3DDLL) {
+         /* *INDENT-OFF* */ // clang-format off
+         typedef IDirect3D9 *(WINAPI *Direct3DCreate9_t)(UINT SDKVersion);
++        typedef IDirect3D9 *(WINAPI *Direct3DCreate9On12_t)(UINT SDKVersion, D3D9ON12_ARGS *pOverrideList, UINT NumOverrideEntries);
++
+         typedef HRESULT (WINAPI* Direct3DCreate9Ex_t)(UINT SDKVersion, IDirect3D9Ex** ppD3D);
++        typedef HRESULT (WINAPI* Direct3DCreate9Ex_t)(UINT SDKVersion, IDirect3D9Ex** ppD3D);
++        typedef HRESULT (WINAPI *Direct3DCreate9On12Ex_t)(UINT SDKVersion, D3D9ON12_ARGS *pOverrideList, UINT NumOverrideEntries, IDirect3D9Ex** ppOutputInterface);
+         /* *INDENT-ON* */ // clang-format on
+         Direct3DCreate9_t Direct3DCreate9Func;
++        Direct3DCreate9On12Ex_t Direct3D9On12Func;
++        D3D9ON12_ARGS Direct3D9On12args;
++        Direct3D9On12args.Enable9On12 = TRUE;
+ 
+         if (SDL_GetHintBoolean(SDL_HINT_WINDOWS_USE_D3D9EX, false)) {
+             Direct3DCreate9Ex_t Direct3DCreate9ExFunc;
++            Direct3DCreate9On12Ex_t Direct3D9On12ExFunc;
+ 
++            Direct3D9On12ExFunc = (Direct3DCreate9On12Ex_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9On12Ex");
++
++            if (Direct3D9On12ExFunc) {
++                IDirect3D9Ex *pDirect3D9ExInterface;
++                HRESULT HR = Direct3D9On12ExFunc(D3D_SDK_VERSION, &Direct3D9On12args, 1, &pDirect3D9ExInterface);
++                if (SUCCEEDED(hr)) {
++                    const GUID IDirect3D9_GUID = { 0x81bdcbca, 0x64d4, 0x426d, { 0xae, 0x8d, 0xad, 0x1, 0x47, 0xf4, 0x27, 0x5c } };
++                    hr = IDirect3D9Ex_QueryInterface(pDirect3D9ExInterface, &IDirect3D9_GUID, (void **)pDirect3D9Interface);
++                    IDirect3D9Ex_Release(pDirect3D9ExInterface);
++                    if (SUCCEEDED(hr)) {
++                        return true;
++                    }
++                }
++            }
++
+             Direct3DCreate9ExFunc = (Direct3DCreate9Ex_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9Ex");
+             if (Direct3DCreate9ExFunc) {
+                 IDirect3D9Ex *pDirect3D9ExInterface;
+@@ -628,6 +664,15 @@
+                         return true;
+                     }
+                 }
++            }
 +        }
-+#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
-+    }
-+#endif
++
++        Direct3D9On12Func = (Direct3DCreate9On12_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9On12");
++
++        if (Direct3D9On12Func) {
++            *pDirect3D9Interface = (Direct3DCreate9_t)Direct3D9On12Func(D3D_SDK_VERSION, &Direct3D9On12args, 1);
++            if (*pDirect3D9Interface) {
++                return true;
+             }
+         }
  
-     renderer->WindowEvent = D3D_WindowEvent;
-     renderer->SupportsBlendMode = D3D_SupportsBlendMode;
-
