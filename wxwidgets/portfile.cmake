@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO wxWidgets/wxWidgets
     REF master
-    SHA512 521cc6cee19ba4aa78640851b6f8f89cf7730fc8ea4ef1299b3accd91f87cf8df1bcb223d2eba6779c942865542891e1f8f55d1e8a5829e42a2fe3876fe61d01
+    SHA512 8ca427baf619d6b24c842a46794385c9a88ade001082f7c6ea26bb89b8d44e5e0f9aef660a678e4f147f37ed8f1831d659152898dbd1276e00e3b3ba9a7dd72e
     PATCHES
         install-layout.patch
         install-config-remove.patch
@@ -36,6 +36,13 @@ if(VCPKG_TARGET_IS_WINDOWS AND (VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64" OR VC
     list(APPEND OPTIONS
         -DwxUSE_STACKWALKER=OFF
     )
+endif()
+
+if(VCPKG_CROSSCOMPILING)
+    list(APPEND OPTIONS -DwxBUILD_LOCALES=OFF)
+#        -DGETTEXT_MSGFMT_EXECUTABLE=PATH:"${CURRENT_HOST_INSTALLED_DIR}/tools/gettext/bin/msgfmt.exe"
+#        -DGETTEXT_MSGMERGE_EXECUTABLE=PATH:"${CURRENT_HOST_INSTALLED_DIR}/tools/gettext/bin/msgmerge.exe"
+#    )
 endif()
 
 if(VCPKG_TARGET_IS_WINDOWS OR VCPKG_TARGET_IS_OSX)
@@ -158,9 +165,14 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
 )
 
-set(tools wxrc)
+if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
+    set(tools wxrc-3.3)
+else()
+    set(tools wxrc)
+endif()
+
 if(NOT VCPKG_TARGET_IS_WINDOWS)
-    list(APPEND tools wxrc-3.2)
+    list(APPEND tools wxrc-3.3)
     file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
     file(RENAME "${CURRENT_PACKAGES_DIR}/bin/wx-config" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/wx-config")
     if(NOT VCPKG_BUILD_TYPE)
