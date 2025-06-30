@@ -1,0 +1,68 @@
+diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_d3d9on12/src/render/direct3d/SDL_render_d3d.c
+--- SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c	2025-03-18 17:55:46
++++ SDL3-3.2.16_d3d9on12/src/render/direct3d/SDL_render_d3d.c	2025-06-30 10:15:21
+@@ -32,6 +32,11 @@
+ #define D3D_DEBUG_INFO
+ #include <d3d9.h>
+ 
++#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
++#include <windows.h>
++#include <d3d9on12.h>
++#endif
++
+ #include "SDL_shaders_d3d.h"
+ 
+ typedef struct
+@@ -52,6 +56,11 @@
+ 
+ typedef struct
+ {
++#if _WIN32_WINNT >= 0x0603
++    PFN_Direct3DCreate9On12 d3d9on12;
++    D3D9ON12_ARGS d3d9on12args;
++    HMODULE d3d9on12dll;
++#endif
+     void *d3dDLL;
+     IDirect3D9 *d3d;
+     IDirect3DDevice9 *device;
+@@ -1491,6 +1500,12 @@
+             IDirect3DDevice9_Release(data->device);
+             data->device = NULL;
+         }
++#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
++        data->d3d9on12 = NULL;
++        if (data->d3d9on12dll) {
++            FreeLibrary(data->d3d9on12dll);
++        } else
++#endif
+         if (data->d3d) {
+             IDirect3D9_Release(data->d3d);
+             SDL_UnloadObject(data->d3dDLL);
+@@ -1649,10 +1664,23 @@
+         return false;
+     }
+ 
+-    if (!D3D_LoadDLL(&data->d3dDLL, &data->d3d)) {
+-        SDL_free(data);
+-        return SDL_SetError("Unable to create Direct3D interface");
++#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
++    data->d3d9on12dll = LoadLibraryW(L"d3d9.dll");
++    data->d3d9on12 = (PFN_Direct3DCreate9On12)GetProcAddress(data->d3d9on12dll, "Direct3DCreate9On12");
++    if (data->d3d9on12 != NULL) {
++        data->d3d9on12args.Enable9On12 = TRUE;
++        data->d3d = data->d3d9on12(D3D_SDK_VERSION, &data->d3d9on12args, 1);
+     }
++
++    if (data->d3d == NULL) {
++#endif
++        if (!D3D_LoadDLL(&data->d3dDLL, &data->d3d)) {
++            SDL_free(data);
++            return SDL_SetError("Unable to create Direct3D interface");
++        }
++#if (_WIN32_WINNT >= 0x0603) && defined(_MSC_VER)
++    }
++#endif
+ 
+     renderer->WindowEvent = D3D_WindowEvent;
+     renderer->SupportsBlendMode = D3D_SupportsBlendMode;
+
