@@ -38,6 +38,13 @@ if(VCPKG_TARGET_IS_WINDOWS AND (VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64" OR VC
     )
 endif()
 
+if(VCPKG_CROSSCOMPILING)
+    list(APPEND OPTIONS -DwxBUILD_LOCALES=OFF)
+#        -DGETTEXT_MSGFMT_EXECUTABLE=PATH:"${CURRENT_HOST_INSTALLED_DIR}/tools/gettext/bin/msgfmt.exe"
+#        -DGETTEXT_MSGMERGE_EXECUTABLE=PATH:"${CURRENT_HOST_INSTALLED_DIR}/tools/gettext/bin/msgmerge.exe"
+#    )
+endif()
+
 if(VCPKG_TARGET_IS_WINDOWS OR VCPKG_TARGET_IS_OSX)
     list(APPEND OPTIONS -DwxUSE_WEBREQUEST_CURL=OFF -DwxUSE_WEBVIEW=ON -DwxUSE_WEBVIEW_EDGE=OFF -DwxUSE_WEBVIEW_IE=ON)
 else()
@@ -158,9 +165,9 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
 )
 
-set(tools wxrc)
+set(tools wxrc-3.3)
 if(NOT VCPKG_TARGET_IS_WINDOWS)
-    list(APPEND tools wxrc-3.2)
+    list(APPEND tools wxrc-3.3)
     file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
     file(RENAME "${CURRENT_PACKAGES_DIR}/bin/wx-config" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/wx-config")
     if(NOT VCPKG_BUILD_TYPE)
