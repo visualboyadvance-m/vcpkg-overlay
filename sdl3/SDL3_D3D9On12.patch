@@ -32,7 +32,7 @@ diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_d3d9on12/
 +        typedef HRESULT (WINAPI *Direct3DCreate9On12Ex_t)(UINT SDKVersion, D3D9ON12_ARGS *pOverrideList, UINT NumOverrideEntries, IDirect3D9Ex** ppOutputInterface);
          /* *INDENT-ON* */ // clang-format on
          Direct3DCreate9_t Direct3DCreate9Func;
-+        Direct3DCreate9On12Ex_t Direct3D9On12Func;
++        Direct3DCreate9On12_t Direct3D9On12Func;
 +        D3D9ON12_ARGS Direct3D9On12args;
 +        Direct3D9On12args.Enable9On12 = TRUE;
  
