@@ -165,7 +165,12 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
 )
 
-set(tools wxrc-3.3)
+if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
+    set(tools wxrc-3.3)
+else()
+    set(tools wxrc)
+endif()
+
 if(NOT VCPKG_TARGET_IS_WINDOWS)
     list(APPEND tools wxrc-3.3)
     file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
