@@ -121,7 +121,11 @@ vcpkg_execute_build_process(
 
 set(cxx_flags "${CMAKE_CXX_FLAGS} ${VCPKG_CXX_FLAGS}")
 if(VCPKG_TARGET_IS_MINGW)
-    set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
+    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+        set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
+    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+        set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
+    endif()
 endif()
 
 vcpkg_cmake_configure(
