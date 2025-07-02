@@ -14,7 +14,7 @@ diff -Nur SDL3-3.2.16/src/SDL_error.c SDL3-3.2.16_d3d9on12/src/SDL_error.c
  
 diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c
 --- SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c	2025-03-18 17:55:46
-+++ SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c	2025-07-02 15:48:07
++++ SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c	2025-07-02 17:53:56
 @@ -73,6 +73,7 @@
      int currentVertexBuffer;
      bool reportedVboProblem;
@@ -63,6 +63,15 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
          SDL_free(data);
          return SDL_SetError("Unable to create Direct3D interface");
      }
+@@ -1692,7 +1697,7 @@
+     pparams.BackBufferWidth = w;
+     pparams.BackBufferHeight = h;
+     pparams.BackBufferCount = 1;
+-    pparams.SwapEffect = D3DSWAPEFFECT_DISCARD;
++    pparams.SwapEffect = D3DSWAPEFFECT_COPY;
+ 
+     if (fullscreen_mode) {
+         pparams.Windowed = FALSE;
 @@ -1709,27 +1714,38 @@
      displayID = SDL_GetDisplayForWindow(window);
      data->adapter = SDL_GetDirect3D9AdapterIndex(displayID);
@@ -267,20 +276,20 @@ diff -Nur SDL3-3.2.16/src/render/direct3d12/SDL_render_d3d12.c SDL3-3.2.16_dxfix
          goto done;
 diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_dxfix/src/video/windows/SDL_windowsvideo.c
 --- SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c	2025-05-19 23:16:25
-+++ SDL3-3.2.16_dxfix/src/video/windows/SDL_windowsvideo.c	2025-07-02 14:30:35
-@@ -38,6 +38,12 @@
- 
- #ifdef SDL_GDK_TEXTINPUT
++++ SDL3-3.2.16_dxfix/src/video/windows/SDL_windowsvideo.c	2025-07-02 17:51:56
+@@ -40,6 +40,12 @@
  #include "../gdk/SDL_gdktextinput.h"
-+#endif
-+
+ #endif
+ 
 +#if defined(_MSC_VER) && !defined(__clang__)
 +#define SDL_COMPOSE_ERROR(str) __FUNCTION__ ", " str
 +#else
 +#define SDL_COMPOSE_ERROR(str) SDL_STRINGIFY_ARG(__FUNCTION__) ", " str
- #endif
- 
++#endif
++
  // #define HIGHDPI_DEBUG
+ 
+ // Initialization/Query functions
 @@ -586,6 +592,34 @@
  #if !defined(SDL_PLATFORM_XBOXONE) && !defined(SDL_PLATFORM_XBOXSERIES)
  #define D3D_DEBUG_INFO
@@ -467,14 +476,16 @@ diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_dxfix/src
              Direct3DCreate9ExFunc = (Direct3DCreate9Ex_t)SDL_LoadFunction(*pD3DDLL, "Direct3DCreate9Ex");
              if (Direct3DCreate9ExFunc) {
                  IDirect3D9Ex *pDirect3D9ExInterface;
-@@ -625,16 +789,55 @@
+@@ -625,16 +789,59 @@
                      hr = IDirect3D9Ex_QueryInterface(pDirect3D9ExInterface, &IDirect3D9_GUID, (void **)pDirect3D9Interface);
                      IDirect3D9Ex_Release(pDirect3D9ExInterface);
                      if (SUCCEEDED(hr)) {
++#ifdef SDL_VIDEO_RENDER_D3D12
 +                        D3D_SAFE_RELEASE(dxgiFactory);
 +                        D3D_SAFE_RELEASE(dxgiFactory4);
 +                        D3D_SAFE_RELEASE(dxgiAdapter);
 +                        D3D_SAFE_RELEASE(dxgiAdapter1);
++#endif
 +
 +                        if (Use9On12)
 +                            *Use9On12 = FALSE;
@@ -512,10 +523,12 @@ diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_dxfix/src
          if (Direct3DCreate9Func) {
              *pDirect3D9Interface = Direct3DCreate9Func(D3D_SDK_VERSION);
              if (*pDirect3D9Interface) {
++#ifdef SDL_VIDEO_RENDER_D3D12
 +                D3D_SAFE_RELEASE(dxgiFactory);
 +                D3D_SAFE_RELEASE(dxgiFactory4);
 +                D3D_SAFE_RELEASE(dxgiAdapter);
 +                D3D_SAFE_RELEASE(dxgiAdapter1);
++#endif
 +
 +                if (Use9On12)
 +                    *Use9On12 = FALSE;
@@ -523,15 +536,17 @@ diff -Nur SDL3-3.2.16/src/video/windows/SDL_windowsvideo.c SDL3-3.2.16_dxfix/src
                  return true;
              }
          }
-@@ -643,14 +846,24 @@
+@@ -643,14 +850,26 @@
          *pD3DDLL = NULL;
      }
      *pDirect3D9Interface = NULL;
 +
++#ifdef SDL_VIDEO_RENDER_D3D12
 +    D3D_SAFE_RELEASE(dxgiFactory);
 +    D3D_SAFE_RELEASE(dxgiFactory4);
 +    D3D_SAFE_RELEASE(dxgiAdapter);
 +    D3D_SAFE_RELEASE(dxgiAdapter1);
++#endif
 +
 +    if (Use9On12)
 +        *Use9On12 = FALSE;
