@@ -38,8 +38,12 @@ if (VCPKG_TARGET_IS_LINUX AND NOT "x11" IN_LIST FEATURES AND NOT "wayland" IN_LI
     message(WARNING "The selected features don't allow sdl3 to create windows, which is usually unintentional. You can get windowing support by installing the x11 and/or wayland features.")
 endif()
 
-if(VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-    list(APPEND OPTIONS -DCMAKE_C_FLAGS=-Wno-error=incompatible-function-pointer-types)
+if(VCPKG_TARGET_IS_MINGW)
+    if (VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+        list(APPEND OPTIONS -DCMAKE_C_FLAGS="-Wno-error=incompatible-function-pointer-types -Wno-error=incompatible-pointer-types")
+    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+        list(APPEND OPTIONS -DCMAKE_C_FLAGS="-Wno-error=incompatible-pointer-types")
+    endif()
 endif()
 
 vcpkg_cmake_configure(
