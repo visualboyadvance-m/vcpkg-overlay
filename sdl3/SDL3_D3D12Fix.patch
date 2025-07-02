@@ -1,0 +1,138 @@
+diff -Nur SDL3-3.2.16/src/SDL_error.c SDL3-3.2.16_d3d9on12/src/SDL_error.c
+--- SDL3-3.2.16/src/SDL_error.c	2025-01-03 02:32:10
++++ SDL3-3.2.16_d3d9on12/src/SDL_error.c	2025-06-30 20:03:30
+@@ -31,7 +31,10 @@
+ 
+     va_start(ap, fmt);
+     result = SDL_SetErrorV(fmt, ap);
++    vprintf(fmt, ap);
++    printf("\n");
+     va_end(ap);
++
+     return result;
+ }
+ 
+diff -Nur SDL3-3.2.16/src/render/direct3d12/SDL_render_d3d12.c SDL3-3.2.16_dxfix/src/render/direct3d12/SDL_render_d3d12.c
+--- SDL3-3.2.16/src/render/direct3d12/SDL_render_d3d12.c	2025-03-21 04:22:33
++++ SDL3-3.2.16_dxfix/src/render/direct3d12/SDL_render_d3d12.c	2025-07-02 10:13:17
+@@ -183,8 +183,10 @@
+ #if defined(SDL_PLATFORM_XBOXONE) || defined(SDL_PLATFORM_XBOXSERIES)
+     UINT64 frameToken;
+ #else
++    IDXGIFactory4 *dxgiFactory4;
+     IDXGIFactory6 *dxgiFactory;
+     IDXGIAdapter4 *dxgiAdapter;
++    IDXGIAdapter1 *dxgiAdapter1;
+     IDXGIDebug *dxgiDebug;
+     IDXGISwapChain4 *swapChain;
+ #endif
+@@ -262,7 +264,9 @@
+ #pragma GCC diagnostic ignored "-Wunused-const-variable"
+ #endif
+ 
++static const GUID SDL_IID_IDXGIFactory4 = { 0x1bc6ea02, 0xef36, 0x464f, { 0xbf, 0x0c, 0x21, 0xca, 0x39, 0xe5, 0x16, 0x8a } };
+ static const GUID SDL_IID_IDXGIFactory6 = { 0xc1b6694f, 0xff09, 0x44a9, { 0xb0, 0x3c, 0x77, 0x90, 0x0a, 0x0a, 0x1d, 0x17 } };
++static const GUID SDL_IID_IDXGIAdapter1 = { 0x29038f61, 0x3839, 0x4626, { 0x91,0xfd, 0x08, 0x68, 0x79, 0x01, 0x1a, 0x05 } };
+ static const GUID SDL_IID_IDXGIAdapter4 = { 0x3c8d99d1, 0x4fbf, 0x4181, { 0xa8, 0x2c, 0xaf, 0x66, 0xbf, 0x7b, 0xd2, 0x4e } };
+ static const GUID SDL_IID_IDXGIDevice1 = { 0x77db970f, 0x6276, 0x48ba, { 0xba, 0x28, 0x07, 0x01, 0x43, 0xb4, 0x39, 0x2c } };
+ static const GUID SDL_IID_ID3D12Device1 = { 0x77acce80, 0x638e, 0x4e65, { 0x88, 0x95, 0xc1, 0xf2, 0x33, 0x86, 0x86, 0x3e } };
+@@ -402,7 +406,9 @@
+ 
+ #if !defined(SDL_PLATFORM_XBOXONE) && !defined(SDL_PLATFORM_XBOXSERIES)
+         D3D_SAFE_RELEASE(data->dxgiFactory);
++        D3D_SAFE_RELEASE(data->dxgiFactory4);
+         D3D_SAFE_RELEASE(data->dxgiAdapter);
++        D3D_SAFE_RELEASE(data->dxgiAdapter1);
+         D3D_SAFE_RELEASE(data->swapChain);
+ #endif
+         D3D_SAFE_RELEASE(data->d3dDevice);
+@@ -777,6 +783,7 @@
+     typedef HRESULT(WINAPI * PFN_CREATE_DXGI_FACTORY)(UINT flags, REFIID riid, void **ppFactory);
+     PFN_CREATE_DXGI_FACTORY CreateDXGIFactoryFunc;
+     PFN_D3D12_CREATE_DEVICE D3D12CreateDeviceFunc;
++    BOOL UseFactory4 = FALSE;
+ #endif
+     typedef HANDLE(WINAPI * PFN_CREATE_EVENT_EX)(LPSECURITY_ATTRIBUTES lpEventAttributes, LPCWSTR lpName, DWORD dwFlags, DWORD dwDesiredAccess);
+     PFN_CREATE_EVENT_EX CreateEventExFunc;
+@@ -892,25 +899,68 @@
+ 
+     result = CreateDXGIFactoryFunc(creationFlags, D3D_GUID(SDL_IID_IDXGIFactory6), (void **)&data->dxgiFactory);
+     if (FAILED(result)) {
+-        WIN_SetErrorFromHRESULT(SDL_COMPOSE_ERROR("CreateDXGIFactory"), result);
+-        goto done;
++        result = CreateDXGIFactoryFunc(creationFlags, D3D_GUID(SDL_IID_IDXGIFactory4), (void **)&data->dxgiFactory4);
++        UseFactory4 = TRUE;
+     }
+ 
+-    // Prefer a high performance adapter if there are multiple choices
+-    result = IDXGIFactory6_EnumAdapterByGpuPreference(data->dxgiFactory,
+-                      0,
+-                      DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
+-                      D3D_GUID(SDL_IID_IDXGIAdapter4),
+-                      (void **)&data->dxgiAdapter);
+     if (FAILED(result)) {
+-        WIN_SetErrorFromHRESULT(SDL_COMPOSE_ERROR("IDXGIFactory6::EnumAdapterByGPUPreference"), result);
++        WIN_SetErrorFromHRESULT(SDL_COMPOSE_ERROR("CreateDXGIFactory"), result);
+         goto done;
+     }
+ 
+-    result = D3D12CreateDeviceFunc((IUnknown *)data->dxgiAdapter,
+-                                   D3D_FEATURE_LEVEL_11_0, // Request minimum feature level 11.0 for maximum compatibility
+-                                   D3D_GUID(SDL_IID_ID3D12Device1),
+-                                   (void **)&d3dDevice);
++    if (UseFactory4 == TRUE) {
++        for (UINT currentAdapter = 0; ; currentAdapter++) {
++            // Prefer a high performance adapter if there are multiple choices
++            result = IDXGIFactory4_EnumAdapters1(data->dxgiFactory4,
++                                                currentAdapter,
++                                                (void **)&data->dxgiAdapter1);
++
++            if (result == DXGI_ERROR_NOT_FOUND) {
++                WIN_SetErrorFromHRESULT(SDL_COMPOSE_ERROR("IDXGIFactory4::EnumAdapters1"), result);
++                goto done;
++            }
++
++            if (FAILED(result)) {
++                continue;
++            }
++            
++            result = D3D12CreateDeviceFunc((IUnknown *)data->dxgiAdapter1,
++                                           D3D_FEATURE_LEVEL_11_0, // Request minimum feature level 11.0 for maximum compatibility
++                                           D3D_GUID(SDL_IID_ID3D12Device1),
++                                           (void **)&d3dDevice);
++
++            if (SUCCEEDED(result)) {
++                break;
++            }
++        }
++    } else {
++        for (UINT currentAdapter = 0; ; currentAdapter++) {
++            // Prefer a high performance adapter if there are multiple choices
++            result = IDXGIFactory6_EnumAdapterByGpuPreference(data->dxgiFactory,
++                                                              currentAdapter,
++                                                              DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
++                                                              D3D_GUID(SDL_IID_IDXGIAdapter4),
++                                                              (void **)&data->dxgiAdapter);
++            if (result == DXGI_ERROR_NOT_FOUND) {
++                WIN_SetErrorFromHRESULT(SDL_COMPOSE_ERROR("IDXGIFactory4::EnumAdapterByGpuPreference"), result);
++                goto done;
++            }
++
++            if (FAILED(result)) {
++                continue;
++            }
++
++            result = D3D12CreateDeviceFunc((IUnknown *)data->dxgiAdapter,
++                                           D3D_FEATURE_LEVEL_11_0, // Request minimum feature level 11.0 for maximum compatibility
++                                           D3D_GUID(SDL_IID_ID3D12Device1),
++                                           (void **)&d3dDevice);
++
++            if (SUCCEEDED(result)) {
++                break;
++            }
++        }
++    }
++
+     if (FAILED(result)) {
+         WIN_SetErrorFromHRESULT(SDL_COMPOSE_ERROR("D3D12CreateDevice"), result);
+         goto done;
