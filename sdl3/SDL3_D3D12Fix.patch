@@ -68,7 +68,7 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
      pparams.BackBufferHeight = h;
      pparams.BackBufferCount = 1;
 -    pparams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-+    pparams.SwapEffect = D3DSWAPEFFECT_COPY;
++    pparams.SwapEffect = D3DSWAPEFFECT_DISCARD;
  
      if (fullscreen_mode) {
          pparams.Windowed = FALSE;
