@@ -14,7 +14,7 @@ diff -Nur SDL3-3.2.16/src/SDL_error.c SDL3-3.2.16_d3d9on12/src/SDL_error.c
  
 diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c
 --- SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c	2025-03-18 17:55:46
-+++ SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c	2025-07-02 17:53:56
++++ SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c	2025-07-03 11:04:51
 @@ -73,6 +73,7 @@
      int currentVertexBuffer;
      bool reportedVboProblem;
@@ -23,30 +23,41 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
  } D3D_RenderData;
  
  typedef struct
-@@ -1604,13 +1605,16 @@
+@@ -1411,6 +1412,7 @@
+     result = IDirect3DDevice9_TestCooperativeLevel(data->device);
+     if (result == D3DERR_DEVICELOST) {
+         // We'll reset later
++        D3D_SetError("TestCooperativeLevel()", result);
+         return false;
+     }
+     if (result == D3DERR_DEVICENOTRESET) {
+@@ -1604,13 +1606,22 @@
      }
  
      D3DCAPS9 caps;
 -    HRESULT result = IDirect3D9_GetDeviceCaps(data->d3d, data->adapter, D3DDEVTYPE_HAL, &caps);
 -    if (FAILED(result)) {
 -        return D3D_SetError("GetDeviceCaps()", result);
--    }
--    if (!(caps.PresentationIntervals & PresentationInterval)) {
--        return SDL_Unsupported();
 +    if (data->Use9On12 == FALSE) {
 +        HRESULT result = IDirect3D9_GetDeviceCaps(data->d3d, data->adapter, D3DDEVTYPE_HAL, &caps);
 +        if (FAILED(result)) {
 +            return D3D_SetError("GetDeviceCaps()", result);
 +        }
-+        if (!(caps.PresentationIntervals & PresentationInterval)) {
-+            return SDL_Unsupported();
++    } else {
++        HRESULT result = IDirect3D9_GetDeviceCaps(data->d3d, D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &caps);
++        if (FAILED(result)) {
++            return D3D_SetError("GetDeviceCaps()", result);
 +        }
+     }
++
+     if (!(caps.PresentationIntervals & PresentationInterval)) {
+         return SDL_Unsupported();
      }
 +
      data->pparams.PresentationInterval = PresentationInterval;
  
      if (!D3D_Reset(renderer)) {
-@@ -1632,6 +1636,7 @@
+@@ -1632,6 +1643,7 @@
      int w, h;
      SDL_DisplayID displayID;
      const SDL_DisplayMode *fullscreen_mode = NULL;
@@ -54,7 +65,7 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
  
      hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
      if (!hwnd) {
-@@ -1649,7 +1654,7 @@
+@@ -1649,7 +1661,7 @@
          return false;
      }
  
@@ -63,31 +74,25 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
          SDL_free(data);
          return SDL_SetError("Unable to create Direct3D interface");
      }
-@@ -1692,7 +1697,7 @@
-     pparams.BackBufferWidth = w;
-     pparams.BackBufferHeight = h;
-     pparams.BackBufferCount = 1;
--    pparams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-+    pparams.SwapEffect = D3DSWAPEFFECT_DISCARD;
+@@ -1707,29 +1719,57 @@
  
-     if (fullscreen_mode) {
-         pparams.Windowed = FALSE;
-@@ -1709,27 +1714,38 @@
+     // Get the adapter for the display that the window is on
      displayID = SDL_GetDisplayForWindow(window);
-     data->adapter = SDL_GetDirect3D9AdapterIndex(displayID);
+-    data->adapter = SDL_GetDirect3D9AdapterIndex(displayID);
  
 -    result = IDirect3D9_GetDeviceCaps(data->d3d, data->adapter, D3DDEVTYPE_HAL, &caps);
 -    if (FAILED(result)) {
 -        return D3D_SetError("GetDeviceCaps()", result);
 -    }
--
++    if (data->Use9On12 == FALSE) {
++        data->adapter = SDL_GetDirect3D9AdapterIndex(displayID);
+ 
 -    device_flags = D3DCREATE_FPU_PRESERVE;
 -    if (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) {
 -        device_flags |= D3DCREATE_HARDWARE_VERTEXPROCESSING;
 -    } else {
 -        device_flags |= D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 -    }
-+    if (data->Use9On12 == FALSE) {
 +        result = IDirect3D9_GetDeviceCaps(data->d3d, data->adapter, D3DDEVTYPE_HAL, &caps);
 +        if (FAILED(result)) {
 +            return D3D_SetError("GetDeviceCaps()", result);
@@ -112,7 +117,23 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
 +                                         device_flags,
 +                                         &pparams, &data->device);
 +    } else {
-+        device_flags = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
++        data->adapter = D3DADAPTER_DEFAULT;
++
++        result = IDirect3D9_GetDeviceCaps(data->d3d, D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &caps);
++        if (FAILED(result)) {
++            return D3D_SetError("GetDeviceCaps()", result);
++        }
++
++        device_flags = D3DCREATE_FPU_PRESERVE;
++        if (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) {
++            device_flags |= D3DCREATE_HARDWARE_VERTEXPROCESSING;
++        } else {
++            device_flags |= D3DCREATE_SOFTWARE_VERTEXPROCESSING;
++        }
++        
++        if (SDL_GetHintBoolean(SDL_HINT_RENDER_DIRECT3D_THREADSAFE, false)) {
++            device_flags |= D3DCREATE_MULTITHREADED;
++        }
 +
 +        result = IDirect3D9_CreateDevice(data->d3d, D3DADAPTER_DEFAULT,
 +                                         D3DDEVTYPE_HAL,
@@ -129,27 +150,20 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
      if (FAILED(result)) {
          return D3D_SetError("CreateDevice()", result);
      }
-@@ -1747,11 +1763,15 @@
+@@ -1745,11 +1785,12 @@
+         return D3D_SetError("GetPresentParameters()", result);
+     }
      IDirect3DSwapChain9_Release(chain);
++    pparams.hDeviceWindow = hwnd;
      data->pparams = pparams;
  
--    IDirect3DDevice9_GetDeviceCaps(data->device, &caps);
--    SDL_SetNumberProperty(SDL_GetRendererProperties(renderer), SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, SDL_min(caps.MaxTextureWidth, caps.MaxTextureHeight));
+     IDirect3DDevice9_GetDeviceCaps(data->device, &caps);
+     SDL_SetNumberProperty(SDL_GetRendererProperties(renderer), SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, SDL_min(caps.MaxTextureWidth, caps.MaxTextureHeight));
 -
--    if (caps.PrimitiveMiscCaps & D3DPMISCCAPS_SEPARATEALPHABLEND) {
--        data->enableSeparateAlphaBlend = true;
-+    if (data->Use9On12 == FALSE) {
-+        IDirect3DDevice9_GetDeviceCaps(data->device, &caps);
-+        SDL_SetNumberProperty(SDL_GetRendererProperties(renderer), SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER, SDL_min(caps.MaxTextureWidth, caps.MaxTextureHeight));
 +        
-+        if (caps.PrimitiveMiscCaps & D3DPMISCCAPS_SEPARATEALPHABLEND) {
-+            data->enableSeparateAlphaBlend = true;
-+        }
-+    } else {
-+        caps.MaxSimultaneousTextures = 3;
+     if (caps.PrimitiveMiscCaps & D3DPMISCCAPS_SEPARATEALPHABLEND) {
+         data->enableSeparateAlphaBlend = true;
      }
- 
-     // Store the default render target
 diff -Nur SDL3-3.2.16/src/render/direct3d12/SDL_render_d3d12.c SDL3-3.2.16_dxfix/src/render/direct3d12/SDL_render_d3d12.c
 --- SDL3-3.2.16/src/render/direct3d12/SDL_render_d3d12.c	2025-03-21 04:22:33
 +++ SDL3-3.2.16_dxfix/src/render/direct3d12/SDL_render_d3d12.c	2025-07-02 10:13:17
