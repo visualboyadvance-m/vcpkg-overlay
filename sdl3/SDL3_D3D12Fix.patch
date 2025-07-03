@@ -14,7 +14,7 @@ diff -Nur SDL3-3.2.16/src/SDL_error.c SDL3-3.2.16_d3d9on12/src/SDL_error.c
  
 diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c
 --- SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c	2025-03-18 17:55:46
-+++ SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c	2025-07-03 11:04:51
++++ SDL3-3.2.16_dxfix/src/render/direct3d/SDL_render_d3d.c	2025-07-03 13:32:07
 @@ -73,6 +73,7 @@
      int currentVertexBuffer;
      bool reportedVboProblem;
@@ -23,7 +23,33 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
  } D3D_RenderData;
  
  typedef struct
-@@ -1411,6 +1412,7 @@
+@@ -191,8 +192,12 @@
+ static D3DFORMAT PixelFormatToD3DFMT(Uint32 format)
+ {
+     switch (format) {
++    case SDL_PIXELFORMAT_RGB332:
++        return D3DFMT_R3G3B2;
+     case SDL_PIXELFORMAT_RGB565:
+         return D3DFMT_R5G6B5;
++    case SDL_PIXELFORMAT_RGB24:
++        return D3DFMT_R8G8B8;
+     case SDL_PIXELFORMAT_XRGB8888:
+         return D3DFMT_X8R8G8B8;
+     case SDL_PIXELFORMAT_ARGB8888:
+@@ -210,8 +215,12 @@
+ static SDL_PixelFormat D3DFMTToPixelFormat(D3DFORMAT format)
+ {
+     switch (format) {
++    case D3DFMT_R3G3B2:
++        return SDL_PIXELFORMAT_RGB332;
+     case D3DFMT_R5G6B5:
+         return SDL_PIXELFORMAT_RGB565;
++    case D3DFMT_R8G8B8:
++        return SDL_PIXELFORMAT_RGB24;
+     case D3DFMT_X8R8G8B8:
+         return SDL_PIXELFORMAT_XRGB8888;
+     case D3DFMT_A8R8G8B8:
+@@ -1411,6 +1420,7 @@
      result = IDirect3DDevice9_TestCooperativeLevel(data->device);
      if (result == D3DERR_DEVICELOST) {
          // We'll reset later
@@ -31,7 +57,7 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
          return false;
      }
      if (result == D3DERR_DEVICENOTRESET) {
-@@ -1604,13 +1606,22 @@
+@@ -1604,13 +1614,22 @@
      }
  
      D3DCAPS9 caps;
@@ -57,15 +83,23 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
      data->pparams.PresentationInterval = PresentationInterval;
  
      if (!D3D_Reset(renderer)) {
-@@ -1632,6 +1643,7 @@
+@@ -1632,9 +1651,14 @@
      int w, h;
      SDL_DisplayID displayID;
      const SDL_DisplayMode *fullscreen_mode = NULL;
 +    SDL_memset(&caps, 0, sizeof(caps));
  
-     hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+-    hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
++    hwnd = (HWND)SDL_GetPointerProperty(create_props, "sdl2-compat.external_window", NULL);
      if (!hwnd) {
-@@ -1649,7 +1661,7 @@
++        hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
++    }
++
++    if (!hwnd) {
+         return SDL_SetError("Couldn't get window handle");
+     }
+ 
+@@ -1649,7 +1673,7 @@
          return false;
      }
  
@@ -74,7 +108,7 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
          SDL_free(data);
          return SDL_SetError("Unable to create Direct3D interface");
      }
-@@ -1707,29 +1719,57 @@
+@@ -1707,29 +1731,57 @@
  
      // Get the adapter for the display that the window is on
      displayID = SDL_GetDisplayForWindow(window);
@@ -150,7 +184,7 @@ diff -Nur SDL3-3.2.16/src/render/direct3d/SDL_render_d3d.c SDL3-3.2.16_dxfix/src
      if (FAILED(result)) {
          return D3D_SetError("CreateDevice()", result);
      }
-@@ -1745,11 +1785,12 @@
+@@ -1745,11 +1797,12 @@
          return D3D_SetError("GetPresentParameters()", result);
      }
      IDirect3DSwapChain9_Release(chain);
