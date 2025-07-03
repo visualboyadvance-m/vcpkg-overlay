@@ -21,6 +21,8 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
         x11      SDL_X11
 )
 
+set(OPTIONS "")
+
 if ("x11" IN_LIST FEATURES)
     message(WARNING "You will need to install Xorg dependencies to use feature x11:\nsudo apt install libx11-dev libxft-dev libxext-dev\n")
 endif()
@@ -34,6 +36,14 @@ endif()
 list(APPEND FEATURE_OPTIONS -DSDL_UNIX_CONSOLE_BUILD=ON)
 if (VCPKG_TARGET_IS_LINUX AND NOT "x11" IN_LIST FEATURES AND NOT "wayland" IN_LIST FEATURES)
     message(WARNING "The selected features don't allow sdl3 to create windows, which is usually unintentional. You can get windowing support by installing the x11 and/or wayland features.")
+endif()
+
+if(VCPKG_TARGET_IS_MINGW)
+    if (VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+        list(APPEND OPTIONS -DCMAKE_C_FLAGS="-Wno-error=incompatible-function-pointer-types -Wno-error=incompatible-pointer-types")
+    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+        list(APPEND OPTIONS -DCMAKE_C_FLAGS="-Wno-error=incompatible-pointer-types")
+    endif()
 endif()
 
 vcpkg_cmake_configure(
@@ -50,6 +60,7 @@ vcpkg_cmake_configure(
         # Specifying the revision skips the need to use git to determine a version
         -DSDL_REVISION=vcpkg
         -DCMAKE_DISABLE_FIND_PACKAGE_LibUSB=1
+        ${OPTIONS}
     MAYBE_UNUSED_VARIABLES
         SDL_FORCE_STATIC_VCRT
 )

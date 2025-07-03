@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO wxWidgets/wxWidgets
     REF master
-    SHA512 8ca427baf619d6b24c842a46794385c9a88ade001082f7c6ea26bb89b8d44e5e0f9aef660a678e4f147f37ed8f1831d659152898dbd1276e00e3b3ba9a7dd72e
+    SHA512 56877873ede0a5daaa2f3b2dc045b41c0bc927be64057384b1f261e571d611d9a421c30501e46656cd448da95d5744bf14483091e74a133ed32f87e1f1beffdc
     PATCHES
         install-layout.patch
         install-config-remove.patch
@@ -121,7 +121,11 @@ vcpkg_execute_build_process(
 
 set(cxx_flags "${CMAKE_CXX_FLAGS} ${VCPKG_CXX_FLAGS}")
 if(VCPKG_TARGET_IS_MINGW)
-    set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
+    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+        set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
+    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+        set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
+    endif()
 endif()
 
 vcpkg_cmake_configure(
