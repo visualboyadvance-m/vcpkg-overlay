@@ -25,9 +25,9 @@ diff -Nur master-0d8123f19f.clean/src/msw/darkmode.cpp master-0d8123f19f.clean_p
 -                ::DrawThemeText(menuTheme, dis.hDC, 8 /* MENU_BARITEM */, partState,
 -                                  buf, mii.cch, drawTextFlags, 0, rcItem);
 +                if ( wxGetWinVersion() >= wxWinVersion_6 ) {
-+                    typedef HRESULT (*DrawThemeTextExFunc_t)(HTHEME, HDC, int, int, LPCWSTR, int, DWORD, LPRECT, const DTTOPTS *);
++                    typedef HRESULT (WINAPI *DrawThemeTextExFunc_t)(HTHEME, HDC, int, int, LPCWSTR, int, DWORD, LPRECT, const DTTOPTS *);
 +                    wxDynamicLibrary UXThemeDLL(wxT("uxtheme.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+                    DrawThemeTextExFunc_t DrawThemeTextExFunc = (HRESULT (*)(HTHEME, HDC, int, int, LPCWSTR, int, DWORD, LPRECT, const DTTOPTS *))UXThemeDLL.GetSymbol(wxT("DrawThemeTextEx"));
++                    DrawThemeTextExFunc_t DrawThemeTextExFunc = (HRESULT (WINAPI *)(HTHEME, HDC, int, int, LPCWSTR, int, DWORD, LPRECT, const DTTOPTS *))UXThemeDLL.GetSymbol(wxT("DrawThemeTextEx"));
 +
 +                    if (DrawThemeTextExFunc)
 +                        DrawThemeTextExFunc(menuTheme, dis.hDC, 8 /* MENU_BARITEM */, partState,
