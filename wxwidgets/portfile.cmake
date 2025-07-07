@@ -14,6 +14,7 @@ vcpkg_from_github(
         winxp-compat-andy.patch
         more-xp-compat.patch
         force-exceptions.patch
+        darkmode_fix.patch
 )
 
 vcpkg_check_features(

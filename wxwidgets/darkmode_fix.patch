@@ -1,0 +1,42 @@
+diff -Nur master-0d8123f19f.clean/src/msw/darkmode.cpp master-0d8123f19f.clean_patched/src/msw/darkmode.cpp
+--- master-0d8123f19f.clean/src/msw/darkmode.cpp	2025-07-07 20:50:54.575397000 +0200
++++ master-0d8123f19f.clean_patched/src/msw/darkmode.cpp	2025-07-07 21:06:41.406388200 +0200
+@@ -22,6 +22,9 @@
+ // headers
+ // ----------------------------------------------------------------------------
+ 
++#undef  _WIN32_WINNT
++#define _WIN32_WINNT 0x0600
++
+ // for compilers that support precompilation, includes "wx.h".
+ #include "wx/wxprec.h"
+ 
+@@ -715,9 +718,26 @@
+                 if ( itemState & ODS_NOACCEL)
+                     drawTextFlags |= DT_HIDEPREFIX;
+ 
++                DTTOPTS textOpts;
++                textOpts.dwSize = sizeof(textOpts);
++                textOpts.dwFlags = DTT_TEXTCOLOR;
++                textOpts.crText = wxColourToRGB(GetMenuColour(colText));
++
++
+                 wxUxThemeHandle menuTheme(w, L"Menu");
+-                ::DrawThemeText(menuTheme, dis.hDC, 8 /* MENU_BARITEM */, partState,
+-                                  buf, mii.cch, drawTextFlags, 0, rcItem);
++                if ( wxGetWinVersion() >= wxWinVersion_6 ) {
++                    typedef HRESULT (*DrawThemeTextExFunc_t)(HTHEME, HDC, int, int, LPCWSTR, int, DWORD, LPRECT, const DTTOPTS *);
++                    wxDynamicLibrary UXThemeDLL(wxT("uxtheme.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++                    DrawThemeTextExFunc_t DrawThemeTextExFunc = (HRESULT (*)(HTHEME, HDC, int, int, LPCWSTR, int, DWORD, LPRECT, const DTTOPTS *))UXThemeDLL.GetSymbol(wxT("DrawThemeTextEx"));
++
++                    if (DrawThemeTextExFunc)
++                        DrawThemeTextExFunc(menuTheme, dis.hDC, 8 /* MENU_BARITEM */, partState,
++                                              buf, mii.cch, drawTextFlags, rcItem,
++                                              &textOpts);
++
++                } else
++                    ::DrawThemeText(menuTheme, dis.hDC, 8 /* MENU_BARITEM */, partState,
++                                      buf, mii.cch, drawTextFlags, 0, rcItem);
+             }
+             return true;
+     }
