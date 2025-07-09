@@ -496,10 +496,11 @@ diff -Nur master-5d36349708.clean/src/msw/taskbar.cpp master-5d36349708.clean_pa
          notifyData.dwInfoFlags |= NIIF_USER | NIIF_LARGE_ICON;
      }
      else if ( flags & wxICON_INFORMATION )
-diff -Nur master-5d36349708.clean/src/msw/toolbar.cpp master-5d36349708.clean_patched/src/msw/toolbar.cpp
---- master-5d36349708.clean/src/msw/toolbar.cpp	2025-05-26 18:04:50.000000000 +0200
-+++ master-5d36349708.clean_patched/src/msw/toolbar.cpp	2025-05-27 18:47:46.550980700 +0200
-@@ -1702,7 +1702,9 @@
+diff --git a/src/msw/toolbar.cpp b/src/msw/toolbar.cpp
+index d6aadd0119..bb92edc32c 100644
+--- a/src/msw/toolbar.cpp
++++ b/src/msw/toolbar.cpp
+@@ -1719,7 +1719,9 @@ bool wxToolBar::MSWOnNotify(int WXUNUSED(idCtrl),
  
                  *result = CDRF_DODEFAULT |
                            CDRF_NOTIFYPOSTPAINT |
@@ -508,7 +509,7 @@ diff -Nur master-5d36349708.clean/src/msw/toolbar.cpp master-5d36349708.clean_pa
 +#endif
                            TBCDRF_HILITEHOTTRACK;
  
-                 // Draw custom checked button background when it is not hot:
+                 // Draw custom button background when it would be drawn with a
 diff -Nur master-5d36349708.clean/src/msw/uilocale.cpp master-5d36349708.clean_patched/src/msw/uilocale.cpp
 --- master-5d36349708.clean/src/msw/uilocale.cpp	2025-05-27 19:25:21.123132300 +0200
 +++ master-5d36349708.clean_patched/src/msw/uilocale.cpp	2025-05-27 18:19:55.135303900 +0200
@@ -1488,21 +1489,6 @@ diff -Nur master-0db0e17733.clean/src/msw/taskbar.cpp master-ea316f385b.clean_pa
          notifyData.dwInfoFlags |= NIIF_USER | NIIF_LARGE_ICON;
      }
      else if ( flags & wxICON_INFORMATION )
-diff -Nur master-0db0e17733.clean/src/msw/toolbar.cpp master-ea316f385b.clean_patched/src/msw/toolbar.cpp
---- master-0db0e17733.clean/src/msw/toolbar.cpp	2025-05-28 11:22:44.317574600 +0200
-+++ master-ea316f385b.clean_patched/src/msw/toolbar.cpp	2025-05-28 09:28:45.976992400 +0200
-@@ -1702,9 +1702,9 @@
- 
-                 *result = CDRF_DODEFAULT |
-                           CDRF_NOTIFYPOSTPAINT |
--#if _WIN32_WINNT >= 0x0600
-+#if _WIN32_WINNT >= 0x0600
-                           TBCDRF_USECDCOLORS |
--#endif
-+#endif
-                           TBCDRF_HILITEHOTTRACK;
- 
-                 // Draw custom checked button background when it is not hot:
 diff -Nur master-0db0e17733.clean/src/msw/uilocale.cpp master-ea316f385b.clean_patched/src/msw/uilocale.cpp
 --- master-0db0e17733.clean/src/msw/uilocale.cpp	2025-05-28 11:22:44.319584000 +0200
 +++ master-ea316f385b.clean_patched/src/msw/uilocale.cpp	2025-05-28 09:28:45.976992400 +0200
