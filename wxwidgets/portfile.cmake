@@ -15,6 +15,7 @@ vcpkg_from_github(
         more-xp-compat.patch
         force-exceptions.patch
         darkmode_fix.patch
+        cmake-install-naming.patch
 )
 
 vcpkg_check_features(
@@ -170,11 +171,7 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
 )
 
-if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
-    set(tools wxrc-3.3)
-else()
-    set(tools wxrc)
-endif()
+set(tools wxrc)
 
 if(NOT VCPKG_TARGET_IS_WINDOWS)
     list(APPEND tools wxrc-3.3)

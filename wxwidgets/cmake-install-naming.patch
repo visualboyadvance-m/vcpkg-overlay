@@ -1,0 +1,15 @@
+--- a/build/cmake/functions.cmake	1900-01-00 00:00:00 +0000
++++ b/build/cmake/functions.cmake	1900-01-00 00:00:00 +0000
+@@ -14,11 +14,7 @@
+ 
+ # Use the MSVC/makefile naming convention, or the configure naming convention,
+ # this is the same check as used in FindwxWidgets.
+-if(WIN32 AND NOT CYGWIN AND NOT MSYS AND NOT CMAKE_CROSSCOMPILING)
+-    set(WIN32_MSVC_NAMING 1)
+-else()
+-    set(WIN32_MSVC_NAMING 0)
+-endif()
++set(WIN32_MSVC_NAMING 1)
+ 
+ 
+ # List of libraries added via wx_add_library() to use for wx-config
