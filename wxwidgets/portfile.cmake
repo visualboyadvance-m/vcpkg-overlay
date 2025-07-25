@@ -5,17 +5,13 @@ vcpkg_from_github(
     SHA512 87982606ea94eb63745bc4e8c9e2cf793fdd3aeb4f1e63d2ac24c04ee0c63e0b7d2f36c7cf8ac11f2ad827ae5dcf0cdb9abe7412f0f4f4fd8d0a08eaa5a8226f
     PATCHES
         install-layout.patch
-        install-config-remove.patch
         relocatable-wx-config.patch
         fix-libs-export.patch
         fix-pcre2.patch
         gtk3-link-libraries.patch
         winxp-compat.patch
-        winxp-compat-andy.patch
-        more-xp-compat.patch
         force-exceptions.patch
         darkmode_fix.patch
-        cmake-install-naming.patch
 )
 
 vcpkg_check_features(
@@ -149,6 +145,7 @@ vcpkg_cmake_configure(
         -DwxUSE_STD_CONTAINERS=${WXWIDGETS_USE_STD_CONTAINERS}
         -DwxUSE_UIACTIONSIMULATOR=OFF
         -DwxBUILD_INSTALL_RUNTIME_DIR:PATH=bin
+        -DwxBUILD_WIN32_MSVC_NAMING=OFF
         ${OPTIONS}
         "-DPKG_CONFIG_EXECUTABLE=${PKGCONFIG}"
         # The minimum cmake version requirement for Cotire is 2.8.12.
@@ -171,10 +168,10 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
 )
 
-set(tools wxrc)
+set(tools wxrc-3.3)
 
 if(NOT VCPKG_TARGET_IS_WINDOWS)
-    list(APPEND tools wxrc-3.3)
+    list(APPEND tools wxrc)
     file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
     file(RENAME "${CURRENT_PACKAGES_DIR}/bin/wx-config" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/wx-config")
     if(NOT VCPKG_BUILD_TYPE)

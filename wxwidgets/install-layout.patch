@@ -11,29 +11,24 @@ index e76dff6..eb4edc0 100644
      if(wxBUILD_SHARED)
          set(lib_suffix "_dll")
      else()
-diff --git a/build/cmake/install.cmake b/build/cmake/install.cmake
-index 384c683..a662a48 100644
---- a/build/cmake/install.cmake
-+++ b/build/cmake/install.cmake
-@@ -41,7 +41,7 @@ else()
+--- a/build/cmake/install.cmake	1900-01-00 00:00:00 +0000
++++ b/build/cmake/install.cmake	1900-01-00 00:00:00 +0000
+@@ -53,17 +53,9 @@
+         DIRECTORY "${wxSETUP_HEADER_PATH}"
+         DESTINATION "lib/wx/include")
  
+-    install(
+-        FILES "${wxOUTPUT_DIR}/wx/config/${wxBUILD_FILE_ID}"
+-        DESTINATION "lib/wx/config"
+-        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+-                    GROUP_EXECUTE GROUP_READ
+-                    WORLD_EXECUTE WORLD_READ
+-        )
+-
      install(DIRECTORY DESTINATION "bin")
      install(CODE "execute_process( \
 -        COMMAND ${CMAKE_COMMAND} -E create_symlink \
 +        COMMAND ${CMAKE_COMMAND} -E copy \
-         \"${CMAKE_INSTALL_PREFIX}/lib/wx/config/${wxBUILD_FILE_ID}\" \
+         \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/wx/config/${wxBUILD_FILE_ID}\" \
          \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/wx-config\" \
          )"
-diff --git a/build/cmake/utils/CMakeLists.txt b/build/cmake/utils/CMakeLists.txt
-index dbed8cc..f1da8e3 100644
---- a/build/cmake/utils/CMakeLists.txt
-+++ b/build/cmake/utils/CMakeLists.txt
-@@ -39,7 +39,7 @@ if(wxUSE_XRC)
- 
-         # Don't use wx_install() here to preserve escaping.
-         install(CODE "execute_process( \
--            COMMAND ${CMAKE_COMMAND} -E create_symlink \
-+            COMMAND ${CMAKE_COMMAND} -E copy \
-             \"${CMAKE_INSTALL_PREFIX}/bin/${wxrc_output_name}${EXE_SUFFIX}\" \
-             \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/wxrc${EXE_SUFFIX}\" \
-             )"

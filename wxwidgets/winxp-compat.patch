@@ -1,42 +1,309 @@
---- a/src/msw/registry.cpp 1900-01-00 00:00:00 +0000
-+++ b/src/msw/registry.cpp 1900-01-00 00:00:00 +0000
-@@ -745,9 +745,7 @@
-   Close();
-
-   // deleting a key which doesn't exist is not considered an error
--  m_dwLastError = ::RegDeleteKeyEx((HKEY) m_hRootKey, m_strKey.t_str(),
--                                   GetMSWViewFlags(m_viewMode),
--                                   wxRESERVED_PARAM);
-+  m_dwLastError = ::RegDeleteKey((HKEY) m_hRootKey, m_strKey.t_str());
-
-   if ( m_dwLastError != ERROR_SUCCESS &&
-           m_dwLastError != ERROR_FILE_NOT_FOUND ) {
---- a/src/msw/uilocale.cpp 1900-01-00 00:00:00 +0000
-+++ b/src/msw/uilocale.cpp 1900-01-00 00:00:00 +0000
-@@ -622,15 +622,12 @@
-         if ( flags & wxCompare_CaseInsensitive )
-             dwFlags |= NORM_IGNORECASE;
-
--        const int ret = ::CompareStringEx
-+        const int ret = ::CompareString
-             (
-                 m_name,
-                 dwFlags,
-                 lhs.wc_str(), -1,
--                rhs.wc_str(), -1,
--                nullptr,               // [out] version information -- not needed
--                wxRESERVED_PARAM,
--                wxRESERVED_PARAM
-+                rhs.wc_str(), -1
-             );
-
-         switch ( ret )
+diff --git a/include/wx/datetimectrl.h b/include/wx/datetimectrl.h
+index 29cff3c7c9..c5d52a2e5d 100644
+--- a/include/wx/datetimectrl.h
++++ b/include/wx/datetimectrl.h
+@@ -14,7 +14,7 @@
+ 
+ #if wxUSE_DATEPICKCTRL || wxUSE_TIMEPICKCTRL
+ 
+-#define wxNEEDS_DATETIMEPICKCTRL
++#define wxNEEDS_DATETIMEPICKCTRL 1
+ 
+ #include "wx/control.h"         // the base class
+ 
+diff --git a/include/wx/msw/datetimectrl.h b/include/wx/msw/datetimectrl.h
+index 989902171a..991380f51c 100644
+--- a/include/wx/msw/datetimectrl.h
++++ b/include/wx/msw/datetimectrl.h
+@@ -23,37 +23,34 @@ class WXDLLIMPEXP_ADV wxDateTimePickerCtrl : public wxDateTimePickerCtrlBase
+ {
+ public:
+     // set/get the date
+-    virtual void SetValue(const wxDateTime& dt) override;
+-    virtual wxDateTime GetValue() const override;
++    virtual void SetValue(const wxDateTime& dt) wxOVERRIDE;
++    virtual wxDateTime GetValue() const wxOVERRIDE;
+ 
+-    virtual void SetNullText(const wxString& text) override;
++    virtual void SetNullText(const wxString& text) wxOVERRIDE;
+ 
+     // returns true if the platform should explicitly apply a theme border
+-    virtual bool CanApplyThemeBorder() const override { return false; }
++    virtual bool CanApplyThemeBorder() const wxOVERRIDE { return false; }
+ 
+-    virtual bool MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM *result) override;
++    virtual bool MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM* result) wxOVERRIDE;
+ 
+ protected:
+-    virtual wxBorder GetDefaultBorder() const override { return wxBORDER_NONE; }
+-    virtual wxSize DoGetBestSize() const override;
++    virtual wxBorder GetDefaultBorder() const wxOVERRIDE { return wxBORDER_NONE; }
++    virtual wxSize DoGetBestSize() const wxOVERRIDE;
+ 
+     // Helper for the derived classes Create(): creates a native control with
+     // the specified attributes.
+-    bool MSWCreateDateTimePicker(wxWindow *parent,
+-                                 wxWindowID id,
+-                                 const wxDateTime& dt,
+-                                 const wxPoint& pos,
+-                                 const wxSize& size,
+-                                 long style,
+-                                 const wxValidator& validator,
+-                                 const wxString& name);
++    bool MSWCreateDateTimePicker(wxWindow* parent,
++        wxWindowID id,
++        const wxDateTime& dt,
++        const wxPoint& pos,
++        const wxSize& size,
++        long style,
++        const wxValidator& validator,
++        const wxString& name);
+ 
+ #if wxUSE_INTL
+     // Override to return the date/time format used by this control.
+     virtual wxLocaleInfo MSWGetFormat() const = 0;
+-
+-    // Set the format used by the native control.
+-    void MSWSetTimeFormat(wxLocaleInfo index);
+ #endif // wxUSE_INTL
+ 
+     // Override to indicate whether we can have no date at all.
+diff --git a/include/wx/msw/msgdlg.h b/include/wx/msw/msgdlg.h
+index 57fb7d2e2c..8996ee9c1b 100644
+--- a/include/wx/msw/msgdlg.h
++++ b/include/wx/msw/msgdlg.h
+@@ -2,6 +2,7 @@
+ // Name:        wx/msw/msgdlg.h
+ // Purpose:     wxMessageDialog class
+ // Author:      Julian Smart
++// Modified by:
+ // Created:     01/02/97
+ // Copyright:   (c) Julian Smart
+ // Licence:     wxWindows licence
+@@ -20,12 +21,12 @@ public:
+                     const wxPoint& WXUNUSED(pos) = wxDefaultPosition)
+         : wxMessageDialogBase(parent, message, caption, style)
+     {
+-        m_hook = nullptr;
++        m_hook = NULL;
+     }
+ 
+-    virtual int ShowModal() override;
++    virtual int ShowModal() wxOVERRIDE;
+ 
+-    virtual long GetEffectiveIcon() const override;
++    virtual long GetEffectiveIcon() const wxOVERRIDE;
+ 
+     // implementation-specific
+ 
+@@ -34,7 +35,7 @@ public:
+ 
+ protected:
+     // Override this as task dialogs are always centered on parent.
+-    virtual void DoCentre(int dir) override;
++    virtual void DoCentre(int dir) wxOVERRIDE;
+ 
+ private:
+     // hook procedure used to adjust the message box beyond what the standard
+diff --git a/include/wx/msw/private/filedialog.h b/include/wx/msw/private/filedialog.h
+index 5823230ca9..4823b110d6 100644
+--- a/include/wx/msw/private/filedialog.h
++++ b/include/wx/msw/private/filedialog.h
+@@ -18,8 +18,8 @@
+ // Using IFileOpenDialog requires a compiler providing declarations and
+ // definitions of interfaces available in Windows Vista.
+ // And it needs OLE support to actually use these interfaces.
+-#if (wxUSE_DIRDLG || wxUSE_FILEDLG) && wxUSE_OLE && \
+-    defined(__IFileOpenDialog_INTERFACE_DEFINED__)
++#if ((wxUSE_DIRDLG || wxUSE_FILEDLG) && wxUSE_OLE && \
++    defined(__IFileOpenDialog_INTERFACE_DEFINED__)) && (_WIN32_WINNT >= 0x0600)
+     #define wxUSE_IFILEOPENDIALOG 1
+ #else
+     #define wxUSE_IFILEOPENDIALOG 0
+diff --git a/include/wx/msw/private/msgdlg.h b/include/wx/msw/private/msgdlg.h
+index 88dc6aa029..cfd4c18bce 100644
+--- a/include/wx/msw/private/msgdlg.h
++++ b/include/wx/msw/private/msgdlg.h
+@@ -13,10 +13,19 @@
+ #include "wx/msw/wrapcctl.h"
+ #include "wx/scopedarray.h"
+ 
++// Macro to help identify if task dialogs are available: we rely on
++// TD_WARNING_ICON being defined in the headers for this as this symbol is used
++// by the task dialogs only. Also notice that task dialogs are available for
++// Unicode applications only.
++#if defined(TD_WARNING_ICON) && wxUSE_UNICODE
++    #define wxHAS_MSW_TASKDIALOG
++#endif
++
+ // Provides methods for creating a task dialog.
+ namespace wxMSWMessageDialog
+ {
+ 
++#ifdef wxHAS_MSW_TASKDIALOG
+     class wxMSWTaskDialogConfig
+     {
+     public:
+@@ -24,7 +33,7 @@ namespace wxMSWMessageDialog
+ 
+         wxMSWTaskDialogConfig()
+             : buttons(new TASKDIALOG_BUTTON[MAX_BUTTONS]),
+-              parent(nullptr),
++              parent(NULL),
+               iconId(0),
+               style(0),
+               useCustomLabels(false)
+@@ -65,15 +74,15 @@ namespace wxMSWMessageDialog
+     typedef HRESULT (WINAPI *TaskDialogIndirect_t)(const TASKDIALOGCONFIG *,
+                                                    int *, int *, BOOL *);
+ 
+-    // Return the pointer to TaskDialogIndirect(). It can return a null pointer
+-    // if the task dialog is not available, which may happen even under modern
+-    // OS versions when using comctl32.dll v5, as it happens if the application
+-    // doesn't provide a manifest specifying that it wants to use v6.
++    // Return the pointer to TaskDialogIndirect(). This should only be called
++    // if HasNativeTaskDialog() returned true and is normally guaranteed to
++    // succeed in this case.
+     TaskDialogIndirect_t GetTaskDialogIndirectFunc();
++#endif // wxHAS_MSW_TASKDIALOG
++
+ 
+-    // Return true if the task dialog is available, but we don't actually need
+-    // to show it yet (if we do, then GetTaskDialogIndirectFunc() should be
+-    // used directly).
++    // Check if the task dialog is available: this simply checks the OS version
++    // as we know that it's only present in Vista and later.
+     bool HasNativeTaskDialog();
+ 
+     // Translates standard MSW button IDs like IDCANCEL into an equivalent
+diff --git a/include/wx/msw/progdlg.h b/include/wx/msw/progdlg.h
+index ff70212885..b0a07db82f 100644
+--- a/include/wx/msw/progdlg.h
++++ b/include/wx/msw/progdlg.h
+@@ -17,48 +17,48 @@ class WXDLLIMPEXP_CORE wxProgressDialog : public wxGenericProgressDialog
+ {
+ public:
+     wxProgressDialog(const wxString& title, const wxString& message,
+-                     int maximum = 100,
+-                     wxWindow *parent = nullptr,
+-                     int style = wxPD_APP_MODAL | wxPD_AUTO_HIDE);
++        int maximum = 100,
++        wxWindow* parent = NULL,
++        int style = wxPD_APP_MODAL | wxPD_AUTO_HIDE);
+ 
+     virtual ~wxProgressDialog();
+ 
+-    virtual bool Update(int value, const wxString& newmsg = wxEmptyString, bool *skip = nullptr) override;
+-    virtual bool Pulse(const wxString& newmsg = wxEmptyString, bool *skip = nullptr) override;
++    virtual bool Update(int value, const wxString& newmsg = wxEmptyString, bool* skip = NULL) wxOVERRIDE;
++    virtual bool Pulse(const wxString& newmsg = wxEmptyString, bool* skip = NULL) wxOVERRIDE;
+ 
+-    virtual void Resume() override;
++    virtual void Resume() wxOVERRIDE;
+ 
+-    virtual int GetValue() const override;
+-    virtual wxString GetMessage() const override;
++    virtual int GetValue() const wxOVERRIDE;
++    virtual wxString GetMessage() const wxOVERRIDE;
+ 
+-    virtual void SetRange(int maximum) override;
++    virtual void SetRange(int maximum) wxOVERRIDE;
+ 
+     // Return whether "Cancel" or "Skip" button was pressed, always return
+     // false if the corresponding button is not shown.
+-    virtual bool WasSkipped() const override;
+-    virtual bool WasCancelled() const override;
++    virtual bool WasSkipped() const wxOVERRIDE;
++    virtual bool WasCancelled() const wxOVERRIDE;
+ 
+-    virtual void SetTitle(const wxString& title) override;
+-    virtual wxString GetTitle() const override;
++    virtual void SetTitle(const wxString& title) wxOVERRIDE;
++    virtual wxString GetTitle() const wxOVERRIDE;
+ 
+-    virtual void SetIcons(const wxIconBundle& icons) override;
+-    virtual void DoMoveWindow(int x, int y, int width, int height) override;
+-    virtual void DoGetPosition(int *x, int *y) const override;
+-    virtual void DoGetSize(int *width, int *height) const override;
+-    virtual void Fit() override;
++    virtual void SetIcons(const wxIconBundle& icons) wxOVERRIDE;
++    virtual void DoMoveWindow(int x, int y, int width, int height) wxOVERRIDE;
++    virtual void DoGetPosition(int* x, int* y) const wxOVERRIDE;
++    virtual void DoGetSize(int* width, int* height) const wxOVERRIDE;
++    virtual void Fit() wxOVERRIDE;
+ 
+-    virtual bool Show( bool show = true ) override;
++    virtual bool Show(bool show = true) wxOVERRIDE;
+ 
+     // Must provide overload to avoid hiding it (and warnings about it)
+-    virtual void Update() override { wxGenericProgressDialog::Update(); }
++    virtual void Update() wxOVERRIDE { wxGenericProgressDialog::Update(); }
+ 
+-    virtual WXWidget GetHandle() const override;
++    virtual WXWidget GetHandle() const wxOVERRIDE;
+ 
+ private:
+     // Common part of Update() and Pulse().
+     //
+     // Returns false if the user requested cancelling the dialog.
+-    bool DoNativeBeforeUpdate(bool *skip);
++    bool DoNativeBeforeUpdate(bool* skip);
+ 
+     // Dispatch the pending events to let the windows to update, just as the
+     // generic version does. This is done as part of DoNativeBeforeUpdate().
+@@ -73,14 +73,14 @@ private:
+     wxRect GetTaskDialogRect() const;
+ 
+ 
+-    wxProgressDialogTaskRunner *m_taskDialogRunner;
++    wxProgressDialogTaskRunner* m_taskDialogRunner;
+ 
+-    wxProgressDialogSharedData *m_sharedData;
++    wxProgressDialogSharedData* m_sharedData;
+ 
+     // Store the message and title we currently use to be able to return it
+     // from Get{Message,Title}()
+     wxString m_message,
+-             m_title;
++        m_title;
+ 
+     wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxProgressDialog);
+ };
+diff --git a/include/wx/msw/richmsgdlg.h b/include/wx/msw/richmsgdlg.h
+index 726bd843e2..7c75b36e57 100644
+--- a/include/wx/msw/richmsgdlg.h
++++ b/include/wx/msw/richmsgdlg.h
+@@ -13,15 +13,16 @@
+ class WXDLLIMPEXP_CORE wxRichMessageDialog : public wxGenericRichMessageDialog
+ {
+ public:
+-    wxRichMessageDialog(wxWindow *parent,
+-                        const wxString& message,
+-                        const wxString& caption = wxASCII_STR(wxMessageBoxCaptionStr),
+-                        long style = wxOK | wxCENTRE)
++    wxRichMessageDialog(wxWindow* parent,
++        const wxString& message,
++        const wxString& caption = wxASCII_STR(wxMessageBoxCaptionStr),
++        long style = wxOK | wxCENTRE)
+         : wxGenericRichMessageDialog(parent, message, caption, style)
+-        { }
++    {
++    }
+ 
+     // overridden base class method showing the native task dialog if possible
+-    virtual int ShowModal() override;
++    virtual int ShowModal() wxOVERRIDE;
+ 
+ private:
+     wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxRichMessageDialog);
+diff --git a/misc/languages/util/showlocales.c b/misc/languages/util/showlocales.c
+index 81b0ecc4dc..97664c555b 100644
 --- a/misc/languages/util/showlocales.c
 +++ b/misc/languages/util/showlocales.c
 @@ -49,11 +49,11 @@ BOOL CALLBACK MyFuncLocaleEx(LPWSTR pStr, DWORD dwFlags, LPARAM lparam)
    int iResult;
    int i;
-
+ 
 -  // Loop through all specified LCTYPES and do GetLocaleInfoEx on them
 +  // Loop through all specified LCTYPES and do GetLocaleInfo on them
    for (i = 0; i < sizeof(winLocaleTypes) / sizeof(winLocaleTypes[0]); i++)
@@ -44,74 +311,1525 @@
      // Get this LCTYPE result for this locale
 -    iResult = GetLocaleInfoEx(pStr, winLocaleTypes[i], wcBuffer, BUFFER_SIZE);
 +    iResult = GetLocaleInfo(pStr, winLocaleTypes[i], wcBuffer, BUFFER_SIZE);
-
+ 
      // If it succeeds, print it out
      if (i != 0) printf("|");
+diff --git a/src/msw/app.cpp b/src/msw/app.cpp
+index 9b6279ae77..0b8bfdfe25 100644
+--- a/src/msw/app.cpp
++++ b/src/msw/app.cpp
+@@ -501,12 +501,21 @@ bool wxApp::Initialize(int& argc_, wxChar **argv_)
+     const wxString className(wxTheApp->GetClassName());
+     if ( !className.empty() )
+     {
+-        SetCurrentProcessExplicitAppUserModelID(className.wc_str());
++        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++        typedef HRESULT(WINAPI* SetCurrentProcessExplicitAppUserModelID_t)(PCWSTR);
++
++        if (wxGetWinVersion() >= wxWinVersion_7) {
++            SetCurrentProcessExplicitAppUserModelID_t pfnSetCurrentProcessExplicitAppUserModelID =
++                (SetCurrentProcessExplicitAppUserModelID_t)
++                kernel32.GetSymbol(wxT("SetCurrentProcessExplicitAppUserModelID"));
++            if (pfnSetCurrentProcessExplicitAppUserModelID)
++                pfnSetCurrentProcessExplicitAppUserModelID(className.wc_str());
++        }
+     }
+ 
+     if ( !wxSystemOptions::GetOptionInt("msw.no-manifest-check") )
+     {
+-        if ( GetComCtl32Version() < 610 )
++        if ( GetComCtl32Version() < 500 )
+         {
+             // Check if we have wx resources in this program: this is not
+             // mandatory, but recommended and could be the simplest way to
+diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
+index a577e7f8e6..55dfffb48f 100644
+--- a/src/msw/darkmode.cpp
++++ b/src/msw/darkmode.cpp
+@@ -32,7 +32,6 @@
+ #endif
+ 
+ #if wxUSE_DARK_MODE
+-
+ #ifndef WX_PRECOMP
+     #include "wx/app.h"
+     #include "wx/bitmap.h"
+@@ -54,6 +53,22 @@
+ 
+ #include <memory>
+ 
++#ifndef MBI_NORMAL
++#define MBI_NORMAL 1
++#endif
++
++#ifndef MBI_HOT
++#define MBI_HOT 2
++#endif
++
++#ifndef MBI_DISABLED
++#define MBI_DISABLED 4
++#endif
++
++#ifndef MBI_DISABLEDHOT
++#define MBI_DISABLEDHOT 5
++#endif
++
+ #if wxUSE_LOG_TRACE
+ static const char* TRACE_DARKMODE = "msw-darkmode";
+ #endif // wxUSE_LOG_TRACE
+@@ -696,19 +711,13 @@ HandleMenuMessage(WXLRESULT* result,
+                 // We have to specify the text colour explicitly as by default
+                 // black would be used, making the menu label unreadable on the
+                 // (almost) black background.
+-                DTTOPTS textOpts;
+-                textOpts.dwSize = sizeof(textOpts);
+-                textOpts.dwFlags = DTT_TEXTCOLOR;
+-                textOpts.crText = wxColourToRGB(GetMenuColour(colText));
+-
+                 DWORD drawTextFlags = DT_CENTER | DT_SINGLELINE | DT_VCENTER;
+                 if ( itemState & ODS_NOACCEL)
+                     drawTextFlags |= DT_HIDEPREFIX;
+ 
+                 wxUxThemeHandle menuTheme(w, L"Menu");
+-                ::DrawThemeTextEx(menuTheme, dis.hDC, MENU_BARITEM, partState,
+-                                  buf, mii.cch, drawTextFlags, rcItem,
+-                                  &textOpts);
++                ::DrawThemeText(menuTheme, dis.hDC, 8 /* MENU_BARITEM */, partState,
++                                  buf, mii.cch, drawTextFlags, 0, rcItem);
+             }
+             return true;
+     }
+diff --git a/src/msw/datectrl.cpp b/src/msw/datectrl.cpp
+index 05cf2184f8..041a42ffac 100644
+--- a/src/msw/datectrl.cpp
++++ b/src/msw/datectrl.cpp
+@@ -62,12 +62,6 @@ wxDatePickerCtrl::Create(wxWindow *parent,
+     bool ok = MSWCreateDateTimePicker(parent, id, dt,
+                                       pos, size, style,
+                                       validator, name);
+-#if wxUSE_INTL
+-    if (ok)
+-    {
+-        MSWSetTimeFormat(wxLOCALE_SHORT_DATE_FMT);
+-    }
+-#endif
+     return ok;
+ }
+ 
+diff --git a/src/msw/datetimectrl.cpp b/src/msw/datetimectrl.cpp
+index 214e12e497..446fd64f6e 100644
+--- a/src/msw/datetimectrl.cpp
++++ b/src/msw/datetimectrl.cpp
+@@ -25,130 +25,76 @@
+ #ifdef wxNEEDS_DATETIMEPICKCTRL
+ 
+ #ifndef WX_PRECOMP
+-    #include "wx/msw/wrapwin.h"
+-    #include "wx/msw/wrapcctl.h" // include <commctrl.h> "properly"
+-    #include "wx/msw/private.h"
+-    #include "wx/dcclient.h"
++#include "wx/msw/wrapwin.h"
++#include "wx/msw/wrapcctl.h" // include <commctrl.h> "properly"
++#include "wx/msw/private.h"
++#include "wx/dcclient.h"
+ #endif // WX_PRECOMP
+ 
+ #include "wx/msw/private/datecontrols.h"
+-#include "wx/msw/private/uilocale.h"
+ 
+ // apparently some versions of mingw define these macros erroneously
+ #ifndef DateTime_GetSystemtime
+-    #define DateTime_GetSystemtime DateTime_GetSystemTime
++#define DateTime_GetSystemtime DateTime_GetSystemTime
+ #endif
+ 
+ #ifndef DateTime_SetSystemtime
+-    #define DateTime_SetSystemtime DateTime_SetSystemTime
++#define DateTime_SetSystemtime DateTime_SetSystemTime
+ #endif
+ 
+ #ifndef DTM_GETIDEALSIZE
+-    #define DTM_GETIDEALSIZE 0x100f
++#define DTM_GETIDEALSIZE 0x100f
+ #endif
+ 
+ // ============================================================================
+ // wxDateTimePickerCtrl implementation
+ // ============================================================================
+ 
+-namespace wxMSWImpl
+-{
+-
+-LRESULT CALLBACK
+-DateTimeUDProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam,
+-               UINT_PTR uIdSubclass, DWORD_PTR WXUNUSED(dwRefData))
+-{
+-    switch ( nMsg )
+-    {
+-        case WM_PAINT:
+-            // This is a bit ridiculous, but we have to explicitly paint the
+-            // control here, even if all we do is to let it draw itself,
+-            // because without this it may not draw the lower arrow at all when
+-            // using WS_EX_COMPOSITED (it probably optimizes redraw by assuming
+-            // that previously drawn part doesn't change, but this is not the
+-            // case when compositing it used).
+-            {
+-                PAINTSTRUCT ps;
+-                ::BeginPaint(hwnd, &ps);
+-                ::DefSubclassProc(hwnd, WM_PAINT, (WPARAM)ps.hdc, 0);
+-                ::EndPaint(hwnd, &ps);
+-            }
+-            return 0;
+-
+-        case WM_NCDESTROY:
+-            ::RemoveWindowSubclass(hwnd, DateTimeUDProc, uIdSubclass);
+-            break;
+-    }
+-
+-    return ::DefSubclassProc(hwnd, nMsg, wParam, lParam);
+-}
+-
+-} // namespace wxMSWImpl
+-
+ bool
+-wxDateTimePickerCtrl::MSWCreateDateTimePicker(wxWindow *parent,
+-                                              wxWindowID id,
+-                                              const wxDateTime& dt,
+-                                              const wxPoint& pos,
+-                                              const wxSize& size,
+-                                              long style,
+-                                              const wxValidator& validator,
+-                                              const wxString& name)
++wxDateTimePickerCtrl::MSWCreateDateTimePicker(wxWindow* parent,
++    wxWindowID id,
++    const wxDateTime& dt,
++    const wxPoint& pos,
++    const wxSize& size,
++    long style,
++    const wxValidator& validator,
++    const wxString& name)
+ {
+-    if ( !wxMSWDateControls::CheckInitialization() )
++    if (!wxMSWDateControls::CheckInitialization())
+         return false;
+ 
+     // initialize the base class
+-    if ( !CreateControl(parent, id, pos, size, style, validator, name) )
++    if (!CreateControl(parent, id, pos, size, style, validator, name))
+         return false;
+ 
+     // create the native control
+-    if ( !MSWCreateControl(DATETIMEPICK_CLASS, wxString(), pos, size) )
++    if (!MSWCreateControl(DATETIMEPICK_CLASS, wxString(), pos, size))
+         return false;
+ 
+-    if ( dt.IsValid() || MSWAllowsNone() )
++    if (dt.IsValid() || MSWAllowsNone())
+         SetValue(dt);
+     else
+         SetValue(wxDateTime::Now());
+ 
+-    // If have an up-down control, we must explicitly paint it ourselves
+-    // because otherwise it may be not redrawn at all with WS_EX_COMPOSITED.
+-    WinStruct<DATETIMEPICKERINFO> info;
+-    ::SendMessage(GetHwnd(), DTM_GETDATETIMEPICKERINFO, 0, (LPARAM)&info);
+-    if ( info.hwndUD )
+-    {
+-        ::SetWindowSubclass(info.hwndUD, wxMSWImpl::DateTimeUDProc, 0, 0);
+-    }
+-
+     return true;
+ }
+ 
+-void wxDateTimePickerCtrl::MSWSetTimeFormat(wxLocaleInfo index)
+-{
+-    const wxString format = wxGetMSWDateTimeFormat(index);
+-    if ( !format.empty() )
+-    {
+-        DateTime_SetFormat(GetHwnd(),
+-                           static_cast<const wchar_t*>(format.t_str()));
+-    }
+-}
+-
+ void wxDateTimePickerCtrl::SetValue(const wxDateTime& dt)
+ {
+-    wxCHECK_RET( dt.IsValid() || MSWAllowsNone(),
+-                    wxT("this control requires a valid date") );
++    wxCHECK_RET(dt.IsValid() || MSWAllowsNone(),
++        wxT("this control requires a valid date"));
+ 
+     SYSTEMTIME st;
+-    if ( dt.IsValid() )
++    if (dt.IsValid())
+         dt.GetAsMSWSysTime(&st);
+ 
+-    if ( !DateTime_SetSystemtime(GetHwnd(),
+-                                 dt.IsValid() ? GDT_VALID : GDT_NONE,
+-                                 &st) )
++    if (!DateTime_SetSystemtime(GetHwnd(),
++        dt.IsValid() ? GDT_VALID : GDT_NONE,
++        &st))
+     {
+         // The only expected failure is when the date is out of range but we
+         // already checked for this above.
+-        wxFAIL_MSG( wxT("Setting the calendar date unexpectedly failed.") );
++        wxFAIL_MSG(wxT("Setting the calendar date unexpectedly failed."));
+ 
+         // In any case, skip updating m_date below.
+         return;
+@@ -166,21 +112,21 @@ wxDateTime wxDateTimePickerCtrl::GetValue() const
+ 
+ void wxDateTimePickerCtrl::MSWUpdateFormatIfNeeded(bool valid)
+ {
+-    if ( MSWAllowsNone() && !m_nullText.empty() && valid != m_date.IsValid() )
++    if (MSWAllowsNone() && !m_nullText.empty() && valid != m_date.IsValid())
+         MSWUpdateFormat(valid);
+ }
+ 
+ void wxDateTimePickerCtrl::MSWUpdateFormat(bool valid)
+ {
+-    // We just use nullptr to reset to the default format when the date is valid,
++    // We just use NULL to reset to the default format when the date is valid,
+     // as the control seems to remember whichever format was used when it was
+     // created, i.e. this works both with and without wxDP_SHOWCENTURY.
+ 
+     // Use a temporary variable to ensure that the code compiles in
+     // wxUSE_UNICODE_UTF8 case, where t_str() doesn't return a pointer.
+     const TCHAR* format;
+-    if ( valid )
+-        format = nullptr;
++    if (valid)
++        format = NULL;
+     else
+         format = m_nullText.t_str();
+ 
+@@ -190,7 +136,7 @@ void wxDateTimePickerCtrl::MSWUpdateFormat(bool valid)
+ void wxDateTimePickerCtrl::SetNullText(const wxString& text)
+ {
+     m_nullText = text;
+-    if ( m_nullText.empty() )
++    if (m_nullText.empty())
+     {
+         // Using empty format doesn't work with the native control, it just
+         // uses the default short date format in this case, so set the format
+@@ -215,7 +161,7 @@ void wxDateTimePickerCtrl::SetNullText(const wxString& text)
+     }
+ 
+     // Apply it immediately if we don't have any value right now.
+-    if ( !m_date.IsValid() )
++    if (!m_date.IsValid())
+         MSWUpdateFormat(false);
+ }
+ 
+@@ -223,63 +169,66 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+ {
+     wxSize size;
+ 
+-    // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal
+-    // size, but we can't use it with DTS_SHOWNONE because handling of
+-    // this flag is completely broken (up to at least Window 10 20H2): it's
+-    // not just ignored, but we get completely wrong results when this flag
+-    // is on, e.g. the returned width is less than the width without it or
+-    // much greater than the real value after a DPI change (and growing
+-    // with every new change, even when repeatedly switching between the
+-    // same DPI values, e.g. dragging a window between 2 monitors with
+-    // different scaling). Moreover, note that even without DTS_SHOWNONE,
+-    // DTM_GETIDEALSIZE still returns wrong results for the height after a
+-    // DPI change, so we never use the vertical component of the value
+-    // returned by it.
+-    //
+-    // Unfortunately, resetting this style doesn't work either, so we have
+-    // to create a whole new window just for this, which is pretty wasteful
+-    // but seems unavoidable.
+-    HWND hwnd;
+-    if ( MSWAllowsNone() )
+-    {
+-        hwnd = ::CreateWindow
+-                 (
+-                    DATETIMEPICK_CLASS,
+-                    wxT(""),
+-                    ::GetWindowLong(GetHwnd(), GWL_STYLE) & ~DTS_SHOWNONE,
+-                    0, 0, 1, 1,
+-                    GetHwndOf(m_parent),
+-                    0,
+-                    wxGetInstance(),
+-                    nullptr
+-                 );
+-        wxCHECK_MSG( hwnd, wxSize(),
+-                     wxS("SysDateTimePick32 creation unexpected failed") );
+-
+-        wxSetWindowFont(hwnd, GetFont());
+-    }
+-    else
+-    {
+-        hwnd = GetHwnd();
+-    }
+-
+-    // Also work around https://bugs.winehq.org/show_bug.cgi?id=44680 by
+-    // checking for the return value: even if all "real" MSW systems do support
+-    // this message, Wine does not, even when it's configured to return Vista
+-    // or later version to the application, and returns FALSE for it.
++    // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal size.
+     SIZE idealSize = { 0, 0 };
+-    if ( ::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize) )
+-    {
+-        size.x = idealSize.cx;
+-        size.y = GetCharHeight();
+-    }
+-
+-    if ( hwnd != GetHwnd() )
++    if (wxGetWinVersion() >= wxWinVersion_Vista)
+     {
+-        ::DestroyWindow(hwnd);
++        // We can't use DTM_GETIDEALSIZE with DTS_SHOWNONE because handling of
++        // this flag is completely broken (up to at least Window 10 20H2): it's
++        // not just ignored, but we get completely wrong results when this flag
++        // is on, e.g. the returned width is less than the width without it or
++        // much greater than the real value after a DPI change (and growing
++        // with every new change, even when repeatedly switching between the
++        // same DPI values, e.g. dragging a window between 2 monitors with
++        // different scaling). Moreover, note that even without DTS_SHOWNONE,
++        // DTM_GETIDEALSIZE still returns wrong results for the height after a
++        // DPI change, so we never use the vertical component of the value
++        // returned by it.
++        //
++        // Unfortunately, resetting this style doesn't work either, so we have
++        // to create a whole new window just for this, which is pretty wasteful
++        // but seems unavoidable.
++        HWND hwnd;
++        if (MSWAllowsNone())
++        {
++            hwnd = ::CreateWindow
++            (
++                DATETIMEPICK_CLASS,
++                wxT(""),
++                ::GetWindowLong(GetHwnd(), GWL_STYLE) & ~DTS_SHOWNONE,
++                0, 0, 1, 1,
++                GetHwndOf(m_parent),
++                0,
++                wxGetInstance(),
++                NULL
++            );
++            wxCHECK_MSG(hwnd, wxSize(),
++                wxS("SysDateTimePick32 creation unexpected failed"));
++
++            wxSetWindowFont(hwnd, GetFont());
++        }
++        else
++        {
++            hwnd = GetHwnd();
++        }
++
++        // Also work around https://bugs.winehq.org/show_bug.cgi?id=44680 by
++        // checking for the return value: even if all "real" MSW systems do support
++        // this message, Wine does not, even when it's configured to return Vista
++        // or later version to the application, and returns FALSE for it.
++        if (::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize))
++        {
++            size.x = idealSize.cx;
++            size.y = GetCharHeight();
++        }
++
++        if (hwnd != GetHwnd())
++        {
++            ::DestroyWindow(hwnd);
++        }
+     }
+ 
+-    if ( !size.x ) // Compute the size ourselves.
++    if (!idealSize.cx) // Compute the size ourselves.
+     {
+         // Use the same native format as the underlying native control.
+ #if wxUSE_INTL
+@@ -301,7 +250,7 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+     }
+ 
+     // Account for the checkbox.
+-    if ( MSWAllowsNone() )
++    if (MSWAllowsNone())
+     {
+         // The extra 8px here was determined heuristically as the value which
+         // results in the same layout with and without DTS_SHOWNONE under
+@@ -319,23 +268,23 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+ }
+ 
+ bool
+-wxDateTimePickerCtrl::MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM *result)
++wxDateTimePickerCtrl::MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM* result)
+ {
+-    NMHDR* hdr = (NMHDR *)lParam;
+-    switch ( hdr->code )
++    NMHDR* hdr = (NMHDR*)lParam;
++    switch (hdr->code)
+     {
+-        case DTN_DATETIMECHANGE:
+-            const NMDATETIMECHANGE& dtch = *(NMDATETIMECHANGE*)(hdr);
+-
+-            // Update the format before showing the new date if necessary.
+-            MSWUpdateFormatIfNeeded(dtch.dwFlags == GDT_VALID);
+-
+-            if ( MSWOnDateTimeChange(dtch) )
+-            {
+-                *result = 0;
+-                return true;
+-            }
+-            break;
++    case DTN_DATETIMECHANGE:
++        const NMDATETIMECHANGE& dtch = *(NMDATETIMECHANGE*)(hdr);
++
++        // Update the format before showing the new date if necessary.
++        MSWUpdateFormatIfNeeded(dtch.dwFlags == GDT_VALID);
++
++        if (MSWOnDateTimeChange(dtch))
++        {
++            *result = 0;
++            return true;
++        }
++        break;
+     }
+ 
+     return wxDateTimePickerCtrlBase::MSWOnNotify(idCtrl, lParam, result);
+diff --git a/src/msw/dirdlg.cpp b/src/msw/dirdlg.cpp
+index 043bd72897..815b305a58 100644
+--- a/src/msw/dirdlg.cpp
++++ b/src/msw/dirdlg.cpp
+@@ -29,6 +29,7 @@
+ #endif
+ 
+ #include "wx/msw/private/filedialog.h"
++#include "wx/msw/private/gethwnd.h"
+ 
+ #if wxUSE_IFILEOPENDIALOG
+ 
+diff --git a/src/msw/hyperlink.cpp b/src/msw/hyperlink.cpp
+index a31deff2a1..f43f61c170 100644
+--- a/src/msw/hyperlink.cpp
++++ b/src/msw/hyperlink.cpp
+@@ -169,9 +169,11 @@ bool wxHyperlinkCtrl::Enable(bool enable)
+ 
+ bool wxHyperlinkCtrl::MSWAreCustomColoursEnabled() const
+ {
++#if _WIN32_WINNT >= 0x0600
+     LITEM litem = { };
+     litem.mask = LIF_ITEMINDEX | LIF_STATE;
+     litem.stateMask = LIS_DEFAULTCOLORS;
++
+     if ( !::SendMessage(GetHwnd(), LM_GETITEM, 0, (LPARAM)&litem) )
+     {
+         wxLogDebug("LM_GETITEM(LIS_DEFAULTCOLORS) unexpectedly failed");
+@@ -179,10 +181,14 @@ bool wxHyperlinkCtrl::MSWAreCustomColoursEnabled() const
+     }
+ 
+     return (litem.state & LIS_DEFAULTCOLORS) != 0;
++#else
++    return false;
++#endif
+ }
+ 
+ void wxHyperlinkCtrl::MSWEnableCustomColours()
+ {
++#if _WIN32_WINNT >= 0x0600
+     // By default, the native control ignores the colours we set for it, so we
+     // need to explicitly enable this for them to be used.
+     if ( !MSWAreCustomColoursEnabled() )
+@@ -194,6 +200,7 @@ void wxHyperlinkCtrl::MSWEnableCustomColours()
+         if ( !::SendMessage(GetHwnd(), LM_SETITEM, 0, (LPARAM)&litem) )
+             wxLogDebug("LM_SETITEM(LIS_DEFAULTCOLORS) unexpectedly failed");
+     }
++#endif
+ }
+ 
+ wxColour wxHyperlinkCtrl::GetHoverColour() const
+diff --git a/src/msw/msgdlg.cpp b/src/msw/msgdlg.cpp
+index 27ce9f15e8..77cf072ada 100644
+--- a/src/msw/msgdlg.cpp
++++ b/src/msw/msgdlg.cpp
+@@ -2,6 +2,7 @@
+ // Name:        src/msw/msgdlg.cpp
+ // Purpose:     wxMessageDialog
+ // Author:      Julian Smart
++// Modified by:
+ // Created:     04/01/98
+ // Copyright:   (c) Julian Smart
+ // Licence:     wxWindows licence
+@@ -19,12 +20,12 @@
+     #include "wx/intl.h"
+     #include "wx/utils.h"
+     #include "wx/msw/private.h"
++    #include "wx/hashmap.h"
+ #endif
+ 
+ #include "wx/ptr_scpd.h"
+ #include "wx/dynlib.h"
+ #include "wx/msw/private/button.h"
+-#include "wx/msw/private/darkmode.h"
+ #include "wx/msw/private/metrics.h"
+ #include "wx/msw/private/msgdlg.h"
+ #include "wx/modalhook.h"
+@@ -43,6 +44,14 @@ using namespace wxMSWMessageDialog;
+ 
+ wxIMPLEMENT_CLASS(wxMessageDialog, wxDialog);
+ 
++// there can potentially be one message box per thread so we use a hash map
++// with thread ids as keys and (currently shown) message boxes as values
++//
++// TODO: replace this with wxTLS once it's available
++WX_DECLARE_HASH_MAP(unsigned long, wxMessageDialog *,
++                    wxIntegerHash, wxIntegerEqual,
++                    wxMessageDialogMap);
++
+ // the order in this array is the one in which buttons appear in the
+ // message box
+ const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
+@@ -56,9 +65,12 @@ const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
+ namespace
+ {
+ 
+-// Different threads could potentially show message boxes at the same time, so
+-// remember the window showing it in a thread-specific variable.
+-thread_local wxMessageDialog* gs_currentDialog = nullptr;
++wxMessageDialogMap& HookMap()
++{
++    static wxMessageDialogMap s_Map;
++
++    return s_Map;
++}
+ 
+ /*
+     All this code is used for adjusting the message box layout when we mess
+@@ -74,7 +86,10 @@ thread_local wxMessageDialog* gs_currentDialog = nullptr;
+ void ScreenRectToClient(HWND hwnd, RECT& rc)
+ {
+     // map from desktop (i.e. screen) coordinates to ones of this window
+-    wxMapWindowPoints(HWND_DESKTOP, hwnd, &rc);
++    //
++    // notice that a RECT is laid out as 2 consecutive POINTs so the cast is
++    // valid
++    ::MapWindowPoints(HWND_DESKTOP, hwnd, reinterpret_cast<POINT *>(&rc), 2);
+ }
+ 
+ // set window position to the given rect
+@@ -101,9 +116,13 @@ void MoveWindowToScreenRect(HWND hwnd, RECT rc)
+ WXLRESULT wxCALLBACK
+ wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
+ {
+-    // Get the thread-local instance of wxMessageDialog
+-    wxMessageDialog *  const wnd = gs_currentDialog;
+-    wxCHECK_MSG( wnd, false, "No valid wxMessageDialog?" );
++    // Find the thread-local instance of wxMessageDialog
++    const DWORD tid = ::GetCurrentThreadId();
++    wxMessageDialogMap::iterator node = HookMap().find(tid);
++    wxCHECK_MSG( node != HookMap().end(), false,
++                    wxT("bogus thread id in wxMessageDialog::Hook") );
++
++    wxMessageDialog *  const wnd = node->second;
+ 
+     const HHOOK hhook = (HHOOK)wnd->m_hook;
+     const LRESULT rc = ::CallNextHookEx(hhook, code, wParam, lParam);
+@@ -112,8 +131,8 @@ wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
+     {
+         // we won't need this hook any longer
+         ::UnhookWindowsHookEx(hhook);
+-        wnd->m_hook = nullptr;
+-        gs_currentDialog = nullptr;
++        wnd->m_hook = NULL;
++        HookMap().erase(tid);
+ 
+         TempHWNDSetter set(wnd, (WXHWND)wParam);
+ 
+@@ -150,9 +169,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
+     // find the static control to replace: normally there are two of them, the
+     // icon and the text itself so search for all of them and ignore the icon
+     // ones
+-    HWND hwndStatic = ::FindWindowEx(GetHwnd(), nullptr, wxT("STATIC"), nullptr);
++    HWND hwndStatic = ::FindWindowEx(GetHwnd(), NULL, wxT("STATIC"), NULL);
+     if ( ::GetWindowLong(hwndStatic, GWL_STYLE) & SS_ICON )
+-        hwndStatic = ::FindWindowEx(GetHwnd(), hwndStatic, wxT("STATIC"), nullptr);
++        hwndStatic = ::FindWindowEx(GetHwnd(), hwndStatic, wxT("STATIC"), NULL);
+ 
+     if ( !hwndStatic )
+     {
+@@ -217,9 +236,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
+                         rc.left, rc.top,
+                         rc.right - rc.left, rc.bottom - rc.top,
+                         GetHwnd(),
+-                        nullptr,
++                        NULL,
+                         wxGetInstance(),
+-                        nullptr
++                        NULL
+                       );
+ 
+     if ( !hwndEdit )
+@@ -396,7 +415,7 @@ int wxMessageDialog::ShowMessageBox()
+ 
+     // use the top level window as parent if none specified
+     m_parent = GetParentForModalDialog();
+-    HWND hWnd = m_parent ? GetHwndOf(m_parent) : nullptr;
++    HWND hWnd = m_parent ? GetHwndOf(m_parent) : NULL;
+ 
+ #if wxUSE_INTL
+     // native message box always uses the current user locale but the program
+@@ -502,8 +521,8 @@ int wxMessageDialog::ShowMessageBox()
+     // control with an edit one)
+     const DWORD tid = ::GetCurrentThreadId();
+     m_hook = ::SetWindowsHookEx(WH_CBT,
+-                                &wxMessageDialog::HookFunction, nullptr, tid);
+-    gs_currentDialog = this;
++                                &wxMessageDialog::HookFunction, NULL, tid);
++    HookMap()[tid] = this;
+ 
+     // do show the dialog
+     const int msAns = MessageBox
+@@ -523,14 +542,18 @@ int wxMessageDialog::ShowModal()
+ 
+     wxWindowDisabler disableOthers(this, GetParentForModalDialog());
+ 
+-    if ( TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc() )
++#ifdef wxHAS_MSW_TASKDIALOG
++    if ( HasNativeTaskDialog() )
+     {
++        TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc();
++        wxCHECK_MSG( taskDialogIndirect, wxID_CANCEL, wxS("no task dialog?") );
++
+         WinStruct<TASKDIALOGCONFIG> tdc;
+         wxMSWTaskDialogConfig wxTdc( *this );
+         wxTdc.MSWCommonTaskDialogInit( tdc );
+ 
+         int msAns;
+-        HRESULT hr = taskDialogIndirect( &tdc, &msAns, nullptr, nullptr );
++        HRESULT hr = taskDialogIndirect( &tdc, &msAns, NULL, NULL );
+         if ( FAILED(hr) )
+         {
+             wxLogApiError( "TaskDialogIndirect", hr );
+@@ -549,6 +572,7 @@ int wxMessageDialog::ShowModal()
+ 
+         return MSWTranslateReturnCode( msAns );
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return ShowMessageBox();
+ }
+@@ -567,11 +591,13 @@ long wxMessageDialog::GetEffectiveIcon() const
+ 
+ void wxMessageDialog::DoCentre(int dir)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     // Task dialog is always centered on its parent window and trying to center
+     // it manually doesn't work because its HWND is not created yet so don't
+     // even try as this would only result in (debug) error messages.
+     if ( HasNativeTaskDialog() )
+         return;
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxMessageDialogBase::DoCentre(dir);
+ }
+@@ -580,23 +606,7 @@ void wxMessageDialog::DoCentre(int dir)
+ // Helpers of the wxMSWMessageDialog namespace
+ // ----------------------------------------------------------------------------
+ 
+-namespace
+-{
+-
+-HRESULT CALLBACK
+-wxTaskDialogCallback(HWND hwnd, UINT msg, WPARAM, LPARAM, LONG_PTR)
+-{
+-    switch ( msg )
+-    {
+-        case TDN_DIALOG_CONSTRUCTED:
+-            wxMSWDarkMode::EnableForTLW(hwnd);
+-            break;
+-    }
+-
+-    return S_OK;
+-}
+-
+-} // anonymous namespace
++#ifdef wxHAS_MSW_TASKDIALOG
+ 
+ wxMSWTaskDialogConfig::wxMSWTaskDialogConfig(const wxMessageDialogBase& dlg)
+                      : buttons(new TASKDIALOG_BUTTON[MAX_BUTTONS])
+@@ -652,7 +662,7 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
+     tdc.pszWindowTitle = caption.t_str();
+ 
+     // use the top level window as parent if none specified
+-    tdc.hwndParent = parent ? GetHwndOf(parent) : nullptr;
++    tdc.hwndParent = parent ? GetHwndOf(parent) : NULL;
+ 
+     if ( wxApp::MSWGetDefaultLayout(parent) == wxLayout_RightToLeft )
+         tdc.dwFlags |= TDF_RTL_LAYOUT;
+@@ -746,8 +756,6 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
+ 
+         AddTaskDialogButton(tdc, IDHELP, 0 /* not used */, btnHelpLabel);
+     }
+-
+-    tdc.pfCallback = wxTaskDialogCallback;
+ }
+ 
+ void wxMSWTaskDialogConfig::AddTaskDialogButton(TASKDIALOGCONFIG &tdc,
+@@ -781,7 +789,7 @@ wxCRIT_SECT_DECLARE(gs_csTaskDialogIndirect);
+ 
+ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
+ {
+-    // Initialize the function pointer to an invalid value different from nullptr
++    // Initialize the function pointer to an invalid value different from NULL
+     // to avoid reloading comctl32.dll and trying to resolve it every time
+     // we're called if task dialog is not available (notice that this may
+     // happen even under Vista+ if we don't use comctl32.dll v6).
+@@ -800,9 +808,19 @@ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
+     return s_TaskDialogIndirect;
+ }
+ 
++#endif // wxHAS_MSW_TASKDIALOG
++
+ bool wxMSWMessageDialog::HasNativeTaskDialog()
+ {
+-    return wxMSWMessageDialog::GetTaskDialogIndirectFunc() != nullptr;
++#ifdef wxHAS_MSW_TASKDIALOG
++    if ( wxGetWinVersion() >= wxWinVersion_6 )
++    {
++        if ( wxMSWMessageDialog::GetTaskDialogIndirectFunc() )
++            return true;
++    }
++#endif // wxHAS_MSW_TASKDIALOG
++
++    return false;
+ }
+ 
+ int wxMSWMessageDialog::MSWTranslateReturnCode(int msAns)
+diff --git a/src/msw/progdlg.cpp b/src/msw/progdlg.cpp
+index ed506a51ee..21978db3e5 100644
+--- a/src/msw/progdlg.cpp
++++ b/src/msw/progdlg.cpp
+@@ -35,6 +35,8 @@
+ 
+ using namespace wxMSWMessageDialog;
+ 
++#ifdef wxHAS_MSW_TASKDIALOG
++
+ // ----------------------------------------------------------------------------
+ // Constants
+ // ----------------------------------------------------------------------------
+@@ -77,7 +79,7 @@ public:
+         m_skipped = false;
+         m_msgChangeElementText = TDM_UPDATE_ELEMENT_TEXT;
+         m_notifications = 0;
+-        m_parent = nullptr;
++        m_parent = NULL;
+     }
+ 
+     wxCriticalSection m_cs;
+@@ -159,7 +161,7 @@ public:
+ private:
+     wxProgressDialogSharedData m_sharedData;
+ 
+-    virtual void* Entry() override;
++    virtual void* Entry() wxOVERRIDE;
+ 
+     static HRESULT CALLBACK TaskDialogCallbackProc(HWND hwnd,
+                                                    UINT uNotification,
+@@ -182,7 +184,7 @@ public:
+     }
+ 
+ protected:
+-    virtual void OnNextIteration() override
++    virtual void OnNextIteration() wxOVERRIDE
+     {
+         wxCriticalSectionLocker locker(m_data.m_cs);
+ 
+@@ -297,7 +299,7 @@ void PerformNotificationUpdates(HWND hwnd,
+ 
+     if ( sharedData->m_notifications & wxSPDD_WINDOW_MOVED )
+     {
+-        ::SetWindowPos(hwnd, nullptr, sharedData->m_winPosition.x, sharedData->m_winPosition.y,
++        ::SetWindowPos(hwnd, NULL, sharedData->m_winPosition.x, sharedData->m_winPosition.y,
+                        -1, -1, // ignored
+                        SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+     }
+@@ -380,6 +382,8 @@ void PerformNotificationUpdates(HWND hwnd,
+ 
+ } // anonymous namespace
+ 
++#endif // wxHAS_MSW_TASKDIALOG
++
+ // ============================================================================
+ // wxProgressDialog implementation
+ // ============================================================================
+@@ -390,11 +394,12 @@ wxProgressDialog::wxProgressDialog( const wxString& title,
+                                     wxWindow *parent,
+                                     int style )
+     : wxGenericProgressDialog(),
+-      m_taskDialogRunner(nullptr),
+-      m_sharedData(nullptr),
++      m_taskDialogRunner(NULL),
++      m_sharedData(NULL),
+       m_message(message),
+       m_title(title)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         SetTopParent(parent);
+@@ -407,12 +412,14 @@ wxProgressDialog::wxProgressDialog( const wxString& title,
+ 
+         return;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     Create(title, message, maximum, parent, style);
+ }
+ 
+ wxProgressDialog::~wxProgressDialog()
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( !m_taskDialogRunner )
+         return;
+ 
+@@ -465,10 +472,12 @@ wxProgressDialog::~wxProgressDialog()
+     ReenableOtherWindows();
+ 
+     delete m_taskDialogRunner;
++#endif // wxHAS_MSW_TASKDIALOG
+ }
+ 
+ bool wxProgressDialog::Update(int value, const wxString& newmsg, bool *skip)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         if ( !DoNativeBeforeUpdate(skip) )
+@@ -536,12 +545,14 @@ bool wxProgressDialog::Update(int value, const wxString& newmsg, bool *skip)
+         loop.Run();
+         return true;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::Update( value, newmsg, skip );
+ }
+ 
+ bool wxProgressDialog::Pulse(const wxString& newmsg, bool *skip)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         if ( !DoNativeBeforeUpdate(skip) )
+@@ -571,12 +582,14 @@ bool wxProgressDialog::Pulse(const wxString& newmsg, bool *skip)
+ 
+         return m_sharedData->m_state != Canceled;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::Pulse( newmsg, skip );
+ }
+ 
+ void wxProgressDialog::DispatchEvents()
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     // No need for HasNativeTaskDialog() check, we're only called when this is
+     // the case.
+ 
+@@ -585,10 +598,14 @@ void wxProgressDialog::DispatchEvents()
+     // other user actions while the dialog is shown.
+     wxEventLoop::GetActive()->
+         YieldFor(wxEVT_CATEGORY_ALL & ~wxEVT_CATEGORY_USER_INPUT);
++#else // !wxHAS_MSW_TASKDIALOG
++    wxFAIL_MSG( "unreachable" );
++#endif // wxHAS_MSW_TASKDIALOG/!wxHAS_MSW_TASKDIALOG
+ }
+ 
+ bool wxProgressDialog::DoNativeBeforeUpdate(bool *skip)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     DispatchEvents();
+ 
+     wxCriticalSectionLocker locker(m_sharedData->m_cs);
+@@ -607,12 +624,19 @@ bool wxProgressDialog::DoNativeBeforeUpdate(bool *skip)
+         m_timeStop = m_sharedData->m_timeStop;
+ 
+     return m_sharedData->m_state != Canceled;
++#else // !wxHAS_MSW_TASKDIALOG
++    wxUnusedVar(skip);
++    wxFAIL_MSG( "unreachable" );
++
++    return false;
++#endif // wxHAS_MSW_TASKDIALOG/!wxHAS_MSW_TASKDIALOG
+ }
+ 
+ void wxProgressDialog::Resume()
+ {
+     wxGenericProgressDialog::Resume();
+ 
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         HWND hwnd;
+@@ -644,40 +668,48 @@ void wxProgressDialog::Resume()
+         // thread would simply fail.
+         ::BringWindowToTop(hwnd);
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ }
+ 
+ WXWidget wxProgressDialog::GetHandle() const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         wxCriticalSectionLocker locker(m_sharedData->m_cs);
+         return m_sharedData->m_hwnd;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::GetHandle();
+ }
+ 
+ int wxProgressDialog::GetValue() const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         wxCriticalSectionLocker locker(m_sharedData->m_cs);
+         return m_sharedData->m_value;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::GetValue();
+ }
+ 
+ wxString wxProgressDialog::GetMessage() const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+         return m_message;
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::GetMessage();
+ }
+ 
+ void wxProgressDialog::SetRange(int maximum)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         SetMaximum(maximum);
+@@ -689,12 +721,14 @@ void wxProgressDialog::SetRange(int maximum)
+ 
+         return;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxGenericProgressDialog::SetRange( maximum );
+ }
+ 
+ bool wxProgressDialog::WasSkipped() const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         if ( !m_sharedData )
+@@ -706,23 +740,27 @@ bool wxProgressDialog::WasSkipped() const
+         wxCriticalSectionLocker locker(m_sharedData->m_cs);
+         return m_sharedData->m_skipped;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::WasSkipped();
+ }
+ 
+ bool wxProgressDialog::WasCancelled() const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         wxCriticalSectionLocker locker(m_sharedData->m_cs);
+         return m_sharedData->m_state == Canceled;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::WasCancelled();
+ }
+ 
+ void wxProgressDialog::SetTitle(const wxString& title)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         m_title = title;
+@@ -734,20 +772,24 @@ void wxProgressDialog::SetTitle(const wxString& title)
+             m_sharedData->m_notifications |= wxSPDD_TITLE_CHANGED;
+         }
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxGenericProgressDialog::SetTitle(title);
+ }
+ 
+ wxString wxProgressDialog::GetTitle() const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+         return m_title;
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::GetTitle();
+ }
+ 
+ void wxProgressDialog::SetIcons(const wxIconBundle& icons)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         m_icons = icons; // We can't just call to parent's SetIcons()
+@@ -774,12 +816,14 @@ void wxProgressDialog::SetIcons(const wxIconBundle& icons)
+ 
+         return;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxGenericProgressDialog::SetIcons(icons);
+ }
+ 
+ void wxProgressDialog::DoMoveWindow(int x, int y, int width, int height)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         if ( m_sharedData )
+@@ -791,6 +835,7 @@ void wxProgressDialog::DoMoveWindow(int x, int y, int width, int height)
+ 
+         return;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxGenericProgressDialog::DoMoveWindow(x, y, width, height);
+ }
+@@ -799,17 +844,22 @@ wxRect wxProgressDialog::GetTaskDialogRect() const
+ {
+     wxRect r;
+ 
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( m_sharedData )
+     {
+         wxCriticalSectionLocker locker(m_sharedData->m_cs);
+         r = wxRectFromRECT(wxGetWindowRect(m_sharedData->m_hwnd));
+     }
++#else // !wxHAS_MSW_TASKDIALOG
++    wxFAIL_MSG( "unreachable" );
++#endif // wxHAS_MSW_TASKDIALOG/!wxHAS_MSW_TASKDIALOG
+ 
+     return r;
+ }
+ 
+ void wxProgressDialog::DoGetPosition(int *x, int *y) const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         const wxRect r = GetTaskDialogRect();
+@@ -820,12 +870,14 @@ void wxProgressDialog::DoGetPosition(int *x, int *y) const
+ 
+         return;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxGenericProgressDialog::DoGetPosition(x, y);
+ }
+ 
+ void wxProgressDialog::DoGetSize(int *width, int *height) const
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         const wxRect r = GetTaskDialogRect();
+@@ -836,12 +888,14 @@ void wxProgressDialog::DoGetSize(int *width, int *height) const
+ 
+         return;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxGenericProgressDialog::DoGetSize(width, height);
+ }
+ 
+ void wxProgressDialog::Fit()
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         wxCriticalSectionLocker locker(m_sharedData->m_cs);
+@@ -852,12 +906,14 @@ void wxProgressDialog::Fit()
+         // Don't change the message, but pretend that it did change.
+         m_sharedData->m_notifications |= wxSPDD_MESSAGE_CHANGED;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     wxGenericProgressDialog::Fit();
+ }
+ 
+ bool wxProgressDialog::Show(bool show)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     if ( HasNativeTaskDialog() )
+     {
+         // The dialog can't be hidden at all and showing it again after it had
+@@ -925,12 +981,14 @@ bool wxProgressDialog::Show(bool show)
+         // Do not show the underlying dialog.
+         return false;
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     return wxGenericProgressDialog::Show( show );
+ }
+ 
+ void wxProgressDialog::UpdateExpandedInformation(int value)
+ {
++#ifdef wxHAS_MSW_TASKDIALOG
+     unsigned long elapsedTime;
+     unsigned long estimatedTime;
+     unsigned long remainingTime;
+@@ -983,12 +1041,17 @@ void wxProgressDialog::UpdateExpandedInformation(int value)
+         m_sharedData->m_expandedInformation = expandedInformation;
+         m_sharedData->m_notifications |= wxSPDD_EXPINFO_CHANGED;
+     }
++#else // !wxHAS_MSW_TASKDIALOG
++    wxUnusedVar(value);
++#endif // wxHAS_MSW_TASKDIALOG/!wxHAS_MSW_TASKDIALOG
+ }
+ 
+ // ----------------------------------------------------------------------------
+ // wxProgressDialogTaskRunner and related methods
+ // ----------------------------------------------------------------------------
+ 
++#ifdef wxHAS_MSW_TASKDIALOG
++
+ void* wxProgressDialogTaskRunner::Entry()
+ {
+     WinStruct<TASKDIALOGCONFIG> tdc;
+@@ -1042,10 +1105,10 @@ void* wxProgressDialogTaskRunner::Entry()
+ 
+     TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc();
+     if ( !taskDialogIndirect )
+-        return nullptr;
++        return NULL;
+ 
+     int msAns;
+-    HRESULT hr = taskDialogIndirect(&tdc, &msAns, nullptr, nullptr);
++    HRESULT hr = taskDialogIndirect(&tdc, &msAns, NULL, NULL);
+     if ( FAILED(hr) )
+         wxLogApiError( "TaskDialogIndirect", hr );
+ 
+@@ -1053,7 +1116,7 @@ void* wxProgressDialogTaskRunner::Entry()
+     // Update(), wake it up so that it checks our status again.
+     wxWakeUpIdle();
+ 
+-    return nullptr;
++    return NULL;
+ }
+ 
+ // static
+@@ -1205,4 +1268,6 @@ wxProgressDialogTaskRunner::TaskDialogCallbackProc
+     return S_OK;
+ }
+ 
++#endif // wxHAS_MSW_TASKDIALOG
++
+ #endif // wxUSE_PROGRESSDLG && wxUSE_THREADS
+diff --git a/src/msw/registry.cpp b/src/msw/registry.cpp
+index 130b91dc27..832b87ffb5 100644
+--- a/src/msw/registry.cpp
++++ b/src/msw/registry.cpp
+@@ -745,9 +745,7 @@ bool wxRegKey::DeleteSelf()
+   Close();
+ 
+   // deleting a key which doesn't exist is not considered an error
+-  m_dwLastError = ::RegDeleteKeyEx((HKEY) m_hRootKey, m_strKey.t_str(),
+-                                   GetMSWViewFlags(m_viewMode),
+-                                   wxRESERVED_PARAM);
++  m_dwLastError = ::RegDeleteKey((HKEY) m_hRootKey, m_strKey.t_str());
+ 
+   if ( m_dwLastError != ERROR_SUCCESS &&
+           m_dwLastError != ERROR_FILE_NOT_FOUND ) {
+diff --git a/src/msw/renderer.cpp b/src/msw/renderer.cpp
+index 94d209f0eb..0096ca088d 100644
+--- a/src/msw/renderer.cpp
++++ b/src/msw/renderer.cpp
+@@ -1006,11 +1006,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+     {
+         RECT rc = ConvertToRECT(dc, rect);
+ 
+-        DTTOPTS textOpts;
+-        textOpts.dwSize = sizeof(textOpts);
+-        textOpts.dwFlags = DTT_STATEID;
+-        textOpts.iStateId = itemState;
+-
+         wxColour textColour = dc.GetTextForeground();
+         if (flags & wxCONTROL_SELECTED)
+         {
+@@ -1021,11 +1016,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+             textColour = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
+         }
+ 
+-        if (textColour.IsOk()) {
+-            textOpts.dwFlags |= DTT_TEXTCOLOR;
+-            textOpts.crText = textColour.GetPixel();
+-        }
+-
+         const DWORD defTextFlags = DT_NOPREFIX;
+         DWORD textFlags = defTextFlags;
+ 
+@@ -1179,8 +1169,8 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+                 break;
+         }
+ 
+-        ::DrawThemeTextEx(hTheme, dc.GetHDC(), LVP_LISTITEM, itemState,
+-                            drawText->wchar_str(), -1, textFlags, &rc, &textOpts);
++        ::DrawThemeText(hTheme, dc.GetHDC(), LVP_LISTITEM, itemState,
++                            drawText->wchar_str(), -1, textFlags, 0, &rc);
+     }
+     else
+     {
+diff --git a/src/msw/richmsgdlg.cpp b/src/msw/richmsgdlg.cpp
+index c8f7c6a870..35d7ccf12d 100644
+--- a/src/msw/richmsgdlg.cpp
++++ b/src/msw/richmsgdlg.cpp
+@@ -16,10 +16,12 @@
+ #include "wx/modalhook.h"
+ 
+ #ifndef WX_PRECOMP
+-    #include "wx/msw/private.h"
+-    #include "wx/utils.h"                   // for wxWindowDisabler
++#include "wx/msw/private.h"
++#include "wx/utils.h"                   // for wxWindowDisabler
+ #endif
+ 
++// This will define wxHAS_MSW_TASKDIALOG if we have support for it in the
++// headers we use.
+ #include "wx/msw/private/msgdlg.h"
+ 
+ // ----------------------------------------------------------------------------
+@@ -30,9 +32,10 @@ int wxRichMessageDialog::ShowModal()
+ {
+     WX_HOOK_MODAL_DIALOG();
+ 
++#ifdef wxHAS_MSW_TASKDIALOG
+     using namespace wxMSWMessageDialog;
+ 
+-    if ( HasNativeTaskDialog() )
++    if (HasNativeTaskDialog())
+     {
+         wxWindowDisabler disableOthers(this, GetParentForModalDialog());
+ 
+@@ -40,52 +43,52 @@ int wxRichMessageDialog::ShowModal()
+         WinStruct<TASKDIALOGCONFIG> tdc;
+         wxMSWTaskDialogConfig wxTdc(*this);
+ 
+-        wxTdc.MSWCommonTaskDialogInit( tdc );
++        wxTdc.MSWCommonTaskDialogInit(tdc);
+ 
+         // add a checkbox
+-        if ( !m_checkBoxText.empty() )
++        if (!m_checkBoxText.empty())
+         {
+             tdc.pszVerificationText = m_checkBoxText.t_str();
+-            if ( m_checkBoxValue )
++            if (m_checkBoxValue)
+                 tdc.dwFlags |= TDF_VERIFICATION_FLAG_CHECKED;
+         }
+ 
+         // add collapsible footer
+-        if ( !m_detailedText.empty() )
++        if (!m_detailedText.empty())
+             tdc.pszExpandedInformation = m_detailedText.t_str();
+ 
+         // Add footer text
+-        if ( !m_footerText.empty() )
++        if (!m_footerText.empty())
+         {
+             tdc.pszFooter = m_footerText.t_str();
+-            switch ( m_footerIcon )
++            switch (m_footerIcon)
+             {
+-                case wxICON_INFORMATION:
+-                    tdc.pszFooterIcon = TD_INFORMATION_ICON;
+-                    break;
+-                case wxICON_WARNING:
+-                    tdc.pszFooterIcon = TD_WARNING_ICON;
+-                    break;
+-                case wxICON_ERROR:
+-                    tdc.pszFooterIcon = TD_ERROR_ICON;
+-                    break;
+-                case wxICON_AUTH_NEEDED:
+-                    tdc.pszFooterIcon = TD_SHIELD_ICON;
+-                    break;
++            case wxICON_INFORMATION:
++                tdc.pszFooterIcon = TD_INFORMATION_ICON;
++                break;
++            case wxICON_WARNING:
++                tdc.pszFooterIcon = TD_WARNING_ICON;
++                break;
++            case wxICON_ERROR:
++                tdc.pszFooterIcon = TD_ERROR_ICON;
++                break;
++            case wxICON_AUTH_NEEDED:
++                tdc.pszFooterIcon = TD_SHIELD_ICON;
++                break;
+             }
+         }
+ 
+         TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc();
+-        if ( !taskDialogIndirect )
++        if (!taskDialogIndirect)
+             return wxID_CANCEL;
+ 
+         // create the task dialog, process the answer and return it.
+         BOOL checkBoxChecked;
+         int msAns;
+-        HRESULT hr = taskDialogIndirect( &tdc, &msAns, nullptr, &checkBoxChecked );
+-        if ( FAILED(hr) )
++        HRESULT hr = taskDialogIndirect(&tdc, &msAns, NULL, &checkBoxChecked);
++        if (FAILED(hr))
+         {
+-            wxLogApiError( "TaskDialogIndirect", hr );
++            wxLogApiError("TaskDialogIndirect", hr);
+             return wxID_CANCEL;
+         }
+         m_checkBoxValue = checkBoxChecked != FALSE;
+@@ -94,14 +97,15 @@ int wxRichMessageDialog::ShowModal()
+         // "Cancel" button (see comment in MSWCommonTaskDialogInit). This
+         // results in msAns being IDCANCEL while we want IDOK (just like
+         // how the native MessageBox function does with only an "OK" button).
+-        if ( (msAns == IDCANCEL)
+-            && !(GetMessageDialogStyle() & (wxYES_NO|wxCANCEL)) )
++        if ((msAns == IDCANCEL)
++            && !(GetMessageDialogStyle() & (wxYES_NO | wxCANCEL)))
+         {
+             msAns = IDOK;
+         }
+ 
+-        return MSWTranslateReturnCode( msAns );
++        return MSWTranslateReturnCode(msAns);
+     }
++#endif // wxHAS_MSW_TASKDIALOG
+ 
+     // use the generic version when task dialog is't available at either
+     // compile or run-time.
+diff --git a/src/msw/taskbar.cpp b/src/msw/taskbar.cpp
+index d9e599b290..fc3c669468 100644
+--- a/src/msw/taskbar.cpp
++++ b/src/msw/taskbar.cpp
+@@ -251,7 +251,9 @@ wxTaskBarIcon::ShowBalloon(const wxString& title,
+     if ( icon.IsOk() )
+     {
+         m_balloonIcon = icon.GetIconFor(m_win);
++#if _WIN32_WINNT >= 0x0600
+         notifyData.hBalloonIcon = GetHiconOf(m_balloonIcon);
++#endif
+         notifyData.dwInfoFlags |= NIIF_USER | NIIF_LARGE_ICON;
+     }
+     else if ( flags & wxICON_INFORMATION )
+diff --git a/src/msw/timectrl.cpp b/src/msw/timectrl.cpp
+index 2769867999..26f9d37f1e 100644
+--- a/src/msw/timectrl.cpp
++++ b/src/msw/timectrl.cpp
+@@ -50,10 +50,6 @@ wxTimePickerCtrl::Create(wxWindow *parent,
+                                   validator, name) )
+         return false;
+ 
+-#if wxUSE_INTL
+-    MSWSetTimeFormat(wxLOCALE_TIME_FMT);
+-#endif
+-
+     return true;
+ }
+ 
+diff --git a/src/msw/toolbar.cpp b/src/msw/toolbar.cpp
+index c5e0b9239e..8b2d5abf1d 100644
+--- a/src/msw/toolbar.cpp
++++ b/src/msw/toolbar.cpp
+@@ -1719,7 +1719,9 @@ bool wxToolBar::MSWOnNotify(int WXUNUSED(idCtrl),
+ 
+                 *result = CDRF_DODEFAULT |
+                           CDRF_NOTIFYPOSTPAINT |
++#if _WIN32_WINNT >= 0x0600
+                           TBCDRF_USECDCOLORS |
++#endif
+                           TBCDRF_HILITEHOTTRACK;
+ 
+                 // Draw custom button background when it would be drawn with a
+diff --git a/src/msw/uilocale.cpp b/src/msw/uilocale.cpp
+index cbfdf0d6b4..4947c1c486 100644
 --- a/src/msw/uilocale.cpp
 +++ b/src/msw/uilocale.cpp
-@@ -157,13 +157,13 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
-     if (lctype != 0)
-     {
-         wchar_t buf[256];
+@@ -167,19 +167,28 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+         return wxString{};
+     }
+ 
+-    wxString format;
+-    wxString localeName = wxUILocale::GetCurrent().GetName();
+-    if (localeName.IsSameAs("C"))
+-    {
+-        localeName = "en-US";
++    LCTYPE lctype = wxGetLCTYPEFormatFromLocalInfo(index);
++
++    if (!lctype) {
++        return "";
+     }
+ 
+-    const wchar_t* name = localeName.wc_str();
+-    LCTYPE lctype = wxGetLCTYPEFormatFromLocalInfo(index);
+-    if (lctype != 0)
+-    {
+-        wchar_t buf[256];
 -        if (::GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
-+        if (::GetLocaleInfo(name, lctype, buf, WXSIZEOF(buf)))
++    wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++    wchar_t buf[256];
++    wxString format;
++
++    if (wxGetWinVersion() >= wxWinVersion_Vista) {
++        wxString localeName = wxUILocale::GetCurrent().GetName();
++        if (localeName.IsSameAs("C"))
++        {
++            localeName = "en-US";
++        }
++
++        const wchar_t* name = localeName.wc_str();
++        int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++            (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
++
++        if (pfnGetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
          {
              format = buf;
          }
-         else
+@@ -187,6 +196,15 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
          {
--            wxLogLastError(wxT("GetLocaleInfoEx"));
-+            wxLogLastError(wxT("GetLocaleInfo"));
+             wxLogLastError(wxT("GetLocaleInfoEx"));
          }
++    } else { // XP
++        LCID localeId = ::GetUserDefaultLCID();
++        if (::GetLocaleInfo(localeId, lctype, buf, WXSIZEOF(buf))) {
++            format = buf;
++        }
++        else
++        {
++            wxLogLastError(wxT("GetLocaleInfo"));
++        }
      }
      return format;
-@@ -375,7 +375,7 @@ public:
-     {
-         // Getting the locale name seems to be the simplest way to see if it's
-         // really supported: unknown locale result in an error here.
--        if ( !::GetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0) )
-+        if ( !::GetLocaleInfo(name, LOCALE_SNAME, nullptr, 0) )
-             return nullptr;
-
-         // Unfortunately under Windows 10 the call above only fails if the given
-@@ -399,7 +399,7 @@ public:
-             // Windows header file). However, for now constructed locales will
-             // be rejected here.
-             int isConstructed = 0;
--            if (!::GetLocaleInfoEx
-+            if (!::GetLocaleInfo
-                  (
-                     name,
-                     LOCALE_ICONSTRUCTEDLOCALE | LOCALE_RETURN_NUMBER,
-@@ -659,9 +659,9 @@ private:
-     wxString DoGetInfo(LCTYPE lctype) const
-     {
-         wchar_t buf[256];
--        if ( !::GetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )
-+        if ( !::GetLocaleInfo(m_name, lctype, buf, WXSIZEOF(buf)) )
-         {
--            wxLogLastError(wxT("GetLocaleInfoEx"));
-+            wxLogLastError(wxT("GetLocaleInfo"));
-             return wxString();
-         }
-
---- a/src/msw/uilocale.cpp
-+++ b/src/msw/uilocale.cpp
-@@ -313,6 +313,7 @@ public:
+ }
+@@ -335,6 +353,7 @@ public:
      static wxVector<wxString> GetPreferredUILanguages()
      {
          wxVector<wxString> preferred;
 +        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-
+ 
          // Check if Windows supports preferred UI languages.
          // Note: Windows 8.x might support them as well, but Windows 7
-@@ -323,10 +324,14 @@ public:
-
+@@ -345,10 +364,14 @@ public:
+ 
              ULONG numberOfLanguages = 0;
              ULONG bufferSize = 0;
 -            if (::GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
 +
-+            BOOL (WINAPI *pfnGetUserPreferredUILanguage)(DWORD, PULONG, PZZWSTR, PULONG) =
++            BOOL (WINAPI *pfnGetUserPreferredUILanguages)(DWORD, PULONG, PZZWSTR, PULONG) =
 +                (BOOL (WINAPI *)(DWORD, PULONG, PZZWSTR, PULONG))kernel32.GetSymbol(wxT("GetUserPreferredUILanguages"));
 +
 +            if (pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
@@ -122,7 +1840,7 @@
                  {
                      WCHAR* buf = languages.get();
                      for (unsigned k = 0; k < numberOfLanguages; ++k)
-@@ -346,11 +351,13 @@ public:
+@@ -368,11 +391,13 @@ public:
                  wxLogLastError(wxT("GetUserPreferredUILanguages"));
              }
          }
@@ -138,7 +1856,7 @@
              {
                  preferred.push_back(buf);
              }
-@@ -359,6 +366,19 @@ public:
+@@ -381,6 +406,19 @@ public:
                  wxLogLastError(wxT("GetUserDefaultLocaleName"));
              }
          }
@@ -154,7 +1872,328 @@
 +            {
 +                wxLogLastError(wxT("GetLocaleInfo"));
 +            }
-+    <S-Del>    }
-
++        }
+ 
          return preferred;
      }
+@@ -397,8 +435,14 @@ public:
+     {
+         // Getting the locale name seems to be the simplest way to see if it's
+         // really supported: unknown locale result in an error here.
+-        if ( !::GetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0) )
+-            return nullptr;
++        if (wxGetWinVersion() >= wxWinVersion_Vista) {
++            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++                (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
++
++            if (!pfnGetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0))
++                return nullptr;
++        }
+ 
+         // Unfortunately under Windows 10 the call above only fails if the given
+         // locale name is not a valid BCP 47 identifier. For example,
+@@ -420,8 +464,11 @@ public:
+             // discouraged by Microsoft (the constant is not even defined in a
+             // Windows header file). However, for now constructed locales will
+             // be rejected here.
++            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++                (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
+             int isConstructed = 0;
+-            if (!::GetLocaleInfoEx
++            if (!pfnGetLocaleInfoEx
+                  (
+                     name,
+                     LOCALE_ICONSTRUCTEDLOCALE | LOCALE_RETURN_NUMBER,
+@@ -442,6 +489,10 @@ public:
+ 
+     void Use() override
+     {
++        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++	BOOL (WINAPI *pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
++             (BOOL (WINAPI *)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
++
+         // Construct a double NUL-terminated buffer.
+         wchar_t buf[256];
+         if ( m_name )
+@@ -452,8 +503,9 @@ public:
+ 
+         ULONG num = 1;
+ 
+-        if ( !::SetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, buf, &num) )
+-            wxLogLastError(wxT("SetThreadPreferredUILanguages"));
++        if (pfnSetThreadPreferredUILanguages)
++            pfnSetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, buf, &num);
++        }
+     }
+ 
+     wxString GetName() const override
+@@ -603,8 +655,8 @@ public:
+               LOCALE_SDAYNAME4, LOCALE_SDAYNAME5, LOCALE_SDAYNAME6 },
+             { LOCALE_SABBREVDAYNAME7, LOCALE_SABBREVDAYNAME1, LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
+               LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5, LOCALE_SABBREVDAYNAME6 },
+-            { LOCALE_SSHORTESTDAYNAME7, LOCALE_SSHORTESTDAYNAME1, LOCALE_SSHORTESTDAYNAME2, LOCALE_SSHORTESTDAYNAME3,
+-              LOCALE_SSHORTESTDAYNAME4, LOCALE_SSHORTESTDAYNAME5, LOCALE_SSHORTESTDAYNAME6 }
++            { LOCALE_SABBREVDAYNAME7, LOCALE_SABBREVDAYNAME1, LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
++              LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5, LOCALE_SABBREVDAYNAME6 }
+         };
+ 
+         const int idx = ArrayIndexFromFlag(form.GetFlags());
+@@ -644,16 +696,35 @@ public:
+         if ( flags & wxCompare_CaseInsensitive )
+             dwFlags |= NORM_IGNORECASE;
+ 
+-        const int ret = ::CompareStringEx
+-            (
+-                m_name,
+-                dwFlags,
+-                lhs.wc_str(), -1,
+-                rhs.wc_str(), -1,
+-                nullptr,               // [out] version information -- not needed
+-                wxRESERVED_PARAM,
+-                wxRESERVED_PARAM
+-            );
++        int ret;
++        if (wxGetWinVersion() >= wxWinVersion_Vista)
++        {
++            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++            int (WINAPI *pfnCompareStringEx)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM) =
++                (int (WINAPI *)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM))kernel32.GetSymbol(wxT("CompareStringEx"));
++
++            ret = pfnCompareStringEx
++                (
++                    m_name,
++                    dwFlags,
++                    lhs.wc_str(), -1,
++                    rhs.wc_str(), -1,
++                    nullptr,
++                    wxRESERVED_PARAM,
++                    wxRESERVED_PARAM
++                );
++        }
++        else // XP
++        {
++            LCID localeId = ::GetUserDefaultLCID();
++            ret = ::CompareString
++                (
++                    localeId,
++                    dwFlags,
++                    lhs.wc_str(), -1,
++                    rhs.wc_str(), -1
++                );
++        }
+ 
+         switch ( ret )
+         {
+@@ -681,10 +752,27 @@ private:
+     wxString DoGetInfo(LCTYPE lctype) const
+     {
+         wchar_t buf[256];
+-        if ( !::GetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )
++
++        if (wxGetWinVersion() >= wxWinVersion_Vista)
+         {
+-            wxLogLastError(wxT("GetLocaleInfoEx"));
+-            return wxString();
++            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++                (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
++
++            if ( !pfnGetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )
++            {
++                wxLogLastError(wxT("GetLocaleInfo"));
++                return wxString();
++            }
++        }
++        else // XP
++        {
++            LCID localeId = ::GetUserDefaultLCID();
++            if (!::GetLocaleInfo(localeId, lctype, buf, WXSIZEOF(buf)))
++            {
++                wxLogLastError(wxT("GetLocaleInfo"));
++                return wxString();
++            }
+         }
+ 
+         return buf;
+diff --git a/src/msw/utilsgui.cpp b/src/msw/utilsgui.cpp
+index 7af6b6e7bb..5c65ab46aa 100644
+--- a/src/msw/utilsgui.cpp
++++ b/src/msw/utilsgui.cpp
+@@ -279,8 +279,13 @@ wxGUIObjectUsage wxGetUsedResources(UseType useType)
+             break;
+ 
+         case UseType::Peak:
++#if _WIN32_WINNT >= 0x0600
+             flagsGDI = GR_GDIOBJECTS_PEAK;
+             flagsUSER = GR_USEROBJECTS_PEAK;
++#else
++            flagsGDI = GR_GDIOBJECTS;
++            flagsUSER = GR_USEROBJECTS;
++#endif
+             break;
+     }
+ 
+diff --git a/src/msw/window.cpp b/src/msw/window.cpp
+index 2dc7820fec..3ea865504c 100644
+--- a/src/msw/window.cpp
++++ b/src/msw/window.cpp
+@@ -286,10 +286,14 @@ void wxGetCursorPosMSW(POINT* pt)
+ // This only works for the current (i.e. last received) mouse event.
+ static bool wxIsTouchEventMSW()
+ {
++#if _WIN32_WINNT >= 0x0601
+     // From https://learn.microsoft.com/en-us/windows/win32/tablet/system-events-and-mouse-messages
+     const LONG_PTR MI_WP_SIGNATURE = 0xFF515700;
+     const LONG_PTR SIGNATURE_MASK = 0xFFFFFF00;
+     return (::GetMessageExtraInfo() & SIGNATURE_MASK) == MI_WP_SIGNATURE;
++#else
++    return false;
++#endif
+ }
+ 
+ // ---------------------------------------------------------------------------
+@@ -889,6 +893,7 @@ void wxWindowMSW::WarpPointer(int x, int y)
+ 
+ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
+ {
++#if _WIN32_WINNT >= 0x0601
+     // Static struct used when we need to use just a single configuration.
+     GESTURECONFIG config = {0, 0, 0};
+ 
+@@ -1006,6 +1011,9 @@ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
+     }
+ 
+     return true;
++#else
++    return false;
++#endif
+ }
+ 
+ void wxWindowMSW::MSWUpdateUIState(int action, int state)
+@@ -3481,6 +3489,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+             }
+             break;
+ 
++#if _WIN32_WINNT >= 0x0601
+         case WM_GESTURE:
+         {
+             HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
+@@ -3559,6 +3568,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+             // handled, otherwise we still pass them to DefWindowProc().
+             processed = HandleTouch(wParam, lParam);
+             break;
++#endif
+ 
+         // CTLCOLOR messages are sent by children to query the parent for their
+         // colors
+@@ -6205,6 +6215,7 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
+                                    const wxPoint& pt,
+                                    WXDWORD flags)
+ {
++#if _WIN32_WINNT >= 0x0601
+     event.SetEventObject(this);
+     event.SetTimestamp(::GetMessageTime());
+     event.SetPosition(pt);
+@@ -6216,10 +6227,14 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
+         event.SetGestureEnd();
+ 
+     return (flags & GF_BEGIN) != 0;
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandlePanGesture(const wxPoint& pt, WXDWORD flags)
+ {
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_GESTURE_PAN
+     wxPanGestureEvent event(GetId());
+ 
+@@ -6240,12 +6255,16 @@ bool wxWindowMSW::HandlePanGesture(const wxPoint& pt, WXDWORD flags)
+     s_previousLocation = pt;
+ 
+     return HandleWindowEvent(event);
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleZoomGesture(const wxPoint& pt,
+                                     WXDWORD fingerDistance,
+                                     WXDWORD flags)
+ {
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_GESTURE_ZOOM
+     wxZoomGestureEvent event(GetId());
+ 
+@@ -6278,12 +6297,16 @@ bool wxWindowMSW::HandleZoomGesture(const wxPoint& pt,
+     s_previousLocation = pt;
+ 
+     return HandleWindowEvent(event);
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleRotateGesture(const wxPoint& pt,
+                                       WXDWORD angleArgument,
+                                       WXDWORD flags)
+ {
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_GESTURE_ROTATE
+     wxRotateGestureEvent event(GetId());
+ 
+@@ -6312,29 +6335,41 @@ bool wxWindowMSW::HandleRotateGesture(const wxPoint& pt,
+     }
+ 
+     return HandleWindowEvent(event);
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleTwoFingerTap(const wxPoint& pt, WXDWORD flags)
+ {
++#if _WIN32_WINNT >= 0x0601
+     // wxEVT_TWO_FINGER_TAP
+     wxTwoFingerTapEvent event(GetId());
+ 
+     InitGestureEvent(event, pt, flags);
+ 
+     return HandleWindowEvent(event);
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandlePressAndTap(const wxPoint& pt, WXDWORD flags)
+ {
++#if _WIN32_WINNT >= 0x0601
+     wxPressAndTapEvent event(GetId());
+ 
+     InitGestureEvent(event, pt, flags);
+ 
+     return HandleWindowEvent(event);
++#else
++    return false;
++#endif
+ }
+ 
+ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+ {
++#if _WIN32_WINNT >= 0x0601
+     const unsigned count = LOWORD(wParam);
+     const HTOUCHINPUT hTouchInput = (HTOUCHINPUT)lParam;
+     wxVector<TOUCHINPUT> info(count);
+@@ -6376,6 +6411,9 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+     }
+ 
+     return allHandled;
++#else
++    return false;
++#endif
+ }
+ 
+ // ---------------------------------------------------------------------------
