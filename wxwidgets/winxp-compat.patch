@@ -1923,7 +1923,7 @@ index cbfdf0d6b4..4947c1c486 100644
  
 -        if ( !::SetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, buf, &num) )
 -            wxLogLastError(wxT("SetThreadPreferredUILanguages"));
-+        if (pfnSetThreadPreferredUILanguages)
++        if (pfnSetThreadPreferredUILanguages) {
 +            pfnSetThreadPreferredUILanguages(MUI_LANGUAGE_NAME, buf, &num);
 +        }
      }
