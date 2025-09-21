@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO libsdl-org/SDL
-    REF "release-${VERSION}"
-    SHA512 a959a906112b22a20acef7300c606c28a781063ff5043feeb0a65b5b405440ad728458ec39dde30e3084ee830e43dbfb877bc8d6f7b30d30fc0990f489b24839
+    REF master
+    SHA512 e1e6d12ae273f82f570f119a6187b5dd3ff155bc67663b09f7e34d8bcf9410afb9e59aa08eb1004d0faa0b4f51a5c09f9f0cfbc25914b94badd990acdbe60615
     HEAD_REF main
     PATCHES
         SDL3_D3D12Fix.patch
