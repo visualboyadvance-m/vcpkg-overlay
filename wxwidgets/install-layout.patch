@@ -2,33 +2,43 @@ diff --git a/build/cmake/init.cmake b/build/cmake/init.cmake
 index e76dff6..eb4edc0 100644
 --- a/build/cmake/init.cmake
 +++ b/build/cmake/init.cmake
-@@ -156,7 +156,7 @@ if(WIN32)
-     endif()
+@@ -199,7 +199,7 @@
  endif()
  
+ wx_get_install_dir(include)
 -if(WIN32_MSVC_NAMING)
-+if(0)
++if(FALSE)
      if(wxBUILD_SHARED)
          set(lib_suffix "_dll")
      else()
+@@ -219,7 +219,7 @@
+     set(wxSETUP_HEADER_PATH ${wxBUILD_CUSTOM_SETUP_HEADER_PATH})
+ else()
+     # Set path where setup.h will be created
+-    if(WIN32_MSVC_NAMING)
++    if(FALSE)
+         set(lib_unicode u)
+         set(wxSETUP_HEADER_PATH
+             ${wxOUTPUT_DIR}/${wxPLATFORM_LIB_DIR}/${wxBUILD_TOOLKIT}${lib_unicode})
 --- a/build/cmake/install.cmake	1900-01-00 00:00:00 +0000
 +++ b/build/cmake/install.cmake	1900-01-00 00:00:00 +0000
-@@ -53,17 +53,9 @@
+@@ -55,18 +55,10 @@
          DIRECTORY "${wxSETUP_HEADER_PATH}"
-         DESTINATION "lib/wx/include")
+         DESTINATION "${library_dir}/wx/include")
  
 -    install(
 -        FILES "${wxOUTPUT_DIR}/wx/config/${wxBUILD_FILE_ID}"
--        DESTINATION "lib/wx/config"
+-        DESTINATION "${library_dir}/wx/config"
 -        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
 -                    GROUP_EXECUTE GROUP_READ
 -                    WORLD_EXECUTE WORLD_READ
 -        )
 -
-     install(DIRECTORY DESTINATION "bin")
+     wx_get_install_platform_dir(runtime)
+     install(DIRECTORY DESTINATION "${runtime_dir}")
      install(CODE "execute_process( \
 -        COMMAND ${CMAKE_COMMAND} -E create_symlink \
 +        COMMAND ${CMAKE_COMMAND} -E copy \
-         \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/wx/config/${wxBUILD_FILE_ID}\" \
-         \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/wx-config\" \
+         \"${CMAKE_INSTALL_PREFIX}/${library_dir}/wx/config/${wxBUILD_FILE_ID}\" \
+         \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${runtime_dir}/wx-config\" \
          )"
