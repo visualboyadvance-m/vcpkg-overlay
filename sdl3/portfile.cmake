@@ -1,7 +1,7 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO libsdl-org/SDL
-    REF master
+    REF main
     SHA512 e1e6d12ae273f82f570f119a6187b5dd3ff155bc67663b09f7e34d8bcf9410afb9e59aa08eb1004d0faa0b4f51a5c09f9f0cfbc25914b94badd990acdbe60615
     HEAD_REF main
     PATCHES
