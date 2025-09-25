@@ -15,7 +15,7 @@ diff --git a/include/wx/msw/datetimectrl.h b/include/wx/msw/datetimectrl.h
 index 989902171a..991380f51c 100644
 --- a/include/wx/msw/datetimectrl.h
 +++ b/include/wx/msw/datetimectrl.h
-@@ -23,19 +23,19 @@ class WXDLLIMPEXP_ADV wxDateTimePickerCtrl : public wxDateTimePickerCtrlBase
+@@ -23,37 +23,34 @@ class WXDLLIMPEXP_ADV wxDateTimePickerCtrl : public wxDateTimePickerCtrlBase
  {
  public:
      // set/get the date
@@ -42,7 +42,23 @@ index 989902171a..991380f51c 100644
  
      // Helper for the derived classes Create(): creates a native control with
      // the specified attributes.
-@@ -51,9 +51,6 @@ protected:
+-    bool MSWCreateDateTimePicker(wxWindow *parent,
+-                                 wxWindowID id,
+-                                 const wxDateTime& dt,
+-                                 const wxPoint& pos,
+-                                 const wxSize& size,
+-                                 long style,
+-                                 const wxValidator& validator,
+-                                 const wxString& name);
++    bool MSWCreateDateTimePicker(wxWindow* parent,
++        wxWindowID id,
++        const wxDateTime& dt,
++        const wxPoint& pos,
++        const wxSize& size,
++        long style,
++        const wxValidator& validator,
++        const wxString& name);
+ 
  #if wxUSE_INTL
      // Override to return the date/time format used by this control.
      virtual wxLocaleInfo MSWGetFormat() const = 0;
@@ -164,13 +180,16 @@ diff --git a/include/wx/msw/progdlg.h b/include/wx/msw/progdlg.h
 index ff70212885..b0a07db82f 100644
 --- a/include/wx/msw/progdlg.h
 +++ b/include/wx/msw/progdlg.h
-@@ -18,41 +18,41 @@ class WXDLLIMPEXP_CORE wxProgressDialog : public wxGenericProgressDialog
+@@ -17,48 +17,48 @@ class WXDLLIMPEXP_CORE wxProgressDialog : public wxGenericProgressDialog
+ {
  public:
      wxProgressDialog(const wxString& title, const wxString& message,
-         int maximum = 100,
+-                     int maximum = 100,
 -                     wxWindow *parent = nullptr,
+-                     int style = wxPD_APP_MODAL | wxPD_AUTO_HIDE);
++        int maximum = 100,
 +        wxWindow* parent = NULL,
-         int style = wxPD_APP_MODAL | wxPD_AUTO_HIDE);
++        int style = wxPD_APP_MODAL | wxPD_AUTO_HIDE);
  
      virtual ~wxProgressDialog();
  
@@ -225,13 +244,47 @@ index ff70212885..b0a07db82f 100644
  
  private:
      // Common part of Update() and Pulse().
+     //
+     // Returns false if the user requested cancelling the dialog.
+-    bool DoNativeBeforeUpdate(bool *skip);
++    bool DoNativeBeforeUpdate(bool* skip);
+ 
+     // Dispatch the pending events to let the windows to update, just as the
+     // generic version does. This is done as part of DoNativeBeforeUpdate().
+@@ -73,14 +73,14 @@ private:
+     wxRect GetTaskDialogRect() const;
+ 
+ 
+-    wxProgressDialogTaskRunner *m_taskDialogRunner;
++    wxProgressDialogTaskRunner* m_taskDialogRunner;
+ 
+-    wxProgressDialogSharedData *m_sharedData;
++    wxProgressDialogSharedData* m_sharedData;
+ 
+     // Store the message and title we currently use to be able to return it
+     // from Get{Message,Title}()
+     wxString m_message,
+-             m_title;
++        m_title;
+ 
+     wxDECLARE_DYNAMIC_CLASS_NO_COPY(wxProgressDialog);
+ };
 diff --git a/include/wx/msw/richmsgdlg.h b/include/wx/msw/richmsgdlg.h
 index 726bd843e2..7c75b36e57 100644
 --- a/include/wx/msw/richmsgdlg.h
 +++ b/include/wx/msw/richmsgdlg.h
-@@ -18,10 +18,11 @@ public:
-         const wxString& caption = wxASCII_STR(wxMessageBoxCaptionStr),
-         long style = wxOK | wxCENTRE)
+@@ -13,15 +13,16 @@
+ class WXDLLIMPEXP_CORE wxRichMessageDialog : public wxGenericRichMessageDialog
+ {
+ public:
+-    wxRichMessageDialog(wxWindow *parent,
+-                        const wxString& message,
+-                        const wxString& caption = wxASCII_STR(wxMessageBoxCaptionStr),
+-                        long style = wxOK | wxCENTRE)
++    wxRichMessageDialog(wxWindow* parent,
++        const wxString& message,
++        const wxString& caption = wxASCII_STR(wxMessageBoxCaptionStr),
++        long style = wxOK | wxCENTRE)
          : wxGenericRichMessageDialog(parent, message, caption, style)
 -        { }
 +    {
@@ -384,7 +437,14 @@ index da91828dae..060b4806fa 100644
  void wxDateTimePickerCtrl::SetValue(const wxDateTime& dt)
  {
      wxCHECK_RET( dt.IsValid() || MSWAllowsNone(),
-@@ -129,7 +119,7 @@ void wxDateTimePickerCtrl::MSWUpdateFormatIfNeeded(bool valid)
+@@ -123,21 +113,21 @@ wxDateTime wxDateTimePickerCtrl::GetValue() const
+ 
+ void wxDateTimePickerCtrl::MSWUpdateFormatIfNeeded(bool valid)
+ {
+-    if ( MSWAllowsNone() && !m_nullText.empty() && valid != m_date.IsValid() )
++    if (MSWAllowsNone() && !m_nullText.empty() && valid != m_date.IsValid())
+         MSWUpdateFormat(valid);
+ }
  
  void wxDateTimePickerCtrl::MSWUpdateFormat(bool valid)
  {
@@ -393,57 +453,202 @@ index da91828dae..060b4806fa 100644
      // as the control seems to remember whichever format was used when it was
      // created, i.e. this works both with and without wxDP_SHOWCENTURY.
  
-@@ -137,7 +127,7 @@ void wxDateTimePickerCtrl::MSWUpdateFormat(bool valid)
+     // Use a temporary variable to ensure that the code compiles in
      // wxUSE_UNICODE_UTF8 case, where t_str() doesn't return a pointer.
      const TCHAR* format;
-     if (valid)
+-    if ( valid )
 -        format = nullptr;
++    if (valid)
 +        format = NULL;
      else
          format = m_nullText.t_str();
  
-@@ -180,8 +170,11 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+@@ -147,7 +137,7 @@ void wxDateTimePickerCtrl::MSWUpdateFormat(bool valid)
+ void wxDateTimePickerCtrl::SetNullText(const wxString& text)
+ {
+     m_nullText = text;
+-    if ( m_nullText.empty() )
++    if (m_nullText.empty())
+     {
+         // Using empty format doesn't work with the native control, it just
+         // uses the default short date format in this case, so set the format
+@@ -172,7 +162,7 @@ void wxDateTimePickerCtrl::SetNullText(const wxString& text)
+     }
+ 
+     // Apply it immediately if we don't have any value right now.
+-    if ( !m_date.IsValid() )
++    if (!m_date.IsValid())
+         MSWUpdateFormat(false);
+ }
+ 
+@@ -180,63 +170,66 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
  {
      wxSize size;
  
 -    // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal
 -    // size, but we can't use it with DTS_SHOWNONE because handling of
-+    // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal size.
-+    SIZE idealSize = { 0, 0 };
-+    if (wxGetWinVersion() >= wxWinVersion_Vista)
-+    {
-+        // We can't use DTM_GETIDEALSIZE with DTS_SHOWNONE because handling of
-         // this flag is completely broken (up to at least Window 10 20H2): it's
-         // not just ignored, but we get completely wrong results when this flag
-         // is on, e.g. the returned width is less than the width without it or
-@@ -208,7 +201,7 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
-                 GetHwndOf(m_parent),
-                 0,
-                 wxGetInstance(),
+-    // this flag is completely broken (up to at least Window 10 20H2): it's
+-    // not just ignored, but we get completely wrong results when this flag
+-    // is on, e.g. the returned width is less than the width without it or
+-    // much greater than the real value after a DPI change (and growing
+-    // with every new change, even when repeatedly switching between the
+-    // same DPI values, e.g. dragging a window between 2 monitors with
+-    // different scaling). Moreover, note that even without DTS_SHOWNONE,
+-    // DTM_GETIDEALSIZE still returns wrong results for the height after a
+-    // DPI change, so we never use the vertical component of the value
+-    // returned by it.
+-    //
+-    // Unfortunately, resetting this style doesn't work either, so we have
+-    // to create a whole new window just for this, which is pretty wasteful
+-    // but seems unavoidable.
+-    HWND hwnd;
+-    if ( MSWAllowsNone() )
+-    {
+-        hwnd = ::CreateWindow
+-                 (
+-                    DATETIMEPICK_CLASS,
+-                    wxT(""),
+-                    ::GetWindowLong(GetHwnd(), GWL_STYLE) & ~DTS_SHOWNONE,
+-                    0, 0, 1, 1,
+-                    GetHwndOf(m_parent),
+-                    0,
+-                    wxGetInstance(),
 -                    nullptr
+-                 );
+-        wxCHECK_MSG( hwnd, wxSize(),
+-                     wxS("SysDateTimePick32 creation unexpected failed") );
+-
+-        wxSetWindowFont(hwnd, GetFont());
+-    }
+-    else
+-    {
+-        hwnd = GetHwnd();
+-    }
+-
+-    // Also work around https://bugs.winehq.org/show_bug.cgi?id=44680 by
+-    // checking for the return value: even if all "real" MSW systems do support
+-    // this message, Wine does not, even when it's configured to return Vista
+-    // or later version to the application, and returns FALSE for it.
++    // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal size.
+     SIZE idealSize = { 0, 0 };
+-    if ( ::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize) )
++    if (wxGetWinVersion() >= wxWinVersion_Vista)
+     {
+-        size.x = idealSize.cx;
+-        size.y = GetCharHeight();
+-    }
+-
+-    if ( hwnd != GetHwnd() )
+-    {
+-        ::DestroyWindow(hwnd);
++        // We can't use DTM_GETIDEALSIZE with DTS_SHOWNONE because handling of
++        // this flag is completely broken (up to at least Window 10 20H2): it's
++        // not just ignored, but we get completely wrong results when this flag
++        // is on, e.g. the returned width is less than the width without it or
++        // much greater than the real value after a DPI change (and growing
++        // with every new change, even when repeatedly switching between the
++        // same DPI values, e.g. dragging a window between 2 monitors with
++        // different scaling). Moreover, note that even without DTS_SHOWNONE,
++        // DTM_GETIDEALSIZE still returns wrong results for the height after a
++        // DPI change, so we never use the vertical component of the value
++        // returned by it.
++        //
++        // Unfortunately, resetting this style doesn't work either, so we have
++        // to create a whole new window just for this, which is pretty wasteful
++        // but seems unavoidable.
++        HWND hwnd;
++        if (MSWAllowsNone())
++        {
++            hwnd = ::CreateWindow
++            (
++                DATETIMEPICK_CLASS,
++                wxT(""),
++                ::GetWindowLong(GetHwnd(), GWL_STYLE) & ~DTS_SHOWNONE,
++                0, 0, 1, 1,
++                GetHwndOf(m_parent),
++                0,
++                wxGetInstance(),
 +                NULL
-             );
-             wxCHECK_MSG(hwnd, wxSize(),
-                 wxS("SysDateTimePick32 creation unexpected failed"));
-@@ -224,7 +217,6 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
-         // checking for the return value: even if all "real" MSW systems do support
-         // this message, Wine does not, even when it's configured to return Vista
-         // or later version to the application, and returns FALSE for it.
--    SIZE idealSize = { 0, 0 };
-         if (::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize))
-         {
-             size.x = idealSize.cx;
-@@ -235,8 +227,9 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
-         {
-             ::DestroyWindow(hwnd);
-         }
-+    }
++            );
++            wxCHECK_MSG(hwnd, wxSize(),
++                wxS("SysDateTimePick32 creation unexpected failed"));
++
++            wxSetWindowFont(hwnd, GetFont());
++        }
++        else
++        {
++            hwnd = GetHwnd();
++        }
++
++        // Also work around https://bugs.winehq.org/show_bug.cgi?id=44680 by
++        // checking for the return value: even if all "real" MSW systems do support
++        // this message, Wine does not, even when it's configured to return Vista
++        // or later version to the application, and returns FALSE for it.
++        if (::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize))
++        {
++            size.x = idealSize.cx;
++            size.y = GetCharHeight();
++        }
++
++        if (hwnd != GetHwnd())
++        {
++            ::DestroyWindow(hwnd);
++        }
+     }
  
 -    if ( !size.x ) // Compute the size ourselves.
 +    if (!idealSize.cx) // Compute the size ourselves.
      {
          // Use the same native format as the underlying native control.
  #if wxUSE_INTL
+@@ -258,7 +251,7 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+     }
+ 
+     // Account for the checkbox.
+-    if ( MSWAllowsNone() )
++    if (MSWAllowsNone())
+     {
+         // The extra 8px here was determined heuristically as the value which
+         // results in the same layout with and without DTS_SHOWNONE under
+@@ -276,23 +269,23 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+ }
+ 
+ bool
+-wxDateTimePickerCtrl::MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM *result)
++wxDateTimePickerCtrl::MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM* result)
+ {
+-    NMHDR* hdr = (NMHDR *)lParam;
+-    switch ( hdr->code )
++    NMHDR* hdr = (NMHDR*)lParam;
++    switch (hdr->code)
+     {
+-        case DTN_DATETIMECHANGE:
+-            const NMDATETIMECHANGE& dtch = *(NMDATETIMECHANGE*)(hdr);
+-
+-            // Update the format before showing the new date if necessary.
+-            MSWUpdateFormatIfNeeded(dtch.dwFlags == GDT_VALID);
+-
+-            if ( MSWOnDateTimeChange(dtch) )
+-            {
+-                *result = 0;
+-                return true;
+-            }
+-            break;
++    case DTN_DATETIMECHANGE:
++        const NMDATETIMECHANGE& dtch = *(NMDATETIMECHANGE*)(hdr);
++
++        // Update the format before showing the new date if necessary.
++        MSWUpdateFormatIfNeeded(dtch.dwFlags == GDT_VALID);
++
++        if (MSWOnDateTimeChange(dtch))
++        {
++            *result = 0;
++            return true;
++        }
++        break;
+     }
+ 
+     return wxDateTimePickerCtrlBase::MSWOnNotify(idCtrl, lParam, result);
 diff --git a/src/msw/dirdlg.cpp b/src/msw/dirdlg.cpp
 index 043bd72897..815b305a58 100644
 --- a/src/msw/dirdlg.cpp
@@ -1246,8 +1451,14 @@ diff --git a/src/msw/richmsgdlg.cpp b/src/msw/richmsgdlg.cpp
 index c8f7c6a870..35d7ccf12d 100644
 --- a/src/msw/richmsgdlg.cpp
 +++ b/src/msw/richmsgdlg.cpp
-@@ -20,6 +20,8 @@
- #include "wx/utils.h"                   // for wxWindowDisabler
+@@ -16,10 +16,12 @@
+ #include "wx/modalhook.h"
+ 
+ #ifndef WX_PRECOMP
+-    #include "wx/msw/private.h"
+-    #include "wx/utils.h"                   // for wxWindowDisabler
++#include "wx/msw/private.h"
++#include "wx/utils.h"                   // for wxWindowDisabler
  #endif
  
 +// This will define wxHAS_MSW_TASKDIALOG if we have support for it in the
@@ -1255,26 +1466,107 @@ index c8f7c6a870..35d7ccf12d 100644
  #include "wx/msw/private/msgdlg.h"
  
  // ----------------------------------------------------------------------------
-@@ -30,6 +32,7 @@ int wxRichMessageDialog::ShowModal()
+@@ -30,9 +32,10 @@ int wxRichMessageDialog::ShowModal()
  {
      WX_HOOK_MODAL_DIALOG();
  
 +#ifdef wxHAS_MSW_TASKDIALOG
      using namespace wxMSWMessageDialog;
  
-     if (HasNativeTaskDialog())
-@@ -82,7 +85,7 @@ int wxRichMessageDialog::ShowModal()
+-    if ( HasNativeTaskDialog() )
++    if (HasNativeTaskDialog())
+     {
+         wxWindowDisabler disableOthers(this, GetParentForModalDialog());
+ 
+@@ -40,52 +43,52 @@ int wxRichMessageDialog::ShowModal()
+         WinStruct<TASKDIALOGCONFIG> tdc;
+         wxMSWTaskDialogConfig wxTdc(*this);
+ 
+-        wxTdc.MSWCommonTaskDialogInit( tdc );
++        wxTdc.MSWCommonTaskDialogInit(tdc);
+ 
+         // add a checkbox
+-        if ( !m_checkBoxText.empty() )
++        if (!m_checkBoxText.empty())
+         {
+             tdc.pszVerificationText = m_checkBoxText.t_str();
+-            if ( m_checkBoxValue )
++            if (m_checkBoxValue)
+                 tdc.dwFlags |= TDF_VERIFICATION_FLAG_CHECKED;
+         }
+ 
+         // add collapsible footer
+-        if ( !m_detailedText.empty() )
++        if (!m_detailedText.empty())
+             tdc.pszExpandedInformation = m_detailedText.t_str();
+ 
+         // Add footer text
+-        if ( !m_footerText.empty() )
++        if (!m_footerText.empty())
+         {
+             tdc.pszFooter = m_footerText.t_str();
+-            switch ( m_footerIcon )
++            switch (m_footerIcon)
+             {
+-                case wxICON_INFORMATION:
+-                    tdc.pszFooterIcon = TD_INFORMATION_ICON;
+-                    break;
+-                case wxICON_WARNING:
+-                    tdc.pszFooterIcon = TD_WARNING_ICON;
+-                    break;
+-                case wxICON_ERROR:
+-                    tdc.pszFooterIcon = TD_ERROR_ICON;
+-                    break;
+-                case wxICON_AUTH_NEEDED:
+-                    tdc.pszFooterIcon = TD_SHIELD_ICON;
+-                    break;
++            case wxICON_INFORMATION:
++                tdc.pszFooterIcon = TD_INFORMATION_ICON;
++                break;
++            case wxICON_WARNING:
++                tdc.pszFooterIcon = TD_WARNING_ICON;
++                break;
++            case wxICON_ERROR:
++                tdc.pszFooterIcon = TD_ERROR_ICON;
++                break;
++            case wxICON_AUTH_NEEDED:
++                tdc.pszFooterIcon = TD_SHIELD_ICON;
++                break;
+             }
+         }
+ 
+         TaskDialogIndirect_t taskDialogIndirect = GetTaskDialogIndirectFunc();
+-        if ( !taskDialogIndirect )
++        if (!taskDialogIndirect)
+             return wxID_CANCEL;
+ 
          // create the task dialog, process the answer and return it.
          BOOL checkBoxChecked;
          int msAns;
 -        HRESULT hr = taskDialogIndirect( &tdc, &msAns, nullptr, &checkBoxChecked );
+-        if ( FAILED(hr) )
 +        HRESULT hr = taskDialogIndirect(&tdc, &msAns, NULL, &checkBoxChecked);
-         if (FAILED(hr))
++        if (FAILED(hr))
          {
-             wxLogApiError("TaskDialogIndirect", hr);
-@@ -102,6 +105,7 @@ int wxRichMessageDialog::ShowModal()
+-            wxLogApiError( "TaskDialogIndirect", hr );
++            wxLogApiError("TaskDialogIndirect", hr);
+             return wxID_CANCEL;
+         }
+         m_checkBoxValue = checkBoxChecked != FALSE;
+@@ -94,14 +97,15 @@ int wxRichMessageDialog::ShowModal()
+         // "Cancel" button (see comment in MSWCommonTaskDialogInit). This
+         // results in msAns being IDCANCEL while we want IDOK (just like
+         // how the native MessageBox function does with only an "OK" button).
+-        if ( (msAns == IDCANCEL)
+-            && !(GetMessageDialogStyle() & (wxYES_NO|wxCANCEL)) )
++        if ((msAns == IDCANCEL)
++            && !(GetMessageDialogStyle() & (wxYES_NO | wxCANCEL)))
+         {
+             msAns = IDOK;
+         }
  
-         return MSWTranslateReturnCode(msAns);
+-        return MSWTranslateReturnCode( msAns );
++        return MSWTranslateReturnCode(msAns);
      }
 +#endif // wxHAS_MSW_TASKDIALOG
  
@@ -1327,33 +1619,39 @@ diff --git a/src/msw/uilocale.cpp b/src/msw/uilocale.cpp
 index c02d5a9912..36167aab7d 100644
 --- a/src/msw/uilocale.cpp
 +++ b/src/msw/uilocale.cpp
-@@ -167,7 +167,17 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+@@ -167,19 +167,28 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
          return wxString{};
      }
  
+-    wxString format;
+-    wxString localeName = wxUILocale::GetCurrent().GetName();
+-    if (localeName.IsSameAs("C"))
+-    {
+-        localeName = "en-US";
 +    LCTYPE lctype = wxGetLCTYPEFormatFromLocalInfo(index);
 +
 +    if (!lctype) {
 +        return "";
-+    }
-+
-+    wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+    wchar_t buf[256];
-     wxString format;
-+
-+    if (wxGetWinVersion() >= wxWinVersion_Vista) {
-         wxString localeName = wxUILocale::GetCurrent().GetName();
-         if (localeName.IsSameAs("C"))
-         {
-@@ -175,11 +185,10 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
-         }
+     }
  
-         const wchar_t* name = localeName.wc_str();
+-    const wchar_t* name = localeName.wc_str();
 -    LCTYPE lctype = wxGetLCTYPEFormatFromLocalInfo(index);
 -    if (lctype != 0)
 -    {
 -        wchar_t buf[256];
 -        if (::GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
++    wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
++    wchar_t buf[256];
++    wxString format;
++
++    if (wxGetWinVersion() >= wxWinVersion_Vista) {
++        wxString localeName = wxUILocale::GetCurrent().GetName();
++        if (localeName.IsSameAs("C"))
++        {
++            localeName = "en-US";
++        }
++
++        const wchar_t* name = localeName.wc_str();
 +        int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +            (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
 +
@@ -1443,13 +1741,14 @@ index c02d5a9912..36167aab7d 100644
          // Getting the locale name seems to be the simplest way to see if it's
          // really supported: unknown locale result in an error here.
 -        if ( !::GetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0) )
+-            return nullptr;
 +        if (wxGetWinVersion() >= wxWinVersion_Vista) {
 +            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
 +            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +                (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
 +
 +            if (!pfnGetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0))
-                 return nullptr;
++                return nullptr;
 +        }
  
          // Unfortunately under Windows 10 the call above only fails if the given
@@ -1506,6 +1805,15 @@ index c02d5a9912..36167aab7d 100644
              dwFlags |= NORM_IGNORECASE;
  
 -        const int ret = ::CompareStringEx
+-            (
+-                m_name,
+-                dwFlags,
+-                lhs.wc_str(), -1,
+-                rhs.wc_str(), -1,
+-                nullptr,               // [out] version information -- not needed
+-                wxRESERVED_PARAM,
+-                wxRESERVED_PARAM
+-            );
 +        int ret;
 +        if (wxGetWinVersion() >= wxWinVersion_Vista)
 +        {
@@ -1514,16 +1822,15 @@ index c02d5a9912..36167aab7d 100644
 +                (int (WINAPI *)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM))kernel32.GetSymbol(wxT("CompareStringEx"));
 +
 +            ret = pfnCompareStringEx
-                 (
-                     m_name,
-                     dwFlags,
-                     lhs.wc_str(), -1,
-                     rhs.wc_str(), -1,
--                nullptr,               // [out] version information -- not needed
++                (
++                    m_name,
++                    dwFlags,
++                    lhs.wc_str(), -1,
++                    rhs.wc_str(), -1,
 +                    nullptr,
-                     wxRESERVED_PARAM,
-                     wxRESERVED_PARAM
-                 );
++                    wxRESERVED_PARAM,
++                    wxRESERVED_PARAM
++                );
 +        }
 +        else // XP
 +        {
@@ -1539,7 +1846,7 @@ index c02d5a9912..36167aab7d 100644
  
          switch ( ret )
          {
-@@ -687,11 +758,28 @@ private:
+@@ -687,10 +758,27 @@ private:
      wxString DoGetInfo(LCTYPE lctype) const
      {
          wchar_t buf[256];
@@ -1548,6 +1855,7 @@ index c02d5a9912..36167aab7d 100644
 +        if (wxGetWinVersion() >= wxWinVersion_Vista)
          {
 -            wxLogLastError(wxT("GetLocaleInfoEx"));
+-            return wxString();
 +            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
 +            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +                (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
@@ -1555,8 +1863,8 @@ index c02d5a9912..36167aab7d 100644
 +            if ( !pfnGetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )
 +            {
 +                wxLogLastError(wxT("GetLocaleInfo"));
-                 return wxString();
-             }
++                return wxString();
++            }
 +        }
 +        else // XP
 +        {
@@ -1566,10 +1874,9 @@ index c02d5a9912..36167aab7d 100644
 +                wxLogLastError(wxT("GetLocaleInfo"));
 +                return wxString();
 +            }
-+        }
+         }
  
          return buf;
-     }
 diff --git a/src/msw/utilsgui.cpp b/src/msw/utilsgui.cpp
 index 7af6b6e7bb..5c65ab46aa 100644
 --- a/src/msw/utilsgui.cpp
