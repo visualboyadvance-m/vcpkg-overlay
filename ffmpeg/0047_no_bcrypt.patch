@@ -9,15 +9,15 @@ diff -Nur n7.1.1-b116121da9.clean/configure n7.1.1-b116121da9.clean_patched/conf
      vaapi_drm
      vaapi_x11
      vaapi_win32
-@@ -4034,7 +4033,7 @@
- avfilter_suggest="libm stdatomic"
+@@ -4128,7 +4127,7 @@
+ avfilter_suggest="libm stdatomic spirv_compiler"
  avformat_deps="avcodec avutil"
  avformat_suggest="libm network zlib stdatomic"
 -avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia bcrypt stdatomic"
 +avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia stdatomic"
- postproc_deps="avutil gpl"
- postproc_suggest="libm stdatomic"
  swresample_deps="avutil"
+ swresample_suggest="libm libsoxr stdatomic"
+ swscale_deps="avutil"
 @@ -6669,8 +6668,6 @@
  done
  

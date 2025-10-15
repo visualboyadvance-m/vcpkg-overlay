@@ -1,20 +1,20 @@
 diff -Nur n7.1.1-3768947d97.clean/libavcodec/Makefile n7.1.1-3768947d97.clean_patched/libavcodec/Makefile
 --- n7.1.1-3768947d97.clean/libavcodec/Makefile	2025-03-03 01:17:09.000000000 +0100
 +++ n7.1.1-3768947d97.clean_patched/libavcodec/Makefile	2025-05-25 15:06:55.324387800 +0200
-@@ -27,6 +27,8 @@
+@@ -27,6 +27,8 @@ HEADERS = ac3_parser.h                                                  \
            vorbis_parser.h                                               \
  
  OBJS = ac3_parser.o                                                     \
-+       adts_header.o                                                    \
++       adt_header.o                                                     \
 +       mpeg4audio_sample_rates.o                                        \
         adts_parser.o                                                    \
         allcodecs.o                                                      \
         avcodec.o                                                        \
-@@ -72,7 +74,6 @@
+@@ -75,7 +77,6 @@ include $(SRC_PATH)/libavcodec/vulkan/Makefile
  -include $(SRC_PATH)/libavcodec/$(ARCH)/vvc/Makefile
  OBJS-$(CONFIG_AANDCTTABLES)            += aandcttab.o
  OBJS-$(CONFIG_AC3DSP)                  += ac3dsp.o ac3.o ac3tab.o
 -OBJS-$(CONFIG_ADTS_HEADER)             += adts_header.o mpeg4audio_sample_rates.o
- OBJS-$(CONFIG_AMF)                     += amfenc.o
+ OBJS-$(CONFIG_AMF)                     += amfenc.o amfdec.o
  OBJS-$(CONFIG_AUDIO_FRAME_QUEUE)       += audio_frame_queue.o
  OBJS-$(CONFIG_ATSC_A53)                += atsc_a53.o
