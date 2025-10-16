@@ -1,6 +1,6 @@
 {
   "name": "ffmpeg",
-  "version": "8.0",
+  "version": "7.1.1",
   "port-version": 2,
   "description": [
     "A library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.",
@@ -213,7 +213,8 @@
           "default-features": false,
           "features": [
             "all",
-            "gpl"
+            "gpl",
+            "postproc"
           ]
         },
         {
@@ -545,6 +546,18 @@
       "description": "Opus de/encoding via libopus",
       "dependencies": [
         "opus"
+      ]
+    },
+    "postproc": {
+      "description": "Build the postproc library",
+      "dependencies": [
+        {
+          "name": "ffmpeg",
+          "default-features": false,
+          "features": [
+            "gpl"
+          ]
+        }
       ]
     },
     "qsv": {
