@@ -1,5 +1,5 @@
 # The latest ref in branch stable
-set(ref 31e19f92f00c7003fa115047ce50978bc98c3a0d)
+set(ref 0480cb05fa188d37ae87e8f4fd8f1aea3711f7ee)
 
 # Note on x264 versioning:
 # The pc file exports "0.164.<N>" where is the number of commits.
@@ -16,7 +16,7 @@ vcpkg_from_gitlab(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO videolan/x264
     REF "${ref}"
-    SHA512 707ff486677a1b5502d6d8faa588e7a03b0dee45491c5cba89341be4be23d3f2e48272c3b11d54cfc7be1b8bf4a3dfc3c3bb6d9643a6b5a2ed77539c85ecf294
+    SHA512 10acb4e1199baf6cae80357f718f943a06f44b81d031366ea7af32cf3f4d38f180c340272662543b268b9ddb08b9b840b13f10c57e673bd59fdba1c3bf019fa7
     HEAD_REF master
     PATCHES
         "${CURRENT_BUILDTREES_DIR}/src/version-${VERSION}.diff"
