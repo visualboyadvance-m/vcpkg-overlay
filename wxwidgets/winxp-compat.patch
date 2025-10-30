@@ -343,7 +343,7 @@ index 9b6279ae77..0b8bfdfe25 100644
              // Check if we have wx resources in this program: this is not
              // mandatory, but recommended and could be the simplest way to
 diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
-index a577e7f8e6..55dfffb48f 100644
+index 53da78769b..6525b08f07 100644
 --- a/src/msw/darkmode.cpp
 +++ b/src/msw/darkmode.cpp
 @@ -32,7 +32,6 @@
@@ -377,7 +377,7 @@ index a577e7f8e6..55dfffb48f 100644
  #if wxUSE_LOG_TRACE
  static const char* TRACE_DARKMODE = "msw-darkmode";
  #endif // wxUSE_LOG_TRACE
-@@ -696,19 +711,13 @@ HandleMenuMessage(WXLRESULT* result,
+@@ -697,19 +712,13 @@ HandleMenuMessage(WXLRESULT* result,
                  // We have to specify the text colour explicitly as by default
                  // black would be used, making the menu label unreadable on the
                  // (almost) black background.
@@ -1409,10 +1409,10 @@ index 130b91dc27..832b87ffb5 100644
    if ( m_dwLastError != ERROR_SUCCESS &&
            m_dwLastError != ERROR_FILE_NOT_FOUND ) {
 diff --git a/src/msw/renderer.cpp b/src/msw/renderer.cpp
-index 94d209f0eb..0096ca088d 100644
+index afc40ddde3..17209cc330 100644
 --- a/src/msw/renderer.cpp
 +++ b/src/msw/renderer.cpp
-@@ -1006,11 +1006,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -972,11 +972,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
      {
          RECT rc = ConvertToRECT(dc, rect);
  
@@ -1424,7 +1424,7 @@ index 94d209f0eb..0096ca088d 100644
          wxColour textColour = dc.GetTextForeground();
          if (flags & wxCONTROL_SELECTED)
          {
-@@ -1021,11 +1016,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -987,11 +982,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
              textColour = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
          }
  
@@ -1436,7 +1436,7 @@ index 94d209f0eb..0096ca088d 100644
          const DWORD defTextFlags = DT_NOPREFIX;
          DWORD textFlags = defTextFlags;
  
-@@ -1179,8 +1169,8 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -1145,8 +1135,8 @@ void wxRendererXP::DrawItemText(wxWindow* win,
                  break;
          }
  
@@ -1602,7 +1602,7 @@ index 2769867999..26f9d37f1e 100644
  }
  
 diff --git a/src/msw/toolbar.cpp b/src/msw/toolbar.cpp
-index c5e0b9239e..8b2d5abf1d 100644
+index b067b521fa..a3d23d3472 100644
 --- a/src/msw/toolbar.cpp
 +++ b/src/msw/toolbar.cpp
 @@ -1719,7 +1719,9 @@ bool wxToolBar::MSWOnNotify(int WXUNUSED(idCtrl),
@@ -1616,10 +1616,18 @@ index c5e0b9239e..8b2d5abf1d 100644
  
                  // Draw custom button background when it would be drawn with a
 diff --git a/src/msw/uilocale.cpp b/src/msw/uilocale.cpp
-index c02d5a9912..36167aab7d 100644
+index fab0c64512..ceef7163c9 100644
 --- a/src/msw/uilocale.cpp
 +++ b/src/msw/uilocale.cpp
-@@ -167,19 +167,28 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+@@ -20,6 +20,7 @@
+ 
+ #if wxUSE_INTL
+ 
++#include "wx/log.h"
+ #include "wx/uilocale.h"
+ #include "wx/private/uilocale.h"
+ 
+@@ -171,19 +172,28 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
          return wxString{};
      }
  
@@ -1659,7 +1667,7 @@ index c02d5a9912..36167aab7d 100644
          {
              format = buf;
          }
-@@ -187,6 +196,15 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+@@ -191,6 +201,15 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
          {
              wxLogLastError(wxT("GetLocaleInfoEx"));
          }
@@ -1675,7 +1683,7 @@ index c02d5a9912..36167aab7d 100644
      }
      return format;
  }
-@@ -335,6 +353,7 @@ public:
+@@ -378,6 +397,7 @@ public:
      static wxVector<wxString> GetPreferredUILanguages()
      {
          wxVector<wxString> preferred;
@@ -1683,7 +1691,7 @@ index c02d5a9912..36167aab7d 100644
  
          // Check if Windows supports preferred UI languages.
          // Note: Windows 8.x might support them as well, but Windows 7
-@@ -345,10 +364,14 @@ public:
+@@ -388,10 +408,14 @@ public:
  
              ULONG numberOfLanguages = 0;
              ULONG bufferSize = 0;
@@ -1700,7 +1708,7 @@ index c02d5a9912..36167aab7d 100644
                  {
                      WCHAR* buf = languages.get();
                      for (unsigned k = 0; k < numberOfLanguages; ++k)
-@@ -368,11 +391,13 @@ public:
+@@ -411,11 +435,13 @@ public:
                  wxLogLastError(wxT("GetUserPreferredUILanguages"));
              }
          }
@@ -1716,7 +1724,7 @@ index c02d5a9912..36167aab7d 100644
              {
                  preferred.push_back(buf);
              }
-@@ -381,6 +406,19 @@ public:
+@@ -424,6 +450,19 @@ public:
                  wxLogLastError(wxT("GetUserDefaultLocaleName"));
              }
          }
@@ -1736,7 +1744,7 @@ index c02d5a9912..36167aab7d 100644
  
          return preferred;
      }
-@@ -397,8 +435,14 @@ public:
+@@ -440,8 +479,14 @@ public:
      {
          // Getting the locale name seems to be the simplest way to see if it's
          // really supported: unknown locale result in an error here.
@@ -1753,7 +1761,7 @@ index c02d5a9912..36167aab7d 100644
  
          // Unfortunately under Windows 10 the call above only fails if the given
          // locale name is not a valid BCP 47 identifier. For example,
-@@ -420,8 +464,11 @@ public:
+@@ -463,8 +508,11 @@ public:
              // discouraged by Microsoft (the constant is not even defined in a
              // Windows header file). However, for now constructed locales will
              // be rejected here.
@@ -1766,10 +1774,12 @@ index c02d5a9912..36167aab7d 100644
                   (
                      name,
                      LOCALE_ICONSTRUCTEDLOCALE | LOCALE_RETURN_NUMBER,
-@@ -442,6 +489,10 @@ public:
+@@ -485,6 +533,12 @@ public:
  
      void Use() override
      {
++        wxLogNull no_errors;
++
 +        wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
 +	BOOL (WINAPI *pfnSetThreadPreferredUILanguages)(DWORD, PCZZWSTR, PULONG) =
 +             (BOOL (WINAPI *)(DWORD, PCZZWSTR, PULONG))kernel32.GetSymbol(wxT("SetThreadPreferredUILanguages"));
@@ -1777,7 +1787,7 @@ index c02d5a9912..36167aab7d 100644
          // Construct a double NUL-terminated buffer.
          wchar_t buf[256];
          if ( m_name )
-@@ -452,8 +503,9 @@ public:
+@@ -495,8 +549,9 @@ public:
  
          ULONG num = 1;
  
@@ -1789,7 +1799,7 @@ index c02d5a9912..36167aab7d 100644
      }
  
      wxString GetName() const override
-@@ -603,8 +655,8 @@ public:
+@@ -648,8 +703,8 @@ public:
                LOCALE_SDAYNAME4, LOCALE_SDAYNAME5, LOCALE_SDAYNAME6 },
              { LOCALE_SABBREVDAYNAME7, LOCALE_SABBREVDAYNAME1, LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
                LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5, LOCALE_SABBREVDAYNAME6 },
@@ -1800,7 +1810,7 @@ index c02d5a9912..36167aab7d 100644
          };
  
          const int idx = ArrayIndexFromFlag(form.GetFlags());
-@@ -650,16 +702,35 @@ public:
+@@ -742,16 +797,35 @@ public:
          if ( flags & wxCompare_CaseInsensitive )
              dwFlags |= NORM_IGNORECASE;
  
@@ -1846,7 +1856,7 @@ index c02d5a9912..36167aab7d 100644
  
          switch ( ret )
          {
-@@ -687,10 +758,27 @@ private:
+@@ -779,10 +853,27 @@ private:
      wxString DoGetInfo(LCTYPE lctype) const
      {
          wchar_t buf[256];
