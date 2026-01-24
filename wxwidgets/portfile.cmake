@@ -6,14 +6,34 @@ vcpkg_from_github(
     PATCHES
         install-layout.patch
         relocatable-wx-config.patch
+        nanosvg-ext-depend.patch
         fix-libs-export.patch
         fix-pcre2.patch
         gtk3-link-libraries.patch
+        sdl2.patch
         winxp-compat.patch
         force-exceptions.patch
         darkmode_fix.patch
         wx-macOS.patch
 )
+
+# Submodule dependencies
+vcpkg_from_github(
+    OUT_SOURCE_PATH lexilla_SOURCE_PATH
+    REPO wxWidgets/lexilla
+    REF "27c20a6ae5eebf418debeac0166052ed6fb653bc"
+    SHA512 7e5de7f664509473b691af8261fca34c2687772faca7260eeba5f2984516e6f8edf88c27192e056c9dda996e2ad2c20f6d1dff1c4bd2f3c0d74852cb50ca424a
+    HEAD_REF wx
+)
+file(COPY "${lexilla_SOURCE_PATH}/" DESTINATION "${SOURCE_PATH}/src/stc/lexilla")
+vcpkg_from_github(
+    OUT_SOURCE_PATH scintilla_SOURCE_PATH
+    REPO wxWidgets/scintilla
+    REF "0b90f31ced23241054e8088abb50babe9a44ae67"
+    SHA512 db1f3007f4bd8860fad0817b6cf87980a4b713777025128cf5caea8d6d17b6fafe23fd22ff6886d7d5a420f241d85b7502b85d7e52b4ddb0774edc4b0a0203e7
+    HEAD_REF wx
+)
+file(COPY "${scintilla_SOURCE_PATH}/" DESTINATION "${SOURCE_PATH}/src/stc/scintilla")
 
 vcpkg_check_features(
     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -37,15 +57,8 @@ if(VCPKG_TARGET_IS_WINDOWS AND (VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64" OR VC
     )
 endif()
 
-if(VCPKG_CROSSCOMPILING)
-    list(APPEND OPTIONS -DwxBUILD_LOCALES=OFF)
-#        -DGETTEXT_MSGFMT_EXECUTABLE=PATH:"${CURRENT_HOST_INSTALLED_DIR}/tools/gettext/bin/msgfmt.exe"
-#        -DGETTEXT_MSGMERGE_EXECUTABLE=PATH:"${CURRENT_HOST_INSTALLED_DIR}/tools/gettext/bin/msgmerge.exe"
-#    )
-endif()
-
 if(VCPKG_TARGET_IS_WINDOWS OR VCPKG_TARGET_IS_OSX)
-    list(APPEND OPTIONS -DwxUSE_WEBREQUEST_CURL=OFF -DwxUSE_WEBVIEW=ON -DwxUSE_WEBVIEW_EDGE=OFF -DwxUSE_WEBVIEW_IE=ON)
+    list(APPEND OPTIONS -DwxUSE_WEBREQUEST_CURL=OFF)
 else()
     list(APPEND OPTIONS -DwxUSE_WEBREQUEST_CURL=ON)
 endif()
@@ -58,65 +71,35 @@ if(VCPKG_TARGET_IS_WINDOWS)
     endif()
 endif()
 
+if("webview" IN_LIST FEATURES)
+    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86" AND VCPKG_TARGET_IS_MINGW)
+        list(APPEND OPTIONS -DwxUSE_WEBVIEW=ON -DwxUSE_WEBVIEW_EDGE=OFF -DwxUSE_WEBVIEW_IE=ON)
+    else()
+        list(APPEND OPTIONS -DwxUSE_WEBVIEW_EDGE=ON)
+        if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+            list(APPEND OPTIONS -DwxUSE_WEBVIEW_EDGE_STATIC=ON)
+        endif()
+    endif()
+endif()
+
 vcpkg_find_acquire_program(PKGCONFIG)
 
 # This may be set to ON by users in a custom triplet.
 # The use of 'WXWIDGETS_USE_STD_CONTAINERS' (ON or OFF) is not API compatible
 # which is why it must be set in a custom triplet rather than a port feature.
+# For backwards compatibility, we also replace 'wxUSE_STL' (which no longer
+# exists) with 'wxUSE_STD_STRING_CONV_IN_WXSTRING' which still exists and was
+# set by `wxUSE_STL` previously.
+set(WXWIDGETS_USE_STL ON)
+set(WXWIDGETS_USE_STD_CONTAINERS ON)
+
+if(NOT DEFINED WXWIDGETS_USE_STL)
+    set(WXWIDGETS_USE_STL OFF)
+endif()
+
 if(NOT DEFINED WXWIDGETS_USE_STD_CONTAINERS)
-    set(WXWIDGETS_USE_STD_CONTAINERS ON)
+    set(WXWIDGETS_USE_STD_CONTAINERS OFF)
 endif()
-
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(GIT_CMD "C:\\Program Files\\Git\\cmd\\git.exe")
-else()
-    set(GIT_CMD "git")
-endif()
-
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/3rdparty/catch"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/Catch.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/3rdparty/nanosvg"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/nanosvg.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/3rdparty/pcre"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/pcre.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/3rdparty/libwebp"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/libwebp.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/src/expat"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/libexpat.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/src/jpeg"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/libjpeg-turbo.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/src/png"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/libpng.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/src/stc/lexilla"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/lexilla.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/src/stc/scintilla"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/scintilla.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/src/tiff"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/libtiff.git  .)
-vcpkg_execute_build_process(
-    WORKING_DIRECTORY "${SOURCE_PATH}/src/zlib"
-    LOGNAME wxwidgets-submodule-clone
-    COMMAND ${GIT_CMD} clone  https://github.com/wxWidgets/zlib.git  .)
 
 set(cxx_flags "${CMAKE_CXX_FLAGS} ${VCPKG_CXX_FLAGS}")
 if(VCPKG_TARGET_IS_MINGW)
@@ -137,16 +120,18 @@ vcpkg_cmake_configure(
         -DwxUSE_LIBJPEG=sys
         -DwxUSE_LIBPNG=sys
         -DwxUSE_LIBTIFF=sys
-        -DwxUSE_LIBWEBP=sys
         -DwxUSE_NANOSVG=sys
+        -DwxUSE_LIBWEBP=sys
         -DwxUSE_GLCANVAS=ON
         -DwxUSE_EXCEPTIONS=ON
         -DwxUSE_LIBGNOMEVFS=OFF
         -DwxUSE_LIBNOTIFY=OFF
+        -DwxUSE_STD_STRING_CONV_IN_WXSTRING=${WXWIDGETS_USE_STL}
         -DwxUSE_STD_CONTAINERS=${WXWIDGETS_USE_STD_CONTAINERS}
         -DwxUSE_UIACTIONSIMULATOR=OFF
+        -DCMAKE_DISABLE_FIND_PACKAGE_GSPELL=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_MSPACK=ON
         -DwxBUILD_INSTALL_RUNTIME_DIR:PATH=bin
-        -DwxBUILD_WIN32_MSVC_NAMING=OFF
         ${OPTIONS}
         "-DPKG_CONFIG_EXECUTABLE=${PKGCONFIG}"
         # The minimum cmake version requirement for Cotire is 2.8.12.
@@ -169,10 +154,9 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/lib/cmake
 )
 
-set(tools wxrc-3.3)
-
+set(tools wxrc)
 if(NOT VCPKG_TARGET_IS_WINDOWS)
-    list(APPEND tools wxrc)
+    list(APPEND tools wxrc-3.3)
     file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
     file(RENAME "${CURRENT_PACKAGES_DIR}/bin/wx-config" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/wx-config")
     if(NOT VCPKG_BUILD_TYPE)
@@ -187,6 +171,11 @@ vcpkg_copy_pdbs()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/include/msvc")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/lib/mswu")
+if(VCPKG_BUILD_TYPE STREQUAL "release")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib/mswud")
+endif()
+
 file(GLOB_RECURSE INCLUDES "${CURRENT_PACKAGES_DIR}/include/*.h")
 if(EXISTS "${CURRENT_PACKAGES_DIR}/lib/mswu/wx/setup.h")
     list(APPEND INCLUDES "${CURRENT_PACKAGES_DIR}/lib/mswu/wx/setup.h")
