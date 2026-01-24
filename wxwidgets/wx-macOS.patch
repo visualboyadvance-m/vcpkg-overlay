@@ -1,0 +1,46 @@
+diff -Nur wxwidgets/src/osx/cocoa/window.mm wxwidgets_patched/src/osx/cocoa/window.mm
+--- wxwidgets/src/osx/cocoa/window.mm	2025-05-30 13:39:07
++++ wxwidgets_patched/src/osx/cocoa/window.mm	2025-05-30 13:40:04
+@@ -2370,11 +2370,7 @@
+ {
+     if ( HasUserKeyHandling() )
+         return m_wxPeer->AcceptsFocus();
+-    else
+-    {
+-        wxOSX_FocusHandlerPtr superimpl = (wxOSX_FocusHandlerPtr) [[slf superclass] instanceMethodForSelector:(SEL)_cmd];
+-        return superimpl(slf, (SEL)_cmd);
+-    }
++    return true;
+ }
+ 
+ bool wxWidgetCocoaImpl::becomeFirstResponder(WXWidget slf, void *_cmd)
+ diff -Nur wxwidgets/src/generic/filedlgg.cpp wxwidgets_patched/src/generic/filedlgg.cpp
+--- wxwidgets/src/generic/filedlgg.cpp	2025-07-06 09:54:24
++++ wxwidgets_patched/src/generic/filedlgg.cpp	2025-07-06 09:53:41
+@@ -213,9 +213,12 @@
+                                                    .Border( wxLEFT | wxRIGHT | wxTOP ) );
+ 
+     long style2 = 0;
+-    if ( HasFdFlag(wxFD_MULTIPLE) )
++    if ( HasFdFlag(wxFD_MULTIPLE) )
+         style2 |= wxFC_MULTIPLE;
+ 
++    if ( HasFdFlag(wxFD_SAVE) )
++        style2 = wxFC_SAVE;
++ 
+     m_filectrl = new wxGenericFileCtrl( this, ID_FILE_CTRL,
+                                         m_dir, defaultFile,
+                                         wildCard,
+diff -Nur wxWidgets-3.3.0/src/generic/filectrlg.cpp wxwidgets/src/generic/filectrlg.cpp 
+--- wxWidgets-3.3.0/src/generic/filectrlg.cpp	2025-06-05 18:50:05
++++ wxwidgets/src/generic/filectrlg.cpp	2025-07-06 12:01:00
+@@ -1001,6 +1001,9 @@
+     // must be after m_ignoreChanges = false
+     SetFilename( defaultFileName );
+ 
++    if ( ( m_style & wxFC_SAVE ) )
++        m_text->SetEditable(true);
++
+     return true;
+ }
+ 

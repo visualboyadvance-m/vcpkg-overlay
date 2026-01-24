@@ -12,6 +12,7 @@ vcpkg_from_github(
         winxp-compat.patch
         force-exceptions.patch
         darkmode_fix.patch
+        wx-macOS.patch
 )
 
 vcpkg_check_features(
