@@ -21,8 +21,8 @@ vcpkg_from_github(
 vcpkg_from_github(
     OUT_SOURCE_PATH lexilla_SOURCE_PATH
     REPO wxWidgets/lexilla
-    REF "27c20a6ae5eebf418debeac0166052ed6fb653bc"
-    SHA512 7e5de7f664509473b691af8261fca34c2687772faca7260eeba5f2984516e6f8edf88c27192e056c9dda996e2ad2c20f6d1dff1c4bd2f3c0d74852cb50ca424a
+    REF "0dbce0b418b8b3d2ef30304d0bf53ff58c07ed84"
+    SHA512 61f7b0217f4518121ecad32f015b53600e565bdd499d4020468cf6c8a533d516c6881115aa5e640afca5ea428535f47680cde426fa3dbabe9e4423b4526853fd
     HEAD_REF wx
 )
 file(COPY "${lexilla_SOURCE_PATH}/" DESTINATION "${SOURCE_PATH}/src/stc/lexilla")
