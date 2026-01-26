@@ -1,8 +1,8 @@
 diff --git a/build/cmake/init.cmake b/build/cmake/init.cmake
-index 5447d33..f5440b4 100644
+index 964394b5e2..33a140cb16 100644
 --- a/build/cmake/init.cmake
 +++ b/build/cmake/init.cmake
-@@ -530,7 +530,9 @@ if(wxUSE_GUI)
+@@ -683,7 +683,9 @@ if(wxUSE_GUI)
      endif()
  
      if(wxUSE_SOUND AND wxUSE_LIBSDL AND UNIX AND NOT APPLE)
@@ -12,18 +12,19 @@ index 5447d33..f5440b4 100644
 +        set(SDL2_LIBRARY SDL2::SDL2 CACHE INTERNAL "")
          if(NOT SDL2_FOUND)
              find_package(SDL)
-         endif()
+             mark_as_advanced(SDL_INCLUDE_DIR SDLMAIN_LIBRARY)
 diff --git a/build/cmake/wxWidgetsConfig.cmake.in b/build/cmake/wxWidgetsConfig.cmake.in
-index 60cf762..202a8c3 100644
+index 2f3a735d92..3345133907 100644
 --- a/build/cmake/wxWidgetsConfig.cmake.in
 +++ b/build/cmake/wxWidgetsConfig.cmake.in
-@@ -2,6 +2,9 @@
+@@ -168,6 +168,10 @@ if(TARGET wx::wxgl AND NOT (APPLE AND IOS))
+     find_dependency(OpenGL)
+ endif()
  
- include(CMakeFindDependencyMacro)
- find_dependency(NanoSVG CONFIG)
-+if("@wxUSE_LIBSDL@")
++if(@wxUSE_LIBSDL@)
 +    find_dependency(SDL2 CONFIG)
 +endif()
++
+ # make sure Threads targets are available
+ find_dependency(Threads)
  
- cmake_policy(PUSH)
- # Set policies to prevent warnings
