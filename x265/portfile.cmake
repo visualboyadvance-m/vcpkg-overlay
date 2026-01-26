@@ -1,8 +1,8 @@
 vcpkg_from_bitbucket(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO multicoreware/x265_git
-    REF "${VERSION}"
-    SHA512 4b7d71f22f0a7f12ff93f9a01e361df2b80532cd8dac01b5465e63b5d8182f1a05c0289ad95f3aa972c963aa6cd90cb3d594f8b9a96f556a006cf7e1bdd9edda
+    REF "afa0028dda3486bce8441473c6c7b99bec2f0961"
+    SHA512 1cc4b4ac538c177486015c0a9af4787019c3312ebfff870afba16c5a8ae72a8efe3b2e92dfb2636d5348a6cb33816b6b521cb91db49ae71e51c4c8c3c01f0ead
     HEAD_REF master
     PATCHES
         disable-install-pdb.patch
@@ -12,8 +12,8 @@ vcpkg_from_bitbucket(
         pthread.diff
         compiler-target.diff
         neon.diff
+        fix-cmake-4.patch
         nasm.diff
-        cmake.diff
         winxp.diff
 )
 
@@ -33,6 +33,18 @@ if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86" OR VCPKG_TARGET_ARCHITECTURE STREQUA
     endif()
 elseif(VCPKG_TARGET_IS_WINDOWS)
     list(APPEND OPTIONS "-DENABLE_ASSEMBLY=OFF")
+endif()
+
+list(APPEND OPTIONS "-DENABLE_ASSEMBLY=OFF")
+
+if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
+    list(APPEND OPTIONS "-DENABLE_ASSEMBLY=OFF")
+    list(APPEND OPTIONS "-DENABLE_NEON=OFF")
+    list(APPEND OPTIONS "-DENABLE_NEON_DOTPROD=OFF")
+    list(APPEND OPTIONS "-DENABLE_NEON_I8MM=OFF")
+    list(APPEND OPTIONS "-DENABLE_SVE=OFF")
+    list(APPEND OPTIONS "-DENABLE_SVE2=OFF")
+    list(APPEND OPTIONS "-DENABLE_SVE2_BITPERM=OFF")
 endif()
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" ENABLE_SHARED)

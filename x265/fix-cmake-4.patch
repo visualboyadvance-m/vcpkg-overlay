@@ -1,0 +1,19 @@
+diff --git a/source/CMakeLists.txt b/source/CMakeLists.txt
+index 9f93b6ec2..257e0d01e 100755
+--- a/source/CMakeLists.txt
++++ b/source/CMakeLists.txt
+@@ -7,13 +7,10 @@ if(NOT CMAKE_BUILD_TYPE)
+ endif()
+ message(STATUS "cmake version ${CMAKE_VERSION}")
+ 
+-if(POLICY CMP0042)
+-    cmake_policy(SET CMP0042 NEW) # MACOSX_RPATH
+-endif()
+ 
+ 
+ project (x265)
+-cmake_minimum_required (VERSION 2.8.8...3.10) # OBJECT libraries require 2.8.8
++cmake_minimum_required (VERSION 3.10)
+ include(CheckIncludeFiles)
+ include(CheckFunctionExists)
+ include(CheckSymbolExists)
