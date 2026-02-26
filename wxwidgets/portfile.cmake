@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO wxWidgets/wxWidgets
     REF master
-    SHA512 fbd0f6fe41e92c0adb39095143b1891d8ba559fc2b688c7cd755b9a1516013952175bacd84e9a44d220d8862579a78f8f7df8b3c923dc50bdc65c53aae4f29f8
+    SHA512 cce24098531eebb9a568ceb4b97f67aa1c05d93915373adc0996575b86b5fccdd6d1c6f4f2a5af80c39c0cdfd064a0b918921936512fd2394f939e82a6c10f98
     PATCHES
         install-layout.patch
         relocatable-wx-config.patch
@@ -22,7 +22,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH lexilla_SOURCE_PATH
     REPO wxWidgets/lexilla
     REF "0dbce0b418b8b3d2ef30304d0bf53ff58c07ed84"
-    SHA512 fbd0f6fe41e92c0adb39095143b1891d8ba559fc2b688c7cd755b9a1516013952175bacd84e9a44d220d8862579a78f8f7df8b3c923dc50bdc65c53aae4f29f8
+    SHA512 cce24098531eebb9a568ceb4b97f67aa1c05d93915373adc0996575b86b5fccdd6d1c6f4f2a5af80c39c0cdfd064a0b918921936512fd2394f939e82a6c10f98
     HEAD_REF wx
 )
 file(COPY "${lexilla_SOURCE_PATH}/" DESTINATION "${SOURCE_PATH}/src/stc/lexilla")
@@ -30,7 +30,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH scintilla_SOURCE_PATH
     REPO wxWidgets/scintilla
     REF "0b90f31ced23241054e8088abb50babe9a44ae67"
-    SHA512 fbd0f6fe41e92c0adb39095143b1891d8ba559fc2b688c7cd755b9a1516013952175bacd84e9a44d220d8862579a78f8f7df8b3c923dc50bdc65c53aae4f29f8
+    SHA512 cce24098531eebb9a568ceb4b97f67aa1c05d93915373adc0996575b86b5fccdd6d1c6f4f2a5af80c39c0cdfd064a0b918921936512fd2394f939e82a6c10f98
     HEAD_REF wx
 )
 file(COPY "${scintilla_SOURCE_PATH}/" DESTINATION "${SOURCE_PATH}/src/stc/scintilla")
