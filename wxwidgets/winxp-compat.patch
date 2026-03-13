@@ -417,7 +417,7 @@ index 05cf2184f8..041a42ffac 100644
  }
  
 diff --git a/src/msw/datetimectrl.cpp b/src/msw/datetimectrl.cpp
-index 6552b9727d..1318183c54 100644
+index 6552b9727d..8fd19316b1 100644
 --- a/src/msw/datetimectrl.cpp
 +++ b/src/msw/datetimectrl.cpp
 @@ -80,7 +80,7 @@ wxDateTimePickerCtrl::MSWCreateDateTimePicker(wxWindow *parent,
@@ -429,10 +429,11 @@ index 6552b9727d..1318183c54 100644
  
  void wxDateTimePickerCtrl::MSWSetTimeFormat(wxLocaleInfo index)
  {
-@@ -184,63 +184,65 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+@@ -183,61 +183,65 @@ void wxDateTimePickerCtrl::SetNullText(const wxString& text)
+ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
  {
      wxSize size;
- 
+-
 -    // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal
 -    // size, but we can't use it with DTS_SHOWNONE because handling of
 -    // this flag is completely broken (up to at least Window 10 20H2): it's
@@ -483,10 +484,12 @@ index 6552b9727d..1318183c54 100644
 -        size.x = idealSize.cx;
 -        size.y = GetCharHeight();
 -    }
--
+ 
 -    if ( hwnd != GetHwnd() )
 -    {
 -        ::DestroyWindow(hwnd);
++    size.x = size.y = 0;
++
 +    if (wxGetWinVersion() >= wxWinVersion_Vista) {
 +        // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal
 +        // size, but we can't use it with DTS_SHOWNONE because handling of
@@ -544,11 +547,7 @@ index 6552b9727d..1318183c54 100644
 +        }
      }
  
--    if ( !size.x ) // Compute the size ourselves.
-+    if ( !idealSize.x ) // Compute the size ourselves.
-     {
-         // Use the same native format as the underlying native control.
- #if wxUSE_INTL
+     if ( !size.x ) // Compute the size ourselves.
 diff --git a/src/msw/dirdlg.cpp b/src/msw/dirdlg.cpp
 index 043bd72897..815b305a58 100644
 --- a/src/msw/dirdlg.cpp
