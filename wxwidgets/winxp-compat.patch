@@ -315,7 +315,7 @@ index 81b0ecc4dc..97664c555b 100644
      // If it succeeds, print it out
      if (i != 0) printf("|");
 diff --git a/src/msw/app.cpp b/src/msw/app.cpp
-index 9b6279ae77..0b8bfdfe25 100644
+index 9679da074a..d2f0f16ab5 100644
 --- a/src/msw/app.cpp
 +++ b/src/msw/app.cpp
 @@ -501,12 +501,21 @@ bool wxApp::Initialize(int& argc_, wxChar **argv_)
@@ -343,18 +343,18 @@ index 9b6279ae77..0b8bfdfe25 100644
              // Check if we have wx resources in this program: this is not
              // mandatory, but recommended and could be the simplest way to
 diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
-index 53da78769b..6525b08f07 100644
+index 9ff28b6fe8..defb31a3cd 100644
 --- a/src/msw/darkmode.cpp
 +++ b/src/msw/darkmode.cpp
-@@ -32,7 +32,6 @@
- #endif
+@@ -112,7 +112,6 @@ DwmSetWindowAttribute_t
+ wxDarkModeModule::ms_pfnDwmSetWindowAttribute = (DwmSetWindowAttribute_t)-1;
  
  #if wxUSE_DARK_MODE
 -
  #ifndef WX_PRECOMP
-     #include "wx/app.h"
      #include "wx/bitmap.h"
-@@ -54,6 +53,22 @@
+     #include "wx/dcmemory.h"
+@@ -128,6 +127,22 @@ wxDarkModeModule::ms_pfnDwmSetWindowAttribute = (DwmSetWindowAttribute_t)-1;
  
  #include <memory>
  
@@ -377,7 +377,7 @@ index 53da78769b..6525b08f07 100644
  #if wxUSE_LOG_TRACE
  static const char* TRACE_DARKMODE = "msw-darkmode";
  #endif // wxUSE_LOG_TRACE
-@@ -697,19 +712,13 @@ HandleMenuMessage(WXLRESULT* result,
+@@ -727,19 +742,13 @@ HandleMenuMessage(WXLRESULT* result,
                  // We have to specify the text colour explicitly as by default
                  // black would be used, making the menu label unreadable on the
                  // (almost) black background.
@@ -417,71 +417,19 @@ index 05cf2184f8..041a42ffac 100644
  }
  
 diff --git a/src/msw/datetimectrl.cpp b/src/msw/datetimectrl.cpp
-index da91828dae..060b4806fa 100644
+index 6552b9727d..e9723f1029 100644
 --- a/src/msw/datetimectrl.cpp
 +++ b/src/msw/datetimectrl.cpp
-@@ -80,16 +80,6 @@ wxDateTimePickerCtrl::MSWCreateDateTimePicker(wxWindow *parent,
+@@ -80,7 +80,7 @@ wxDateTimePickerCtrl::MSWCreateDateTimePicker(wxWindow *parent,
      return true;
  }
  
--void wxDateTimePickerCtrl::MSWSetTimeFormat(wxLocaleInfo index)
--{
--    const wxString format = wxGetMSWDateTimeFormat(index);
--    if ( !format.empty() )
--    {
--        DateTime_SetFormat(GetHwnd(),
--                           static_cast<const wchar_t*>(format.t_str()));
--    }
--}
--
- void wxDateTimePickerCtrl::SetValue(const wxDateTime& dt)
+-#if wxUSE_INTL
++#if 0
+ 
+ void wxDateTimePickerCtrl::MSWSetTimeFormat(wxLocaleInfo index)
  {
-     wxCHECK_RET( dt.IsValid() || MSWAllowsNone(),
-@@ -123,21 +113,21 @@ wxDateTime wxDateTimePickerCtrl::GetValue() const
- 
- void wxDateTimePickerCtrl::MSWUpdateFormatIfNeeded(bool valid)
- {
--    if ( MSWAllowsNone() && !m_nullText.empty() && valid != m_date.IsValid() )
-+    if (MSWAllowsNone() && !m_nullText.empty() && valid != m_date.IsValid())
-         MSWUpdateFormat(valid);
- }
- 
- void wxDateTimePickerCtrl::MSWUpdateFormat(bool valid)
- {
--    // We just use nullptr to reset to the default format when the date is valid,
-+    // We just use NULL to reset to the default format when the date is valid,
-     // as the control seems to remember whichever format was used when it was
-     // created, i.e. this works both with and without wxDP_SHOWCENTURY.
- 
-     // Use a temporary variable to ensure that the code compiles in
-     // wxUSE_UNICODE_UTF8 case, where t_str() doesn't return a pointer.
-     const TCHAR* format;
--    if ( valid )
--        format = nullptr;
-+    if (valid)
-+        format = NULL;
-     else
-         format = m_nullText.t_str();
- 
-@@ -147,7 +137,7 @@ void wxDateTimePickerCtrl::MSWUpdateFormat(bool valid)
- void wxDateTimePickerCtrl::SetNullText(const wxString& text)
- {
-     m_nullText = text;
--    if ( m_nullText.empty() )
-+    if (m_nullText.empty())
-     {
-         // Using empty format doesn't work with the native control, it just
-         // uses the default short date format in this case, so set the format
-@@ -172,7 +162,7 @@ void wxDateTimePickerCtrl::SetNullText(const wxString& text)
-     }
- 
-     // Apply it immediately if we don't have any value right now.
--    if ( !m_date.IsValid() )
-+    if (!m_date.IsValid())
-         MSWUpdateFormat(false);
- }
- 
-@@ -180,63 +170,66 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
+@@ -184,63 +184,65 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
  {
      wxSize size;
  
@@ -529,11 +477,9 @@ index da91828dae..060b4806fa 100644
 -    // checking for the return value: even if all "real" MSW systems do support
 -    // this message, Wine does not, even when it's configured to return Vista
 -    // or later version to the application, and returns FALSE for it.
-+    // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal size.
      SIZE idealSize = { 0, 0 };
 -    if ( ::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize) )
-+    if (wxGetWinVersion() >= wxWinVersion_Vista)
-     {
+-    {
 -        size.x = idealSize.cx;
 -        size.y = GetCharHeight();
 -    }
@@ -541,7 +487,9 @@ index da91828dae..060b4806fa 100644
 -    if ( hwnd != GetHwnd() )
 -    {
 -        ::DestroyWindow(hwnd);
-+        // We can't use DTM_GETIDEALSIZE with DTS_SHOWNONE because handling of
++    if (wxGetWinVersion() >= wxWinVersion_Vista)
++        // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal
++        // size, but we can't use it with DTS_SHOWNONE because handling of
 +        // this flag is completely broken (up to at least Window 10 20H2): it's
 +        // not just ignored, but we get completely wrong results when this flag
 +        // is on, e.g. the returned width is less than the width without it or
@@ -557,21 +505,21 @@ index da91828dae..060b4806fa 100644
 +        // to create a whole new window just for this, which is pretty wasteful
 +        // but seems unavoidable.
 +        HWND hwnd;
-+        if (MSWAllowsNone())
++        if ( MSWAllowsNone() )
 +        {
 +            hwnd = ::CreateWindow
-+            (
-+                DATETIMEPICK_CLASS,
-+                wxT(""),
-+                ::GetWindowLong(GetHwnd(), GWL_STYLE) & ~DTS_SHOWNONE,
-+                0, 0, 1, 1,
-+                GetHwndOf(m_parent),
-+                0,
-+                wxGetInstance(),
-+                NULL
-+            );
-+            wxCHECK_MSG(hwnd, wxSize(),
-+                wxS("SysDateTimePick32 creation unexpected failed"));
++                     (
++                        DATETIMEPICK_CLASS,
++                        wxT(""),
++                        ::GetWindowLong(GetHwnd(), GWL_STYLE) & ~DTS_SHOWNONE,
++                        0, 0, 1, 1,
++                        GetHwndOf(m_parent),
++                        0,
++                        wxGetInstance(),
++                        nullptr
++                     );
++            wxCHECK_MSG( hwnd, wxSize(),
++                         wxS("SysDateTimePick32 creation unexpected failed") );
 +
 +            wxSetWindowFont(hwnd, GetFont());
 +        }
@@ -584,71 +532,23 @@ index da91828dae..060b4806fa 100644
 +        // checking for the return value: even if all "real" MSW systems do support
 +        // this message, Wine does not, even when it's configured to return Vista
 +        // or later version to the application, and returns FALSE for it.
-+        if (::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize))
++        if ( ::SendMessage(hwnd, DTM_GETIDEALSIZE, 0, (LPARAM)&idealSize) )
 +        {
 +            size.x = idealSize.cx;
 +            size.y = GetCharHeight();
 +        }
 +
-+        if (hwnd != GetHwnd())
++        if ( hwnd != GetHwnd() )
 +        {
 +            ::DestroyWindow(hwnd);
 +        }
      }
  
 -    if ( !size.x ) // Compute the size ourselves.
-+    if (!idealSize.cx) // Compute the size ourselves.
++    if ( !idealSize.x ) // Compute the size ourselves.
      {
          // Use the same native format as the underlying native control.
  #if wxUSE_INTL
-@@ -258,7 +251,7 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
-     }
- 
-     // Account for the checkbox.
--    if ( MSWAllowsNone() )
-+    if (MSWAllowsNone())
-     {
-         // The extra 8px here was determined heuristically as the value which
-         // results in the same layout with and without DTS_SHOWNONE under
-@@ -276,23 +269,23 @@ wxSize wxDateTimePickerCtrl::DoGetBestSize() const
- }
- 
- bool
--wxDateTimePickerCtrl::MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM *result)
-+wxDateTimePickerCtrl::MSWOnNotify(int idCtrl, WXLPARAM lParam, WXLPARAM* result)
- {
--    NMHDR* hdr = (NMHDR *)lParam;
--    switch ( hdr->code )
-+    NMHDR* hdr = (NMHDR*)lParam;
-+    switch (hdr->code)
-     {
--        case DTN_DATETIMECHANGE:
--            const NMDATETIMECHANGE& dtch = *(NMDATETIMECHANGE*)(hdr);
--
--            // Update the format before showing the new date if necessary.
--            MSWUpdateFormatIfNeeded(dtch.dwFlags == GDT_VALID);
--
--            if ( MSWOnDateTimeChange(dtch) )
--            {
--                *result = 0;
--                return true;
--            }
--            break;
-+    case DTN_DATETIMECHANGE:
-+        const NMDATETIMECHANGE& dtch = *(NMDATETIMECHANGE*)(hdr);
-+
-+        // Update the format before showing the new date if necessary.
-+        MSWUpdateFormatIfNeeded(dtch.dwFlags == GDT_VALID);
-+
-+        if (MSWOnDateTimeChange(dtch))
-+        {
-+            *result = 0;
-+            return true;
-+        }
-+        break;
-     }
- 
-     return wxDateTimePickerCtrlBase::MSWOnNotify(idCtrl, lParam, result);
 diff --git a/src/msw/dirdlg.cpp b/src/msw/dirdlg.cpp
 index 043bd72897..815b305a58 100644
 --- a/src/msw/dirdlg.cpp
@@ -701,7 +601,7 @@ index a31deff2a1..f43f61c170 100644
  
  wxColour wxHyperlinkCtrl::GetHoverColour() const
 diff --git a/src/msw/msgdlg.cpp b/src/msw/msgdlg.cpp
-index 27ce9f15e8..77cf072ada 100644
+index 19bc1a6504..5dbb9a9093 100644
 --- a/src/msw/msgdlg.cpp
 +++ b/src/msw/msgdlg.cpp
 @@ -2,6 +2,7 @@
@@ -909,16 +809,7 @@ index 27ce9f15e8..77cf072ada 100644
  
  wxMSWTaskDialogConfig::wxMSWTaskDialogConfig(const wxMessageDialogBase& dlg)
                       : buttons(new TASKDIALOG_BUTTON[MAX_BUTTONS])
-@@ -652,7 +662,7 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
-     tdc.pszWindowTitle = caption.t_str();
- 
-     // use the top level window as parent if none specified
--    tdc.hwndParent = parent ? GetHwndOf(parent) : nullptr;
-+    tdc.hwndParent = parent ? GetHwndOf(parent) : NULL;
- 
-     if ( wxApp::MSWGetDefaultLayout(parent) == wxLayout_RightToLeft )
-         tdc.dwFlags |= TDF_RTL_LAYOUT;
-@@ -746,8 +756,6 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
+@@ -751,8 +761,6 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
  
          AddTaskDialogButton(tdc, IDHELP, 0 /* not used */, btnHelpLabel);
      }
@@ -927,7 +818,7 @@ index 27ce9f15e8..77cf072ada 100644
  }
  
  void wxMSWTaskDialogConfig::AddTaskDialogButton(TASKDIALOGCONFIG &tdc,
-@@ -781,7 +789,7 @@ wxCRIT_SECT_DECLARE(gs_csTaskDialogIndirect);
+@@ -786,7 +794,7 @@ wxCRIT_SECT_DECLARE(gs_csTaskDialogIndirect);
  
  TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
  {
@@ -936,7 +827,7 @@ index 27ce9f15e8..77cf072ada 100644
      // to avoid reloading comctl32.dll and trying to resolve it every time
      // we're called if task dialog is not available (notice that this may
      // happen even under Vista+ if we don't use comctl32.dll v6).
-@@ -800,9 +808,19 @@ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
+@@ -805,9 +813,19 @@ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
      return s_TaskDialogIndirect;
  }
  
@@ -1409,10 +1300,10 @@ index 130b91dc27..832b87ffb5 100644
    if ( m_dwLastError != ERROR_SUCCESS &&
            m_dwLastError != ERROR_FILE_NOT_FOUND ) {
 diff --git a/src/msw/renderer.cpp b/src/msw/renderer.cpp
-index afc40ddde3..17209cc330 100644
+index 807bd9b4a2..72682e8981 100644
 --- a/src/msw/renderer.cpp
 +++ b/src/msw/renderer.cpp
-@@ -972,11 +972,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -964,11 +964,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
      {
          RECT rc = ConvertToRECT(dc, rect);
  
@@ -1424,7 +1315,7 @@ index afc40ddde3..17209cc330 100644
          wxColour textColour = dc.GetTextForeground();
          if (flags & wxCONTROL_SELECTED)
          {
-@@ -987,11 +982,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -979,11 +974,6 @@ void wxRendererXP::DrawItemText(wxWindow* win,
              textColour = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
          }
  
@@ -1436,7 +1327,7 @@ index afc40ddde3..17209cc330 100644
          const DWORD defTextFlags = DT_NOPREFIX;
          DWORD textFlags = defTextFlags;
  
-@@ -1145,8 +1135,8 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -1137,8 +1127,8 @@ void wxRendererXP::DrawItemText(wxWindow* win,
                  break;
          }
  
@@ -1602,10 +1493,10 @@ index 2769867999..26f9d37f1e 100644
  }
  
 diff --git a/src/msw/toolbar.cpp b/src/msw/toolbar.cpp
-index b067b521fa..a3d23d3472 100644
+index 6dbe9bd661..48ead6b6f0 100644
 --- a/src/msw/toolbar.cpp
 +++ b/src/msw/toolbar.cpp
-@@ -1719,7 +1719,9 @@ bool wxToolBar::MSWOnNotify(int WXUNUSED(idCtrl),
+@@ -1721,7 +1721,9 @@ bool wxToolBar::MSWOnNotify(int WXUNUSED(idCtrl),
  
                  *result = CDRF_DODEFAULT |
                            CDRF_NOTIFYPOSTPAINT |
@@ -1906,10 +1797,10 @@ index 7af6b6e7bb..5c65ab46aa 100644
      }
  
 diff --git a/src/msw/window.cpp b/src/msw/window.cpp
-index 3ccbbb36dc..c1332e130b 100644
+index 0522e6e7d9..40ee3a42e8 100644
 --- a/src/msw/window.cpp
 +++ b/src/msw/window.cpp
-@@ -286,10 +286,14 @@ void wxGetCursorPosMSW(POINT* pt)
+@@ -293,10 +293,14 @@ void wxGetCursorPosMSW(POINT* pt)
  // This only works for the current (i.e. last received) mouse event.
  static bool wxIsTouchEventMSW()
  {
@@ -1924,7 +1815,7 @@ index 3ccbbb36dc..c1332e130b 100644
  }
  
  // ---------------------------------------------------------------------------
-@@ -848,6 +852,7 @@ void wxWindowMSW::WarpPointer(int x, int y)
+@@ -855,6 +859,7 @@ void wxWindowMSW::WarpPointer(int x, int y)
  
  bool wxWindowMSW::EnableTouchEvents(int eventsMask)
  {
@@ -1932,7 +1823,7 @@ index 3ccbbb36dc..c1332e130b 100644
      // Static struct used when we need to use just a single configuration.
      GESTURECONFIG config = {0, 0, 0};
  
-@@ -965,6 +970,9 @@ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
+@@ -972,6 +977,9 @@ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
      }
  
      return true;
@@ -1942,7 +1833,7 @@ index 3ccbbb36dc..c1332e130b 100644
  }
  
  void wxWindowMSW::MSWUpdateUIState(int action, int state)
-@@ -3435,6 +3443,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3442,6 +3450,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              }
              break;
  
@@ -1950,7 +1841,7 @@ index 3ccbbb36dc..c1332e130b 100644
          case WM_GESTURE:
          {
              HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
-@@ -3513,6 +3522,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3520,6 +3529,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              // handled, otherwise we still pass them to DefWindowProc().
              processed = HandleTouch(wParam, lParam);
              break;
@@ -1958,7 +1849,7 @@ index 3ccbbb36dc..c1332e130b 100644
  
          // CTLCOLOR messages are sent by children to query the parent for their
          // colors
-@@ -6159,6 +6169,7 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
+@@ -6195,6 +6205,7 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
                                     const wxPoint& pt,
                                     WXDWORD flags)
  {
@@ -1966,7 +1857,7 @@ index 3ccbbb36dc..c1332e130b 100644
      event.SetEventObject(this);
      event.SetTimestamp(::GetMessageTime());
      event.SetPosition(pt);
-@@ -6170,10 +6181,14 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
+@@ -6206,10 +6217,14 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
          event.SetGestureEnd();
  
      return (flags & GF_BEGIN) != 0;
@@ -1981,7 +1872,7 @@ index 3ccbbb36dc..c1332e130b 100644
      // wxEVT_GESTURE_PAN
      wxPanGestureEvent event(GetId());
  
-@@ -6194,12 +6209,16 @@ bool wxWindowMSW::HandlePanGesture(const wxPoint& pt, WXDWORD flags)
+@@ -6230,12 +6245,16 @@ bool wxWindowMSW::HandlePanGesture(const wxPoint& pt, WXDWORD flags)
      s_previousLocation = pt;
  
      return HandleWindowEvent(event);
@@ -1998,7 +1889,7 @@ index 3ccbbb36dc..c1332e130b 100644
      // wxEVT_GESTURE_ZOOM
      wxZoomGestureEvent event(GetId());
  
-@@ -6232,12 +6251,16 @@ bool wxWindowMSW::HandleZoomGesture(const wxPoint& pt,
+@@ -6268,12 +6287,16 @@ bool wxWindowMSW::HandleZoomGesture(const wxPoint& pt,
      s_previousLocation = pt;
  
      return HandleWindowEvent(event);
@@ -2015,7 +1906,7 @@ index 3ccbbb36dc..c1332e130b 100644
      // wxEVT_GESTURE_ROTATE
      wxRotateGestureEvent event(GetId());
  
-@@ -6266,29 +6289,41 @@ bool wxWindowMSW::HandleRotateGesture(const wxPoint& pt,
+@@ -6302,29 +6325,41 @@ bool wxWindowMSW::HandleRotateGesture(const wxPoint& pt,
      }
  
      return HandleWindowEvent(event);
@@ -2057,7 +1948,7 @@ index 3ccbbb36dc..c1332e130b 100644
      const unsigned count = LOWORD(wParam);
      const HTOUCHINPUT hTouchInput = (HTOUCHINPUT)lParam;
      wxVector<TOUCHINPUT> info(count);
-@@ -6330,6 +6365,9 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+@@ -6366,6 +6401,9 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
      }
  
      return allHandled;
