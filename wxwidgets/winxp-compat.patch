@@ -417,7 +417,7 @@ index 05cf2184f8..041a42ffac 100644
  }
  
 diff --git a/src/msw/datetimectrl.cpp b/src/msw/datetimectrl.cpp
-index 6552b9727d..e9723f1029 100644
+index 6552b9727d..1318183c54 100644
 --- a/src/msw/datetimectrl.cpp
 +++ b/src/msw/datetimectrl.cpp
 @@ -80,7 +80,7 @@ wxDateTimePickerCtrl::MSWCreateDateTimePicker(wxWindow *parent,
@@ -487,7 +487,7 @@ index 6552b9727d..e9723f1029 100644
 -    if ( hwnd != GetHwnd() )
 -    {
 -        ::DestroyWindow(hwnd);
-+    if (wxGetWinVersion() >= wxWinVersion_Vista)
++    if (wxGetWinVersion() >= wxWinVersion_Vista) {
 +        // Use DTM_GETIDEALSIZE to ask the control itself to compute its ideal
 +        // size, but we can't use it with DTS_SHOWNONE because handling of
 +        // this flag is completely broken (up to at least Window 10 20H2): it's
