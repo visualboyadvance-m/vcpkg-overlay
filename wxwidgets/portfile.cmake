@@ -82,6 +82,10 @@ if("webview" IN_LIST FEATURES)
     endif()
 endif()
 
+if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86" AND VCPKG_TARGET_IS_MINGW)
+    list(APPEND OPTIONS -DwxUSE_PROGRESSDLG=OFF)
+endif()
+
 vcpkg_find_acquire_program(PKGCONFIG)
 
 # This may be set to ON by users in a custom triplet.

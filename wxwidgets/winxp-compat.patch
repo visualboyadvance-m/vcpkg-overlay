@@ -314,6 +314,60 @@ index 81b0ecc4dc..97664c555b 100644
  
      // If it succeeds, print it out
      if (i != 0) printf("|");
+diff --git a/src/generic/printps.cpp b/src/generic/printps.cpp
+index 9fe33ee4c0..8994909ec7 100644
+--- a/src/generic/printps.cpp
++++ b/src/generic/printps.cpp
+@@ -137,6 +137,8 @@ bool wxPostScriptPrinter::Print(wxWindow *parent, wxPrintout *printout, bool pro
+        pagesPerCopy = m_printDialogData.GetToPage()-m_printDialogData.GetFromPage()+1,
+        totalPages = pagesPerCopy * m_printDialogData.GetNoCopies(),
+        printedPages = 0;
++
++#if wxUSE_PROGRESSDLG
+     // Open the progress bar dialog
+     wxProgressDialog *progressDialog = new wxProgressDialog (
+        printout->GetTitle(),
+@@ -144,6 +146,7 @@ bool wxPostScriptPrinter::Print(wxWindow *parent, wxPrintout *printout, bool pro
+        totalPages,
+        parent,
+        wxPD_CAN_ABORT|wxPD_AUTO_HIDE|wxPD_APP_MODAL);
++#endif
+ 
+     printout->OnBeginPrinting();
+ 
+@@ -181,11 +184,14 @@ bool wxPostScriptPrinter::Print(wxWindow *parent, wxPrintout *printout, bool pro
+             {
+                wxString msg;
+                msg.Printf(_("Printing page %d..."), printedPages+1);
++#if wxUSE_PROGRESSDLG
+                if(progressDialog->Update(printedPages++, msg))
+                {
++#endif
+                   dc->StartPage();
+                   printout->OnPrintPage(pn);
+                   dc->EndPage();
++#if wxUSE_PROGRESSDLG
+                }
+                else
+                {
+@@ -193,6 +199,7 @@ bool wxPostScriptPrinter::Print(wxWindow *parent, wxPrintout *printout, bool pro
+                   sm_lastError = wxPRINTER_CANCELLED;
+                   keepGoing = false;
+                }
++#endif
+             }
+             wxYield();
+         }
+@@ -200,7 +207,9 @@ bool wxPostScriptPrinter::Print(wxWindow *parent, wxPrintout *printout, bool pro
+     }
+ 
+     printout->OnEndPrinting();
++#if wxUSE_PROGRESSDLG
+     delete progressDialog;
++#endif
+ 
+     wxEndBusyCursor();
+ 
 diff --git a/src/msw/app.cpp b/src/msw/app.cpp
 index 9679da074a..d2f0f16ab5 100644
 --- a/src/msw/app.cpp
@@ -599,6 +653,26 @@ index a31deff2a1..f43f61c170 100644
  }
  
  wxColour wxHyperlinkCtrl::GetHoverColour() const
+diff --git a/src/msw/menuitem.cpp b/src/msw/menuitem.cpp
+index 9d17c0e392..234cdefa76 100644
+--- a/src/msw/menuitem.cpp
++++ b/src/msw/menuitem.cpp
+@@ -1028,6 +1028,7 @@ bool wxMenuItem::OnDrawItem(wxDC& dc, const wxRect& rc,
+             drawMenuThemePart(rcSelection, MENU_POPUPITEM, state);
+ 
+             // We also need to draw the menu arrow for sub menus in dark mode.
++#if _WIN32_WINNT > 0x0501
+             if ( isDark && GetSubMenu() )
+             {
+                 const int glyphState =
+@@ -1047,6 +1048,7 @@ bool wxMenuItem::OnDrawItem(wxDC& dc, const wxRect& rc,
+                                   rcArrow.left, rcArrow.top,
+                                   rcArrow.right, rcArrow.bottom);
+             }
++#endif
+         }
+         else
+ #endif // wxUSE_UXTHEME
 diff --git a/src/msw/msgdlg.cpp b/src/msw/msgdlg.cpp
 index 19bc1a6504..5dbb9a9093 100644
 --- a/src/msw/msgdlg.cpp
@@ -847,151 +921,6 @@ index 19bc1a6504..5dbb9a9093 100644
  }
  
  int wxMSWMessageDialog::MSWTranslateReturnCode(int msAns)
-diff --git a/src/msw/progdlg.cpp b/src/msw/progdlg.cpp
-index c567fb0f1d..0c7bdb5c1b 100644
---- a/src/msw/progdlg.cpp
-+++ b/src/msw/progdlg.cpp
-@@ -35,6 +35,8 @@
- 
- using namespace wxMSWMessageDialog;
- 
-+#ifdef wxHAS_MSW_TASKDIALOG
-+
- // ----------------------------------------------------------------------------
- // Constants
- // ----------------------------------------------------------------------------
-@@ -85,7 +87,7 @@ public:
-         m_skipped = false;
-         m_msgChangeElementText = TDM_UPDATE_ELEMENT_TEXT;
-         m_notifications = 0;
--        m_parent = nullptr;
-+        m_parent = NULL;
-     }
- 
-     wxCriticalSection m_cs;
-@@ -172,7 +174,7 @@ public:
- private:
-     wxProgressDialogSharedData m_sharedData;
- 
--    virtual void* Entry() override;
-+    virtual void* Entry() wxOVERRIDE;
- 
-     static HRESULT CALLBACK TaskDialogCallbackProc(HWND hwnd,
-                                                    UINT uNotification,
-@@ -195,7 +197,7 @@ public:
-     }
- 
- protected:
--    virtual void OnNextIteration() override
-+    virtual void OnNextIteration() wxOVERRIDE
-     {
-         wxCriticalSectionLocker locker(m_data.m_cs);
- 
-@@ -310,7 +312,7 @@ void PerformNotificationUpdates(HWND hwnd,
- 
-     if ( sharedData->m_notifications & wxSPDD_WINDOW_MOVED )
-     {
--        ::SetWindowPos(hwnd, nullptr, sharedData->m_winPosition.x, sharedData->m_winPosition.y,
-+        ::SetWindowPos(hwnd, NULL, sharedData->m_winPosition.x, sharedData->m_winPosition.y,
-                        -1, -1, // ignored
-                        SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
-     }
-@@ -393,6 +395,8 @@ void PerformNotificationUpdates(HWND hwnd,
- 
- } // anonymous namespace
- 
-+#endif // wxHAS_MSW_TASKDIALOG
-+
- // ============================================================================
- // wxProgressDialog implementation
- // ============================================================================
-@@ -441,12 +445,14 @@ wxProgressDialog::wxProgressDialog( const wxString& title,
-             m_taskDialogRunner = nullptr;
-         }
-     }
-+#endif // wxHAS_MSW_TASKDIALOG
- 
-     Create(title, message, maximum, parent, style);
- }
- 
- wxProgressDialog::~wxProgressDialog()
- {
-+#ifdef wxHAS_MSW_TASKDIALOG
-     if ( !m_taskDialogRunner )
-         return;
- 
-@@ -619,10 +625,14 @@ void wxProgressDialog::DispatchEvents()
-     // other user actions while the dialog is shown.
-     wxEventLoop::GetActive()->
-         YieldFor(wxEVT_CATEGORY_ALL & ~wxEVT_CATEGORY_USER_INPUT);
-+#else // !wxHAS_MSW_TASKDIALOG
-+    wxFAIL_MSG( "unreachable" );
-+#endif // wxHAS_MSW_TASKDIALOG/!wxHAS_MSW_TASKDIALOG
- }
- 
- bool wxProgressDialog::DoNativeBeforeUpdate(bool *skip)
- {
-+#ifdef wxHAS_MSW_TASKDIALOG
-     DispatchEvents();
- 
-     wxCriticalSectionLocker locker(m_sharedData->m_cs);
-@@ -825,6 +835,7 @@ void wxProgressDialog::DoMoveWindow(int x, int y, int width, int height)
- 
-         return;
-     }
-+#endif // wxHAS_MSW_TASKDIALOG
- 
-     wxGenericProgressDialog::DoMoveWindow(x, y, width, height);
- }
-@@ -975,12 +986,14 @@ bool wxProgressDialog::Show(bool show)
-         // We don't need to do anything to show it.
-         return true;
-     }
-+#endif // wxHAS_MSW_TASKDIALOG
- 
-     return wxGenericProgressDialog::Show( show );
- }
- 
- void wxProgressDialog::UpdateExpandedInformation(int value)
- {
-+#ifdef wxHAS_MSW_TASKDIALOG
-     unsigned long elapsedTime;
-     unsigned long estimatedTime;
-     unsigned long remainingTime;
-@@ -1033,12 +1046,17 @@ void wxProgressDialog::UpdateExpandedInformation(int value)
-         m_sharedData->m_expandedInformation = expandedInformation;
-         m_sharedData->m_notifications |= wxSPDD_EXPINFO_CHANGED;
-     }
-+#else // !wxHAS_MSW_TASKDIALOG
-+    wxUnusedVar(value);
-+#endif // wxHAS_MSW_TASKDIALOG/!wxHAS_MSW_TASKDIALOG
- }
- 
- // ----------------------------------------------------------------------------
- // wxProgressDialogTaskRunner and related methods
- // ----------------------------------------------------------------------------
- 
-+#ifdef wxHAS_MSW_TASKDIALOG
-+
- void* wxProgressDialogTaskRunner::Entry()
- {
-     WinStruct<TASKDIALOGCONFIG> tdc;
-@@ -1118,7 +1136,7 @@ void* wxProgressDialogTaskRunner::Entry()
-     // Update(), wake it up so that it checks our status again.
-     wxWakeUpIdle();
- 
--    return nullptr;
-+    return NULL;
- }
- 
- // static
-@@ -1273,4 +1291,6 @@ wxProgressDialogTaskRunner::TaskDialogCallbackProc
-     return S_OK;
- }
- 
-+#endif // wxHAS_MSW_TASKDIALOG
-+
- #endif // wxUSE_PROGRESSDLG && wxUSE_THREADS
 diff --git a/src/msw/registry.cpp b/src/msw/registry.cpp
 index 130b91dc27..832b87ffb5 100644
 --- a/src/msw/registry.cpp
@@ -1505,7 +1434,7 @@ index 7af6b6e7bb..5c65ab46aa 100644
      }
  
 diff --git a/src/msw/window.cpp b/src/msw/window.cpp
-index 8bc8c415f1..4fb0d83066 100644
+index 8bc8c415f1..fce8831c42 100644
 --- a/src/msw/window.cpp
 +++ b/src/msw/window.cpp
 @@ -293,10 +293,14 @@ void wxGetCursorPosMSW(POINT* pt)
@@ -1549,15 +1478,23 @@ index 8bc8c415f1..4fb0d83066 100644
          case WM_GESTURE:
          {
              HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
-@@ -3520,6 +3529,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3520,12 +3529,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              // handled, otherwise we still pass them to DefWindowProc().
              processed = HandleTouch(wParam, lParam);
              break;
 +#endif
  
++#if _WIN32_WINNT >= 0x0602
          case WM_POINTERDOWN:
          case WM_POINTERUP:
-@@ -6201,6 +6211,7 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
+         case WM_POINTERUPDATE:
+             processed = HandlePointer(message, wParam, lParam);
+             break;
++#endif
+ 
+         // CTLCOLOR messages are sent by children to query the parent for their
+         // colors
+@@ -6201,6 +6213,7 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
                                     const wxPoint& pt,
                                     WXDWORD flags)
  {
@@ -1565,7 +1502,7 @@ index 8bc8c415f1..4fb0d83066 100644
      event.SetEventObject(this);
      event.SetTimestamp(::GetMessageTime());
      event.SetPosition(pt);
-@@ -6212,10 +6223,14 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
+@@ -6212,10 +6225,14 @@ bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
          event.SetGestureEnd();
  
      return (flags & GF_BEGIN) != 0;
@@ -1580,7 +1517,7 @@ index 8bc8c415f1..4fb0d83066 100644
      // wxEVT_GESTURE_PAN
      wxPanGestureEvent event(GetId());
  
-@@ -6236,12 +6251,16 @@ bool wxWindowMSW::HandlePanGesture(const wxPoint& pt, WXDWORD flags)
+@@ -6236,12 +6253,16 @@ bool wxWindowMSW::HandlePanGesture(const wxPoint& pt, WXDWORD flags)
      s_previousLocation = pt;
  
      return HandleWindowEvent(event);
@@ -1597,7 +1534,7 @@ index 8bc8c415f1..4fb0d83066 100644
      // wxEVT_GESTURE_ZOOM
      wxZoomGestureEvent event(GetId());
  
-@@ -6274,12 +6293,16 @@ bool wxWindowMSW::HandleZoomGesture(const wxPoint& pt,
+@@ -6274,12 +6295,16 @@ bool wxWindowMSW::HandleZoomGesture(const wxPoint& pt,
      s_previousLocation = pt;
  
      return HandleWindowEvent(event);
@@ -1614,7 +1551,7 @@ index 8bc8c415f1..4fb0d83066 100644
      // wxEVT_GESTURE_ROTATE
      wxRotateGestureEvent event(GetId());
  
-@@ -6308,29 +6331,41 @@ bool wxWindowMSW::HandleRotateGesture(const wxPoint& pt,
+@@ -6308,29 +6333,41 @@ bool wxWindowMSW::HandleRotateGesture(const wxPoint& pt,
      }
  
      return HandleWindowEvent(event);
@@ -1656,7 +1593,7 @@ index 8bc8c415f1..4fb0d83066 100644
      const unsigned count = LOWORD(wParam);
      const HTOUCHINPUT hTouchInput = (HTOUCHINPUT)lParam;
      wxVector<TOUCHINPUT> info(count);
-@@ -6372,6 +6407,9 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+@@ -6372,11 +6409,15 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
      }
  
      return allHandled;
@@ -1666,3 +1603,22 @@ index 8bc8c415f1..4fb0d83066 100644
  }
  
  bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam)
+ {
+     wxUnusedVar(lParam);
++#if _WIN32_WINNT >= 0x0602
+     wxEventType type;
+     switch( message )
+     {
+@@ -6446,6 +6487,12 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
+     }
+ 
+     return HandleWindowEvent(event);;
++#else
++    wxUnusedVar(message);
++    wxUnusedVar(wParam);
++
++    return false;
++#endif
+ }
+ 
+ // ---------------------------------------------------------------------------
