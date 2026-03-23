@@ -1,7 +1,6 @@
-diff -Nur n7.1.1-b116121da9.clean/configure n7.1.1-b116121da9.clean_patched/configure
---- n7.1.1-b116121da9.clean/configure	2025-05-25 15:55:12.024995500 +0200
-+++ n7.1.1-b116121da9.clean_patched/configure	2025-05-26 07:51:03.294230500 +0200
-@@ -2421,7 +2421,6 @@
+--- a/configure	1900-01-00 00:00:00 +0000
++++ b/configure	1900-01-00 00:00:00 +0000
+@@ -2444,7 +2444,6 @@
  "
  
  SYSTEM_LIBRARIES="
@@ -9,16 +8,16 @@ diff -Nur n7.1.1-b116121da9.clean/configure n7.1.1-b116121da9.clean_patched/conf
      vaapi_drm
      vaapi_x11
      vaapi_win32
-@@ -4034,7 +4033,7 @@
- avfilter_suggest="libm stdatomic"
+@@ -4128,7 +4127,7 @@
+ avfilter_suggest="libm stdatomic spirv_compiler"
  avformat_deps="avcodec avutil"
  avformat_suggest="libm network zlib stdatomic"
 -avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia bcrypt stdatomic"
 +avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia stdatomic"
- postproc_deps="avutil gpl"
- postproc_suggest="libm stdatomic"
  swresample_deps="avutil"
-@@ -6669,8 +6668,6 @@
+ swresample_suggest="libm libsoxr stdatomic"
+ swscale_deps="avutil"
+@@ -6806,8 +6805,6 @@
  done
  
  check_lib advapi32 "windows.h"            RegCloseKey          -ladvapi32
@@ -27,9 +26,8 @@ diff -Nur n7.1.1-b116121da9.clean/configure n7.1.1-b116121da9.clean_patched/conf
  check_lib ole32    "windows.h objbase.h"  CoTaskMemFree        -lole32
  check_lib shell32  "windows.h shellapi.h" CommandLineToArgvW   -lshell32
  check_lib psapi    "windows.h psapi.h"    GetProcessMemoryInfo -lpsapi
-diff -Nur n7.1.1-b116121da9.clean/libavutil/random_seed.c n7.1.1-b116121da9.clean_patched/libavutil/random_seed.c
---- n7.1.1-b116121da9.clean/libavutil/random_seed.c	2025-03-03 01:17:09.000000000 +0100
-+++ n7.1.1-b116121da9.clean_patched/libavutil/random_seed.c	2025-05-26 07:52:09.259778300 +0200
+--- a/libavutil/random_seed.c	1900-01-00 00:00:00 +0000
++++ b/libavutil/random_seed.c	1900-01-00 00:00:00 +0000
 @@ -26,10 +26,6 @@
  #if HAVE_IO_H
  #include <io.h>
@@ -41,7 +39,7 @@ diff -Nur n7.1.1-b116121da9.clean/libavutil/random_seed.c n7.1.1-b116121da9.clea
  #if CONFIG_GCRYPT
  #include <gcrypt.h>
  #elif CONFIG_OPENSSL
-@@ -131,18 +127,6 @@
+@@ -160,18 +156,6 @@
  {
      int err;
  

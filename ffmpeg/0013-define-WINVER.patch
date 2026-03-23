@@ -5,9 +5,9 @@ diff --color -Naur src_old/libavcodec/mf_utils.c src/libavcodec/mf_utils.c
  #define _WIN32_WINNT 0x0602
  #endif
  
-+#if !defined(WINVER) || WINVER < 0x0501
++#if !defined(WINVER) || WINVER < 0x0602
 +#undef WINVER
-+#define WINVER 0x0501
++#define WINVER 0x0602
 +#endif
 +
  #include "mf_utils.h"
