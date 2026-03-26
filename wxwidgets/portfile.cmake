@@ -18,22 +18,26 @@ vcpkg_from_github(
 )
 
 # Submodule dependencies
-vcpkg_from_github(
-    OUT_SOURCE_PATH lexilla_SOURCE_PATH
-    REPO wxWidgets/lexilla
-    REF "0dbce0b418b8b3d2ef30304d0bf53ff58c07ed84"
-    SHA512 570bb07fd83d7bd1d6958e833f663e4061082e41a2d9f4e94e3d99dfc22a8afc90ba9b28397501aeab68c4a4ab59fd126413bb5cdf9af2591e947799d3e5748f
-    HEAD_REF wx
+file(DOWNLOAD
+    https://github.com/wxWidgets/lexilla/archive/refs/heads/wx.zip
+    "${SOURCE_PATH}/lexilla.zip"
 )
-file(COPY "${lexilla_SOURCE_PATH}/" DESTINATION "${SOURCE_PATH}/src/stc/lexilla")
-vcpkg_from_github(
-    OUT_SOURCE_PATH scintilla_SOURCE_PATH
-    REPO wxWidgets/scintilla
-    REF "0b90f31ced23241054e8088abb50babe9a44ae67"
-    SHA512 570bb07fd83d7bd1d6958e833f663e4061082e41a2d9f4e94e3d99dfc22a8afc90ba9b28397501aeab68c4a4ab59fd126413bb5cdf9af2591e947799d3e5748f
-    HEAD_REF wx
+file(ARCHIVE_EXTRACT
+    INPUT       "${SOURCE_PATH}/lexilla.zip"
+    DESTINATION "${SOURCE_PATH}"
 )
-file(COPY "${scintilla_SOURCE_PATH}/" DESTINATION "${SOURCE_PATH}/src/stc/scintilla")
+file(REMOVE_RECURSE "${SOURCE_PATH}/src/stc/lexilla")
+file(RENAME "${SOURCE_PATH}/lexilla-wx" "${SOURCE_PATH}/src/stc/lexilla")
+file(DOWNLOAD
+    https://github.com/wxWidgets/scintilla/archive/refs/heads/wx.zip
+    "${SOURCE_PATH}/scintilla.zip"
+)
+file(ARCHIVE_EXTRACT
+    INPUT       "${SOURCE_PATH}/scintilla.zip"
+    DESTINATION "${SOURCE_PATH}"
+)
+file(REMOVE_RECURSE "${SOURCE_PATH}/src/stc/scintilla")
+file(RENAME "${SOURCE_PATH}/scintilla-wx" "${SOURCE_PATH}/src/stc/scintilla")
 
 vcpkg_check_features(
     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
