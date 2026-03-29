@@ -37,10 +37,12 @@ endif()
 
 set(OPTIONS "--enable-pic --disable-doc --enable-runtime-cpudetect --disable-autodetect")
 
+set(WITH_SCHANNEL OFF)
+
 if(VCPKG_TARGET_IS_MINGW)
     string(APPEND OPTIONS " --disable-w32threads --enable-pthreads --disable-d3d11va --disable-d3d12va  --disable-mediafoundation")
     if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
-        string(APPEND OPTIONS " --target-os=mingw32 --extra-cflags=-D_WIN32_WINNT=0x0501")
+        string(APPEND OPTIONS " --target-os=mingw32 --extra-cflags=-D_WIN32_WINNT=0x0501 --disable-schannel")
     elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
         string(APPEND OPTIONS " --target-os=mingw64 --extra-cflags=-D_WIN32_WINNT=0x0601")
     endif()
@@ -426,13 +428,14 @@ else()
 endif()
 
 set(WITH_OPENSSL OFF)
-set(WITH_SCHANNEL OFF)
 if("openssl" IN_LIST FEATURES)
     set(OPTIONS "${OPTIONS} --enable-openssl")
     set(WITH_OPENSSL ON)
 else()
     set(OPTIONS "${OPTIONS} --disable-openssl")
-    if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_UWP)
+    if(VCPKG_TARGET_IS_WINDOWS
+            AND NOT VCPKG_TARGET_IS_UWP
+            AND NOT (VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x86"))
         string(APPEND OPTIONS " --enable-schannel")
         set(WITH_SCHANNEL ON)
     endif()
