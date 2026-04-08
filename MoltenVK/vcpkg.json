@@ -1,0 +1,16 @@
+{
+  "name": "moltenvk",
+  "version": "1.4.1",
+  "description": [
+    "An implementation of Vulkan on Metal.",
+    "For macOS 10.13 or higher."
+  ],
+  "license": null,
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    "vulkan-headers"
+  ]
+}

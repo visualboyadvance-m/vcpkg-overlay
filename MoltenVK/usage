@@ -1,0 +1,4 @@
+MoltenVK is compatible with built-in CMake targets:
+
+    find_library(MOTLENVK MoltenVK)
+    target_link_libraries(main PRIVATE ${MOLTENVK})
