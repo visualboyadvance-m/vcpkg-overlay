@@ -1144,7 +1144,7 @@ index 6dbe9bd661..48ead6b6f0 100644
  
                  // Draw custom button background when it would be drawn with a
 diff --git a/src/msw/uilocale.cpp b/src/msw/uilocale.cpp
-index fab0c64512..ceef7163c9 100644
+index 1b07cc0ddb..0deca29caa 100644
 --- a/src/msw/uilocale.cpp
 +++ b/src/msw/uilocale.cpp
 @@ -20,6 +20,7 @@
@@ -1155,63 +1155,72 @@ index fab0c64512..ceef7163c9 100644
  #include "wx/uilocale.h"
  #include "wx/private/uilocale.h"
  
-@@ -171,19 +172,28 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
-         return wxString{};
-     }
- 
--    wxString format;
--    wxString localeName = wxUILocale::GetCurrent().GetName();
--    if (localeName.IsSameAs("C"))
--    {
--        localeName = "en-US";
+@@ -177,31 +178,49 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+     // format: if a locale is explicitly specified, use it, but otherwise use
+     // LOCALE_NAME_USER_DEFAULT to get the format configured in the regional
+     // settings.
++    wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
+     const wchar_t* name = LOCALE_NAME_USER_DEFAULT;
 +    LCTYPE lctype = wxGetLCTYPEFormatFromLocalInfo(index);
+     wxString format;
+-    wxString localeName;
+-    if ( !wxUILocale::GetCurrent().IsDefault() )
+-    {
+-        localeName = wxUILocale::GetCurrent().GetName();
+-        if ( localeName.IsSameAs("C") )
++    wchar_t buf[256];
 +
-+    if (!lctype) {
-+        return "";
-     }
++    if (wxGetWinVersion() >= wxWinVersion_Vista) {
++        wxString localeName;
++        if ( !wxUILocale::GetCurrent().IsDefault() )
+         {
+-            // Handle the case when the application uses the C locale
+-            localeName = "en-US";
++            localeName = wxUILocale::GetCurrent().GetName();
++            if ( localeName.IsSameAs("C") )
++            {
++                // Handle the case when the application uses the C locale
++                localeName = "en-US";
++            }
++            name = localeName.wc_str();
+         }
+-        name = localeName.wc_str();
+-    }
  
--    const wchar_t* name = localeName.wc_str();
 -    LCTYPE lctype = wxGetLCTYPEFormatFromLocalInfo(index);
 -    if (lctype != 0)
 -    {
 -        wchar_t buf[256];
 -        if (::GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
-+    wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
-+    wchar_t buf[256];
-+    wxString format;
++        if (lctype != 0)
+         {
++            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
++                (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
 +
-+    if (wxGetWinVersion() >= wxWinVersion_Vista) {
-+        wxString localeName = wxUILocale::GetCurrent().GetName();
-+        if (localeName.IsSameAs("C"))
-+        {
-+            localeName = "en-US";
++            if (pfnGetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
++            {
++                format = buf;
++            }
++            else
++            {
++                wxLogLastError(wxT("GetLocaleInfoEx"));
++            }
 +        }
++    }
 +
-+        const wchar_t* name = localeName.wc_str();
-+        int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
-+            (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
-+
-+        if (pfnGetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
-         {
-             format = buf;
-         }
-@@ -191,6 +201,15 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
-         {
-             wxLogLastError(wxT("GetLocaleInfoEx"));
-         }
-+    } else { // XP
++    if (!format) {
 +        LCID localeId = ::GetUserDefaultLCID();
 +        if (::GetLocaleInfo(localeId, lctype, buf, WXSIZEOF(buf))) {
-+            format = buf;
-+        }
-+        else
-+        {
+             format = buf;
+         }
+         else
+         {
+-            wxLogLastError(wxT("GetLocaleInfoEx"));
 +            wxLogLastError(wxT("GetLocaleInfo"));
-+        }
+         }
      }
-     return format;
- }
-@@ -378,6 +397,7 @@ public:
+ 
+@@ -391,6 +410,7 @@ public:
      static wxVector<wxString> GetPreferredUILanguages()
      {
          wxVector<wxString> preferred;
@@ -1219,7 +1228,7 @@ index fab0c64512..ceef7163c9 100644
  
          // Check if Windows supports preferred UI languages.
          // Note: Windows 8.x might support them as well, but Windows 7
-@@ -388,10 +408,14 @@ public:
+@@ -401,10 +421,14 @@ public:
  
              ULONG numberOfLanguages = 0;
              ULONG bufferSize = 0;
@@ -1236,7 +1245,7 @@ index fab0c64512..ceef7163c9 100644
                  {
                      WCHAR* buf = languages.get();
                      for (unsigned k = 0; k < numberOfLanguages; ++k)
-@@ -411,11 +435,13 @@ public:
+@@ -424,11 +448,13 @@ public:
                  wxLogLastError(wxT("GetUserPreferredUILanguages"));
              }
          }
@@ -1252,7 +1261,7 @@ index fab0c64512..ceef7163c9 100644
              {
                  preferred.push_back(buf);
              }
-@@ -424,6 +450,19 @@ public:
+@@ -437,6 +463,19 @@ public:
                  wxLogLastError(wxT("GetUserDefaultLocaleName"));
              }
          }
@@ -1272,7 +1281,7 @@ index fab0c64512..ceef7163c9 100644
  
          return preferred;
      }
-@@ -440,8 +479,14 @@ public:
+@@ -453,8 +492,14 @@ public:
      {
          // Getting the locale name seems to be the simplest way to see if it's
          // really supported: unknown locale result in an error here.
@@ -1289,7 +1298,7 @@ index fab0c64512..ceef7163c9 100644
  
          // Unfortunately under Windows 10 the call above only fails if the given
          // locale name is not a valid BCP 47 identifier. For example,
-@@ -463,8 +508,11 @@ public:
+@@ -476,8 +521,11 @@ public:
              // discouraged by Microsoft (the constant is not even defined in a
              // Windows header file). However, for now constructed locales will
              // be rejected here.
@@ -1302,7 +1311,7 @@ index fab0c64512..ceef7163c9 100644
                   (
                      name,
                      LOCALE_ICONSTRUCTEDLOCALE | LOCALE_RETURN_NUMBER,
-@@ -485,6 +533,12 @@ public:
+@@ -502,6 +550,12 @@ public:
  
      void Use() override
      {
@@ -1314,8 +1323,8 @@ index fab0c64512..ceef7163c9 100644
 +
          // Construct a double NUL-terminated buffer.
          wchar_t buf[256];
-         if ( m_name )
-@@ -495,8 +549,9 @@ public:
+         if ( m_nameDisplay )
+@@ -512,8 +566,9 @@ public:
  
          ULONG num = 1;
  
@@ -1327,7 +1336,7 @@ index fab0c64512..ceef7163c9 100644
      }
  
      wxString GetName() const override
-@@ -648,8 +703,8 @@ public:
+@@ -665,8 +720,8 @@ public:
                LOCALE_SDAYNAME4, LOCALE_SDAYNAME5, LOCALE_SDAYNAME6 },
              { LOCALE_SABBREVDAYNAME7, LOCALE_SABBREVDAYNAME1, LOCALE_SABBREVDAYNAME2, LOCALE_SABBREVDAYNAME3,
                LOCALE_SABBREVDAYNAME4, LOCALE_SABBREVDAYNAME5, LOCALE_SABBREVDAYNAME6 },
@@ -1338,13 +1347,13 @@ index fab0c64512..ceef7163c9 100644
          };
  
          const int idx = ArrayIndexFromFlag(form.GetFlags());
-@@ -742,16 +797,35 @@ public:
+@@ -759,16 +814,35 @@ public:
          if ( flags & wxCompare_CaseInsensitive )
              dwFlags |= NORM_IGNORECASE;
  
 -        const int ret = ::CompareStringEx
 -            (
--                m_name,
+-                m_nameDisplay,
 -                dwFlags,
 -                lhs.wc_str(), -1,
 -                rhs.wc_str(), -1,
@@ -1361,7 +1370,7 @@ index fab0c64512..ceef7163c9 100644
 +
 +            ret = pfnCompareStringEx
 +                (
-+                    m_name,
++                    m_nameDisplay,
 +                    dwFlags,
 +                    lhs.wc_str(), -1,
 +                    rhs.wc_str(), -1,
@@ -1384,11 +1393,11 @@ index fab0c64512..ceef7163c9 100644
  
          switch ( ret )
          {
-@@ -779,10 +853,27 @@ private:
-     wxString DoGetInfo(LCTYPE lctype) const
+@@ -805,10 +879,27 @@ private:
+     wxString DoGetInfo(const wchar_t* const name, LCTYPE lctype) const
      {
          wchar_t buf[256];
--        if ( !::GetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )
+-        if ( !::GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)) )
 +
 +        if (wxGetWinVersion() >= wxWinVersion_Vista)
          {
@@ -1398,9 +1407,9 @@ index fab0c64512..ceef7163c9 100644
 +            int (WINAPI *pfnGetLocaleInfoEx)(LPCWSTR, LCTYPE, LPWSTR, int) =
 +                (int (WINAPI *)(LPCWSTR, LCTYPE, LPWSTR, int))kernel32.GetSymbol(wxT("GetLocaleInfoEx"));
 +
-+            if ( !pfnGetLocaleInfoEx(m_name, lctype, buf, WXSIZEOF(buf)) )
++            if (!pfnGetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)) )
 +            {
-+                wxLogLastError(wxT("GetLocaleInfo"));
++                wxLogLastError(wxT("GetLocaleInfoEx"));
 +                return wxString();
 +            }
 +        }
