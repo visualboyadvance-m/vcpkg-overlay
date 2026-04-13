@@ -721,6 +721,8 @@ index 19bc1a6504..5dbb9a9093 100644
 -// Different threads could potentially show message boxes at the same time, so
 -// remember the window showing it in a thread-specific variable.
 -thread_local wxMessageDialog* gs_currentDialog = nullptr;
++wxCRIT_SECT_DECLARE(gs_csHookMap);
++
 +wxMessageDialogMap& HookMap()
 +{
 +    static wxMessageDialogMap s_Map;
@@ -751,11 +753,14 @@ index 19bc1a6504..5dbb9a9093 100644
 -    wxCHECK_MSG( wnd, false, "No valid wxMessageDialog?" );
 +    // Find the thread-local instance of wxMessageDialog
 +    const DWORD tid = ::GetCurrentThreadId();
-+    wxMessageDialogMap::iterator node = HookMap().find(tid);
-+    wxCHECK_MSG( node != HookMap().end(), false,
-+                    wxT("bogus thread id in wxMessageDialog::Hook") );
-+
-+    wxMessageDialog *  const wnd = node->second;
++    wxMessageDialog* wnd;
++    {
++        wxCRIT_SECT_LOCKER(lock, gs_csHookMap);
++        wxMessageDialogMap::iterator node = HookMap().find(tid);
++        wxCHECK_MSG( node != HookMap().end(), false,
++                        wxT("bogus thread id in wxMessageDialog::Hook") );
++        wnd = node->second;
++    }
  
      const HHOOK hhook = (HHOOK)wnd->m_hook;
      const LRESULT rc = ::CallNextHookEx(hhook, code, wParam, lParam);
@@ -766,7 +771,10 @@ index 19bc1a6504..5dbb9a9093 100644
 -        wnd->m_hook = nullptr;
 -        gs_currentDialog = nullptr;
 +        wnd->m_hook = NULL;
-+        HookMap().erase(tid);
++        {
++            wxCRIT_SECT_LOCKER(lock, gs_csHookMap);
++            HookMap().erase(tid);
++        }
  
          TempHWNDSetter set(wnd, (WXHWND)wParam);
  
@@ -810,7 +818,10 @@ index 19bc1a6504..5dbb9a9093 100644
 -                                &wxMessageDialog::HookFunction, nullptr, tid);
 -    gs_currentDialog = this;
 +                                &wxMessageDialog::HookFunction, NULL, tid);
-+    HookMap()[tid] = this;
++    {
++        wxCRIT_SECT_LOCKER(lock, gs_csHookMap);
++        HookMap()[tid] = this;
++    }
  
      // do show the dialog
      const int msAns = MessageBox
@@ -1237,7 +1248,7 @@ index 1b07cc0ddb..0deca29caa 100644
 +            BOOL (WINAPI *pfnGetUserPreferredUILanguages)(DWORD, PULONG, PZZWSTR, PULONG) =
 +                (BOOL (WINAPI *)(DWORD, PULONG, PZZWSTR, PULONG))kernel32.GetSymbol(wxT("GetUserPreferredUILanguages"));
 +
-+            if (pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
++            if (pfnGetUserPreferredUILanguages && pfnGetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
              {
                  wxScopedArray<WCHAR> languages(bufferSize);
 -                if (::GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, languages.get(), &bufferSize))
@@ -1255,7 +1266,7 @@ index 1b07cc0ddb..0deca29caa 100644
              // Use the default user locale for Windows 7 resp Windows 8.x and below
              wchar_t buf[LOCALE_NAME_MAX_LENGTH];
 -            if (::GetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH))
-+            int (*pfnGetUserDefaultLocaleName)(LPWSTR, int) =
++            int (WINAPI *pfnGetUserDefaultLocaleName)(LPWSTR, int) =
 +                (int (*)(LPWSTR, int))kernel32.GetSymbol(wxT("GetUserDefaultLocaleName"));
 +            if (pfnGetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH))
              {
@@ -1361,23 +1372,24 @@ index 1b07cc0ddb..0deca29caa 100644
 -                wxRESERVED_PARAM,
 -                wxRESERVED_PARAM
 -            );
-+        int ret;
++        int ret = 0;
 +        if (wxGetWinVersion() >= wxWinVersion_Vista)
 +        {
 +            wxDynamicLibrary kernel32(wxT("kernel32.dll"), wxDL_VERBATIM | wxDL_DEFAULT);
 +            int (WINAPI *pfnCompareStringEx)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM) =
 +                (int (WINAPI *)(LPCWSTR, DWORD, LPCWCH, int, LPCWCH, int, LPNLSVERSIONINFO, LPVOID, LPARAM))kernel32.GetSymbol(wxT("CompareStringEx"));
 +
-+            ret = pfnCompareStringEx
-+                (
-+                    m_nameDisplay,
-+                    dwFlags,
-+                    lhs.wc_str(), -1,
-+                    rhs.wc_str(), -1,
-+                    nullptr,
-+                    wxRESERVED_PARAM,
-+                    wxRESERVED_PARAM
-+                );
++            if (pfnCompareStringEx)
++                ret = pfnCompareStringEx
++                    (
++                        m_nameDisplay,
++                        dwFlags,
++                        lhs.wc_str(), -1,
++                        rhs.wc_str(), -1,
++                        nullptr,
++                        wxRESERVED_PARAM,
++                        wxRESERVED_PARAM
++                    );
 +        }
 +        else // XP
 +        {
