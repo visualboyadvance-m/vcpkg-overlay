@@ -1,5 +1,5 @@
 diff --git a/build/cmake/init.cmake b/build/cmake/init.cmake
-index 964394b5e2..eb731ef10e 100644
+index a0fda0f721..df0afaa5ca 100644
 --- a/build/cmake/init.cmake
 +++ b/build/cmake/init.cmake
 @@ -201,11 +201,11 @@ endif()
@@ -17,29 +17,3 @@ index 964394b5e2..eb731ef10e 100644
      set(wxINSTALL_INCLUDE_DIR "${include_dir}")
  else()
      wx_get_flavour(lib_flavour "-")
-diff --git a/build/cmake/install.cmake b/build/cmake/install.cmake
-index 88591a8c05..14f88cba81 100644
---- a/build/cmake/install.cmake
-+++ b/build/cmake/install.cmake
-@@ -68,7 +68,7 @@ else()
-     wx_get_install_platform_dir(runtime)
-     install(DIRECTORY DESTINATION "${runtime_dir}")
-     install(CODE "execute_process( \
--        COMMAND ${CMAKE_COMMAND} -E create_symlink \
-+        COMMAND ${CMAKE_COMMAND} -E copy \
-         \"${CMAKE_INSTALL_PREFIX}/${library_dir}/wx/config/${wxBUILD_FILE_ID}\" \
-         \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${runtime_dir}/wx-config\" \
-         )"
-diff --git a/build/cmake/utils/CMakeLists.txt b/build/cmake/utils/CMakeLists.txt
-index 608351ac42..d8110f9148 100644
---- a/build/cmake/utils/CMakeLists.txt
-+++ b/build/cmake/utils/CMakeLists.txt
-@@ -40,7 +40,7 @@ if(wxUSE_XRC)
- 
-         # Don't use wx_install() here to preserve escaping.
-         install(CODE "execute_process( \
--            COMMAND ${CMAKE_COMMAND} -E create_symlink \
-+            COMMAND ${CMAKE_COMMAND} -E copy \
-             \"${CMAKE_INSTALL_PREFIX}/${runtime_dir}/${wxrc_output_name}${EXE_SUFFIX}\" \
-             \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${runtime_dir}/wxrc${EXE_SUFFIX}\" \
-             )"

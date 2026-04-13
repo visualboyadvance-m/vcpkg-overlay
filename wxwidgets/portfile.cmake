@@ -73,6 +73,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
     else()
         list(APPEND OPTIONS -DwxBUILD_USE_STATIC_RUNTIME=ON)
     endif()
+    list(APPEND OPTIONS -DwxBUILD_INSTALL_USE_SYMLINK=OFF)
 endif()
 
 if("webview" IN_LIST FEATURES)

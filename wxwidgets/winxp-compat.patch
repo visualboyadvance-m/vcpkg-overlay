@@ -714,7 +714,7 @@ index 19bc1a6504..5dbb9a9093 100644
  // the order in this array is the one in which buttons appear in the
  // message box
  const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
-@@ -56,9 +65,12 @@ const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
+@@ -56,7 +63,12 @@ const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
  namespace
  {
  
@@ -730,8 +730,6 @@ index 19bc1a6504..5dbb9a9093 100644
 +    return s_Map;
 +}
  
- /*
-     All this code is used for adjusting the message box layout when we mess
 @@ -74,7 +86,10 @@ thread_local wxMessageDialog* gs_currentDialog = nullptr;
  void ScreenRectToClient(HWND hwnd, RECT& rc)
  {
@@ -744,7 +742,7 @@ index 19bc1a6504..5dbb9a9093 100644
  }
  
  // set window position to the given rect
-@@ -101,9 +116,13 @@ void MoveWindowToScreenRect(HWND hwnd, RECT rc)
+@@ -101,9 +116,16 @@ void MoveWindowToScreenRect(HWND hwnd, RECT rc)
  WXLRESULT wxCALLBACK
  wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
  {
@@ -764,7 +762,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      const HHOOK hhook = (HHOOK)wnd->m_hook;
      const LRESULT rc = ::CallNextHookEx(hhook, code, wParam, lParam);
-@@ -112,8 +131,8 @@ wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
+@@ -112,8 +134,11 @@ wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
      {
          // we won't need this hook any longer
          ::UnhookWindowsHookEx(hhook);
@@ -778,7 +776,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
          TempHWNDSetter set(wnd, (WXHWND)wParam);
  
-@@ -150,9 +169,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
+@@ -150,9 +175,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
      // find the static control to replace: normally there are two of them, the
      // icon and the text itself so search for all of them and ignore the icon
      // ones
@@ -790,7 +788,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      if ( !hwndStatic )
      {
-@@ -217,9 +236,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
+@@ -217,9 +242,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
                          rc.left, rc.top,
                          rc.right - rc.left, rc.bottom - rc.top,
                          GetHwnd(),
@@ -802,7 +800,7 @@ index 19bc1a6504..5dbb9a9093 100644
                        );
  
      if ( !hwndEdit )
-@@ -396,7 +415,7 @@ int wxMessageDialog::ShowMessageBox()
+@@ -396,7 +421,7 @@ int wxMessageDialog::ShowMessageBox()
  
      // use the top level window as parent if none specified
      m_parent = GetParentForModalDialog();
@@ -811,7 +809,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
  #if wxUSE_INTL
      // native message box always uses the current user locale but the program
-@@ -502,8 +521,8 @@ int wxMessageDialog::ShowMessageBox()
+@@ -502,8 +527,11 @@ int wxMessageDialog::ShowMessageBox()
      // control with an edit one)
      const DWORD tid = ::GetCurrentThreadId();
      m_hook = ::SetWindowsHookEx(WH_CBT,
@@ -825,7 +823,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      // do show the dialog
      const int msAns = MessageBox
-@@ -523,14 +542,18 @@ int wxMessageDialog::ShowModal()
+@@ -523,14 +551,18 @@ int wxMessageDialog::ShowModal()
  
      wxWindowDisabler disableOthers(this, GetParentForModalDialog());
  
@@ -846,7 +844,7 @@ index 19bc1a6504..5dbb9a9093 100644
          if ( FAILED(hr) )
          {
              wxLogApiError( "TaskDialogIndirect", hr );
-@@ -549,6 +572,7 @@ int wxMessageDialog::ShowModal()
+@@ -549,6 +581,7 @@ int wxMessageDialog::ShowModal()
  
          return MSWTranslateReturnCode( msAns );
      }
@@ -854,7 +852,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      return ShowMessageBox();
  }
-@@ -567,11 +591,13 @@ long wxMessageDialog::GetEffectiveIcon() const
+@@ -567,11 +600,13 @@ long wxMessageDialog::GetEffectiveIcon() const
  
  void wxMessageDialog::DoCentre(int dir)
  {
@@ -868,7 +866,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      wxMessageDialogBase::DoCentre(dir);
  }
-@@ -580,23 +606,7 @@ void wxMessageDialog::DoCentre(int dir)
+@@ -580,23 +615,7 @@ void wxMessageDialog::DoCentre(int dir)
  // Helpers of the wxMSWMessageDialog namespace
  // ----------------------------------------------------------------------------
  
@@ -893,7 +891,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
  wxMSWTaskDialogConfig::wxMSWTaskDialogConfig(const wxMessageDialogBase& dlg)
                       : buttons(new TASKDIALOG_BUTTON[MAX_BUTTONS])
-@@ -751,8 +761,6 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
+@@ -751,8 +770,6 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
  
          AddTaskDialogButton(tdc, IDHELP, 0 /* not used */, btnHelpLabel);
      }
@@ -902,7 +900,7 @@ index 19bc1a6504..5dbb9a9093 100644
  }
  
  void wxMSWTaskDialogConfig::AddTaskDialogButton(TASKDIALOGCONFIG &tdc,
-@@ -786,7 +794,7 @@ wxCRIT_SECT_DECLARE(gs_csTaskDialogIndirect);
+@@ -786,7 +803,7 @@ wxCRIT_SECT_DECLARE(gs_csTaskDialogIndirect);
  
  TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
  {
@@ -911,7 +909,7 @@ index 19bc1a6504..5dbb9a9093 100644
      // to avoid reloading comctl32.dll and trying to resolve it every time
      // we're called if task dialog is not available (notice that this may
      // happen even under Vista+ if we don't use comctl32.dll v6).
-@@ -805,9 +813,19 @@ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
+@@ -805,9 +822,19 @@ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
      return s_TaskDialogIndirect;
  }
  
@@ -1358,7 +1356,7 @@ index 1b07cc0ddb..0deca29caa 100644
          };
  
          const int idx = ArrayIndexFromFlag(form.GetFlags());
-@@ -759,16 +814,35 @@ public:
+@@ -759,16 +814,36 @@ public:
          if ( flags & wxCompare_CaseInsensitive )
              dwFlags |= NORM_IGNORECASE;
  
@@ -1405,7 +1403,7 @@ index 1b07cc0ddb..0deca29caa 100644
  
          switch ( ret )
          {
-@@ -805,10 +879,27 @@ private:
+@@ -805,10 +880,27 @@ private:
      wxString DoGetInfo(const wchar_t* const name, LCTYPE lctype) const
      {
          wchar_t buf[256];
