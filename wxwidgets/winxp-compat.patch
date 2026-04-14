@@ -674,7 +674,7 @@ index 9d17c0e392..234cdefa76 100644
          else
  #endif // wxUSE_UXTHEME
 diff --git a/src/msw/msgdlg.cpp b/src/msw/msgdlg.cpp
-index 19bc1a6504..5dbb9a9093 100644
+index 19bc1a6504..5d0101ac41 100644
 --- a/src/msw/msgdlg.cpp
 +++ b/src/msw/msgdlg.cpp
 @@ -2,6 +2,7 @@
@@ -714,7 +714,7 @@ index 19bc1a6504..5dbb9a9093 100644
  // the order in this array is the one in which buttons appear in the
  // message box
  const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
-@@ -56,7 +63,12 @@ const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
+@@ -56,9 +65,14 @@ const wxMessageDialog::ButtonAccessors wxMessageDialog::ms_buttons[] =
  namespace
  {
  
@@ -730,7 +730,9 @@ index 19bc1a6504..5dbb9a9093 100644
 +    return s_Map;
 +}
  
-@@ -74,7 +86,10 @@ thread_local wxMessageDialog* gs_currentDialog = nullptr;
+ /*
+     All this code is used for adjusting the message box layout when we mess
+@@ -74,7 +88,10 @@ thread_local wxMessageDialog* gs_currentDialog = nullptr;
  void ScreenRectToClient(HWND hwnd, RECT& rc)
  {
      // map from desktop (i.e. screen) coordinates to ones of this window
@@ -742,7 +744,7 @@ index 19bc1a6504..5dbb9a9093 100644
  }
  
  // set window position to the given rect
-@@ -101,9 +116,16 @@ void MoveWindowToScreenRect(HWND hwnd, RECT rc)
+@@ -101,9 +118,16 @@ void MoveWindowToScreenRect(HWND hwnd, RECT rc)
  WXLRESULT wxCALLBACK
  wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
  {
@@ -762,7 +764,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      const HHOOK hhook = (HHOOK)wnd->m_hook;
      const LRESULT rc = ::CallNextHookEx(hhook, code, wParam, lParam);
-@@ -112,8 +134,11 @@ wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
+@@ -112,8 +136,11 @@ wxMessageDialog::HookFunction(int code, WXWPARAM wParam, WXLPARAM lParam)
      {
          // we won't need this hook any longer
          ::UnhookWindowsHookEx(hhook);
@@ -776,7 +778,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
          TempHWNDSetter set(wnd, (WXHWND)wParam);
  
-@@ -150,9 +175,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
+@@ -150,9 +177,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
      // find the static control to replace: normally there are two of them, the
      // icon and the text itself so search for all of them and ignore the icon
      // ones
@@ -788,7 +790,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      if ( !hwndStatic )
      {
-@@ -217,9 +242,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
+@@ -217,9 +244,9 @@ void wxMessageDialog::ReplaceStaticWithEdit()
                          rc.left, rc.top,
                          rc.right - rc.left, rc.bottom - rc.top,
                          GetHwnd(),
@@ -800,7 +802,7 @@ index 19bc1a6504..5dbb9a9093 100644
                        );
  
      if ( !hwndEdit )
-@@ -396,7 +421,7 @@ int wxMessageDialog::ShowMessageBox()
+@@ -396,7 +423,7 @@ int wxMessageDialog::ShowMessageBox()
  
      // use the top level window as parent if none specified
      m_parent = GetParentForModalDialog();
@@ -809,7 +811,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
  #if wxUSE_INTL
      // native message box always uses the current user locale but the program
-@@ -502,8 +527,11 @@ int wxMessageDialog::ShowMessageBox()
+@@ -502,8 +529,11 @@ int wxMessageDialog::ShowMessageBox()
      // control with an edit one)
      const DWORD tid = ::GetCurrentThreadId();
      m_hook = ::SetWindowsHookEx(WH_CBT,
@@ -823,7 +825,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      // do show the dialog
      const int msAns = MessageBox
-@@ -523,14 +551,18 @@ int wxMessageDialog::ShowModal()
+@@ -523,14 +553,18 @@ int wxMessageDialog::ShowModal()
  
      wxWindowDisabler disableOthers(this, GetParentForModalDialog());
  
@@ -844,7 +846,7 @@ index 19bc1a6504..5dbb9a9093 100644
          if ( FAILED(hr) )
          {
              wxLogApiError( "TaskDialogIndirect", hr );
-@@ -549,6 +581,7 @@ int wxMessageDialog::ShowModal()
+@@ -549,6 +583,7 @@ int wxMessageDialog::ShowModal()
  
          return MSWTranslateReturnCode( msAns );
      }
@@ -852,7 +854,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      return ShowMessageBox();
  }
-@@ -567,11 +600,13 @@ long wxMessageDialog::GetEffectiveIcon() const
+@@ -567,11 +602,13 @@ long wxMessageDialog::GetEffectiveIcon() const
  
  void wxMessageDialog::DoCentre(int dir)
  {
@@ -866,7 +868,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
      wxMessageDialogBase::DoCentre(dir);
  }
-@@ -580,23 +615,7 @@ void wxMessageDialog::DoCentre(int dir)
+@@ -580,23 +617,7 @@ void wxMessageDialog::DoCentre(int dir)
  // Helpers of the wxMSWMessageDialog namespace
  // ----------------------------------------------------------------------------
  
@@ -891,7 +893,7 @@ index 19bc1a6504..5dbb9a9093 100644
  
  wxMSWTaskDialogConfig::wxMSWTaskDialogConfig(const wxMessageDialogBase& dlg)
                       : buttons(new TASKDIALOG_BUTTON[MAX_BUTTONS])
-@@ -751,8 +770,6 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
+@@ -751,8 +772,6 @@ void wxMSWTaskDialogConfig::MSWCommonTaskDialogInit(TASKDIALOGCONFIG &tdc)
  
          AddTaskDialogButton(tdc, IDHELP, 0 /* not used */, btnHelpLabel);
      }
@@ -900,7 +902,7 @@ index 19bc1a6504..5dbb9a9093 100644
  }
  
  void wxMSWTaskDialogConfig::AddTaskDialogButton(TASKDIALOGCONFIG &tdc,
-@@ -786,7 +803,7 @@ wxCRIT_SECT_DECLARE(gs_csTaskDialogIndirect);
+@@ -786,7 +805,7 @@ wxCRIT_SECT_DECLARE(gs_csTaskDialogIndirect);
  
  TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
  {
@@ -909,7 +911,7 @@ index 19bc1a6504..5dbb9a9093 100644
      // to avoid reloading comctl32.dll and trying to resolve it every time
      // we're called if task dialog is not available (notice that this may
      // happen even under Vista+ if we don't use comctl32.dll v6).
-@@ -805,9 +822,19 @@ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
+@@ -805,9 +824,19 @@ TaskDialogIndirect_t wxMSWMessageDialog::GetTaskDialogIndirectFunc()
      return s_TaskDialogIndirect;
  }
  
@@ -1153,7 +1155,7 @@ index 6dbe9bd661..48ead6b6f0 100644
  
                  // Draw custom button background when it would be drawn with a
 diff --git a/src/msw/uilocale.cpp b/src/msw/uilocale.cpp
-index 1b07cc0ddb..0deca29caa 100644
+index 1b07cc0ddb..9c2409a603 100644
 --- a/src/msw/uilocale.cpp
 +++ b/src/msw/uilocale.cpp
 @@ -20,6 +20,7 @@
@@ -1265,7 +1267,7 @@ index 1b07cc0ddb..0deca29caa 100644
              wchar_t buf[LOCALE_NAME_MAX_LENGTH];
 -            if (::GetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH))
 +            int (WINAPI *pfnGetUserDefaultLocaleName)(LPWSTR, int) =
-+                (int (*)(LPWSTR, int))kernel32.GetSymbol(wxT("GetUserDefaultLocaleName"));
++                (int (WINAPI *)(LPWSTR, int))kernel32.GetSymbol(wxT("GetUserDefaultLocaleName"));
 +            if (pfnGetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH))
              {
                  preferred.push_back(buf);
