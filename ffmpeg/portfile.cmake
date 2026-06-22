@@ -40,6 +40,7 @@ endif()
 set(OPTIONS "--enable-pic --disable-doc --enable-runtime-cpudetect --disable-autodetect")
 
 set(WITH_SCHANNEL OFF)
+set(WITH_SECURETRANSPORT OFF)
 
 if(VCPKG_TARGET_IS_MINGW)
     string(APPEND OPTIONS " --disable-w32threads --enable-pthreads --disable-d3d11va --disable-d3d12va  --disable-mediafoundation")
@@ -430,17 +431,35 @@ else()
 endif()
 
 set(WITH_OPENSSL OFF)
-if("openssl" IN_LIST FEATURES)
-    set(OPTIONS "${OPTIONS} --enable-openssl")
-    set(WITH_OPENSSL ON)
-else()
-    set(OPTIONS "${OPTIONS} --disable-openssl")
-    if(VCPKG_TARGET_IS_WINDOWS
-            AND NOT VCPKG_TARGET_IS_UWP
-            AND NOT (VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x86"))
-        string(APPEND OPTIONS " --enable-schannel")
-        set(WITH_SCHANNEL ON)
+# Selecting "openssl" implies networking even if the "network" feature was not
+# explicitly requested (e.g. forcing OpenSSL over the platform TLS backend).
+if("network" IN_LIST FEATURES OR "openssl" IN_LIST FEATURES)
+    if("openssl" IN_LIST FEATURES)
+        set(OPTIONS "${OPTIONS} --enable-openssl")
+        set(WITH_OPENSSL ON)
+    else()
+        set(OPTIONS "${OPTIONS} --disable-openssl")
+        if(VCPKG_TARGET_IS_WINDOWS
+                AND NOT VCPKG_TARGET_IS_UWP
+                AND NOT (VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x86"))
+            string(APPEND OPTIONS " --enable-schannel")
+            set(WITH_SCHANNEL ON)
+        elseif(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
+            # SecureTransport is Apple's platform TLS backend (the macOS/iOS
+            # equivalent of schannel). autodetect is off, so enable it explicitly
+            # to secure network protocols without pulling in OpenSSL.
+            string(APPEND OPTIONS " --enable-securetransport")
+            set(WITH_SECURETRANSPORT ON)
+        endif()
     endif()
+else()
+    # No "network" feature: build without networking. Disable network support and
+    # every protocol except the local file protocol, plus the TLS backends that
+    # exist only to secure network protocols (schannel on Windows, SecureTransport
+    # on macOS/iOS, OpenSSL everywhere). Equivalent to ffmpeg's
+    #   --disable-schannel --disable-network --disable-protocols --enable-protocol=file
+    string(APPEND OPTIONS " --disable-network --disable-protocols --enable-protocol=file")
+    string(APPEND OPTIONS " --disable-openssl --disable-schannel --disable-securetransport")
 endif()
 
 if("opus" IN_LIST FEATURES)
