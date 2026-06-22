@@ -1,6 +1,7 @@
---- a/configure	1900-01-00 00:00:00 +0000
-+++ b/configure	1900-01-00 00:00:00 +0000
-@@ -2444,7 +2444,6 @@
+diff -ruN ".\\ffmpeg-8.1.2.orig/configure" ".\\ffmpeg-8.1.2/configure"
+--- ".\\ffmpeg-8.1.2.orig/configure"	1900-01-00 00:00:00 +0000
++++ ".\\ffmpeg-8.1.2/configure"	1900-01-00 00:00:00 +0000
+@@ -2563,7 +2563,6 @@
  "
  
  SYSTEM_LIBRARIES="
@@ -8,16 +9,16 @@
      vaapi_drm
      vaapi_x11
      vaapi_win32
-@@ -4128,7 +4127,7 @@
- avfilter_suggest="libm stdatomic spirv_compiler"
+@@ -4300,7 +4299,7 @@
+ avfilter_suggest="libm stdatomic zlib spirv_library"
  avformat_deps="avcodec avutil"
  avformat_suggest="libm network zlib stdatomic"
--avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia bcrypt stdatomic"
-+avutil_suggest="clock_gettime ffnvcodec gcrypt libm libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia stdatomic"
+-avutil_suggest="clock_gettime ffnvcodec gcrypt libm zlib libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia bcrypt stdatomic"
++avutil_suggest="clock_gettime ffnvcodec gcrypt libm zlib libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia stdatomic"
  swresample_deps="avutil"
  swresample_suggest="libm libsoxr stdatomic"
  swscale_deps="avutil"
-@@ -6806,8 +6805,6 @@
+@@ -7009,8 +7008,6 @@
  done
  
  check_lib advapi32 "windows.h"            RegCloseKey          -ladvapi32
@@ -26,8 +27,9 @@
  check_lib ole32    "windows.h objbase.h"  CoTaskMemFree        -lole32
  check_lib shell32  "windows.h shellapi.h" CommandLineToArgvW   -lshell32
  check_lib psapi    "windows.h psapi.h"    GetProcessMemoryInfo -lpsapi
---- a/libavutil/random_seed.c	1900-01-00 00:00:00 +0000
-+++ b/libavutil/random_seed.c	1900-01-00 00:00:00 +0000
+diff -ruN ".\\ffmpeg-8.1.2.orig/libavutil/random_seed.c" ".\\ffmpeg-8.1.2/libavutil/random_seed.c"
+--- ".\\ffmpeg-8.1.2.orig/libavutil/random_seed.c"	1900-01-00 00:00:00 +0000
++++ ".\\ffmpeg-8.1.2/libavutil/random_seed.c"	1900-01-00 00:00:00 +0000
 @@ -26,10 +26,6 @@
  #if HAVE_IO_H
  #include <io.h>
