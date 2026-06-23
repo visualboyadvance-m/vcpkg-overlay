@@ -20,7 +20,6 @@ vcpkg_from_github(
         0049-fix-twolame-pkgconfig.patch
         0050-fix-test-ld-absolute-lib-paths.patch
         0044-ffmpeg-xp.patch
-        0051_adts.patch
         0052_no_bcrypt.patch
         0053_cancelio_xp.patch
 )
