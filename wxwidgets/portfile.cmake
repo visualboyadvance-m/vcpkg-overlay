@@ -11,9 +11,8 @@ vcpkg_from_github(
         fix-pcre2.patch
         gtk3-link-libraries.patch
         sdl2.patch
-        winxp-compat.patch
+        win-backcompat.patch
         force-exceptions.patch
-        darkmode_fix.patch
         wx-macOS.patch
 )
 
@@ -111,12 +110,15 @@ if(NOT DEFINED WXWIDGETS_USE_STD_CONTAINERS)
 endif()
 
 set(cxx_flags "${CMAKE_CXX_FLAGS} ${VCPKG_CXX_FLAGS}")
-if(VCPKG_TARGET_IS_MINGW)
-    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
-        set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
-    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-        set(cxx_flags "${cxx_Flags} -fpermissive -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
-    endif()
+
+if(VCPKG_TARGET_IS_MINGW )
+    set(cxx_flags "${cxx_Flags} -fpermissive ")
+endif()
+
+if(VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+    set(cxx_flags "${cxx_Flags} -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
+elseif(VCPKG_TARGET_IS_WINDOWS AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
+    set(cxx_flags "${cxx_Flags} -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
 endif()
 
 vcpkg_cmake_configure(
