@@ -24,7 +24,7 @@
     "expat",
     {
       "name": "gtk3",
-      "platform": "!windows & !osx & !ios"
+      "platform": "!windows & !osx & !ios & !android"
     },
     {
       "name": "libiconv",
