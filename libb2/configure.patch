@@ -1,0 +1,9 @@
+diff -Nur libb2-2c5142f12a2cd52f3ee0a43e50a3a76f75badf85/Makefile.am libb2-2c5142f12a2cd52f3ee0a43e50a3a76f75badf85-patched/Makefile.am
+--- libb2-2c5142f12a2cd52f3ee0a43e50a3a76f75badf85/Makefile.am	2019-03-10 16:35:26
++++ libb2-2c5142f12a2cd52f3ee0a43e50a3a76f75badf85-patched/Makefile.am	2026-07-26 11:46:48
+@@ -4,4 +4,5 @@
+ 
+ SUBDIRS = src
+ 
++pkgconfigdir = /lib/pkgconfig
+ pkgconfig_DATA = libb2.pc
