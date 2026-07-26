@@ -1,0 +1,4269 @@
+Binary files wxWidgets/.git/.DS_Store and wxWidgets-Qt-Android/.git/.DS_Store differ
+diff -Nur wxWidgets/.git/FETCH_HEAD wxWidgets-Qt-Android/.git/FETCH_HEAD
+--- wxWidgets/.git/FETCH_HEAD	1970-01-01 01:00:00
++++ wxWidgets-Qt-Android/.git/FETCH_HEAD	2026-07-24 10:49:58
+@@ -0,0 +1,65 @@
++8003fd68a481c27fa657b39281957245f1a69443		branch 'master' of https://github.com/wxWidgets/wxWidgets
++4634d26dfba49f6972a197e9a20fb5ddddf14cfb	not-for-merge	branch '3.2' of https://github.com/wxWidgets/wxWidgets
++a812fffda3fe686c94e24bff27e8effd96e4de64	not-for-merge	branch '3.2.2-hotfix' of https://github.com/wxWidgets/wxWidgets
++896e4f587615b832ce27b8325357cb504997e1d3	not-for-merge	branch '3.2.8-hotfix' of https://github.com/wxWidgets/wxWidgets
++2fd894514e7d5ec2a9128ac2cb82ee550f30e407	not-for-merge	branch '3.3-release' of https://github.com/wxWidgets/wxWidgets
++d4a2ae7a13071e13cd20eb115c5ffe4b31d74c59	not-for-merge	branch 'AUTOCONF_ARCHIVE' of https://github.com/wxWidgets/wxWidgets
++df5029178c36d4391373e98174dfa5112b4ebc3b	not-for-merge	branch 'BAKEFILE' of https://github.com/wxWidgets/wxWidgets
++03628df6dbe75b51597f8f168cf1142deac2391f	not-for-merge	branch 'BAKEFILE_BRANCH' of https://github.com/wxWidgets/wxWidgets
++2aa148634e1089c7ecfcdd50692cd063d03b38f5	not-for-merge	branch 'CPPUNIT' of https://github.com/wxWidgets/wxWidgets
++8ddbd9376f2b3b19098d6891bdb2266795e5ddf3	not-for-merge	branch 'EXPAT' of https://github.com/wxWidgets/wxWidgets
++f9fe9f796380e0d35f1979a309139d5c1bf86571	not-for-merge	branch 'GSTREAMER' of https://github.com/wxWidgets/wxWidgets
++66a4c5295fe2193cf65b0983795e1c17ee4775b6	not-for-merge	branch 'GTK1' of https://github.com/wxWidgets/wxWidgets
++f443d3f0085ab90d85e4d4c68135b23ded772b7e	not-for-merge	branch 'GTK2' of https://github.com/wxWidgets/wxWidgets
++903d14fba1564e3c8281cc73f6fd4b9bc601feaf	not-for-merge	branch 'LIBPNG' of https://github.com/wxWidgets/wxWidgets
++956d1e72bb52020012425e4a47cd798a6186e6a7	not-for-merge	branch 'NEW_TBAR' of https://github.com/wxWidgets/wxWidgets
++13f1bc7004f9556e3cb6fa52d65768e2d47fa5f7	not-for-merge	branch 'PKG_CONFIG' of https://github.com/wxWidgets/wxWidgets
++4891a376949d0173d4192726ea9cd89f1fa8275f	not-for-merge	branch 'RXSPENCER' of https://github.com/wxWidgets/wxWidgets
++be6968a8ba9a97e8a9c26846d60ee97d7146b42c	not-for-merge	branch 'SDL' of https://github.com/wxWidgets/wxWidgets
++ad7d1818701faf80b1e2b7b5741965866a744ff0	not-for-merge	branch 'SOC2006_RTL' of https://github.com/wxWidgets/wxWidgets
++90963ea89070ad8f7caf17261b0bf85ee776eff8	not-for-merge	branch 'SOC2006_SOCKETS' of https://github.com/wxWidgets/wxWidgets
++83f988bdba60fdf347dfe1b5edd2b36781203804	not-for-merge	branch 'SOC2007_DVC' of https://github.com/wxWidgets/wxWidgets
++02fed917691a39fa360734ac4f8e261463a7273b	not-for-merge	branch 'SOC2007_WXWEB' of https://github.com/wxWidgets/wxWidgets
++ebb0abc070f19e7102b498a58858faf0b4c5a1c1	not-for-merge	branch 'SOC2007_XTI' of https://github.com/wxWidgets/wxWidgets
++f691e88f5b55f8825d6e8994efb980dd0377864c	not-for-merge	branch 'SOC2008_WXWALLCTRL' of https://github.com/wxWidgets/wxWidgets
++c7b076676624047cbe28da2776c7c0c98eb55f3e	not-for-merge	branch 'SOC2009_AUI' of https://github.com/wxWidgets/wxWidgets
++a2782d38ec01f7174578bbceee43a2f0b5bf6b99	not-for-merge	branch 'SOC2009_FSWATCHER' of https://github.com/wxWidgets/wxWidgets
++cf5f87ccbd8b22e6f5ac0328d88f1803fe8c84ba	not-for-merge	branch 'SOC2009_RIBBON' of https://github.com/wxWidgets/wxWidgets
++4d364814c529d373f94760c2e82678ed688a11c6	not-for-merge	branch 'SOC2010_GUI_TEST' of https://github.com/wxWidgets/wxWidgets
++91db0c73ad1f34360efccdf7266c117d5470f49a	not-for-merge	branch 'SOC2010_MASKED_CTRL' of https://github.com/wxWidgets/wxWidgets
++be581e404d4b92ac366a97d9b0fdeeda069121b6	not-for-merge	branch 'SOC2010_RTC_IMAGES' of https://github.com/wxWidgets/wxWidgets
++4cbdc35af26eac93c4e396840f46134a60a1f330	not-for-merge	branch 'SOC2010_WIN7_UI' of https://github.com/wxWidgets/wxWidgets
++15cc8d7411ef56b526ed2e4b6c9fc849d9dfb427	not-for-merge	branch 'SOC2011_ANIMATION' of https://github.com/wxWidgets/wxWidgets
++0e5486fa0a0c10f1fec7d48b6408fc746907be12	not-for-merge	branch 'SOC2011_GTK3' of https://github.com/wxWidgets/wxWidgets
++1d156af3247c862e51a7c62f569a3fd302052a42	not-for-merge	branch 'SOC2011_WEBVIEW' of https://github.com/wxWidgets/wxWidgets
++9e85fb080d422ce944193adb33a001a8d760ef1f	not-for-merge	branch 'SOC2011_WXIOS' of https://github.com/wxWidgets/wxWidgets
++b8a993577cbb8c3071a93226692d0aa59896bec3	not-for-merge	branch 'SOC2014_QT' of https://github.com/wxWidgets/wxWidgets
++fa9fe15ea05c31bead79701a3be8c0184ffbb6d2	not-for-merge	branch 'SOC2014_TASKBAR' of https://github.com/wxWidgets/wxWidgets
++30734ae630d217862cec97e164f16e4c77a868a2	not-for-merge	branch 'WXSTANDALONE_EXPERIMENT' of https://github.com/wxWidgets/wxWidgets
++4d38cf90c037804cd3d5c58db8446c571c4ac42e	not-for-merge	branch 'WX_2_0_FIXES' of https://github.com/wxWidgets/wxWidgets
++079520c0e0e75bcede3e88a992ccb3050a5169fb	not-for-merge	branch 'WX_2_10_BRANCH' of https://github.com/wxWidgets/wxWidgets
++4774c6e556e58d909c51a206b089272f85245d15	not-for-merge	branch 'WX_2_2_BRANCH' of https://github.com/wxWidgets/wxWidgets
++6ed7a609873aabe8ef4a08ca2ed99e2cbe0a5ecc	not-for-merge	branch 'WX_2_4_BRANCH' of https://github.com/wxWidgets/wxWidgets
++aaec3794a4d59fec10a589f27a7a8b2fc835cd6f	not-for-merge	branch 'WX_2_6_BRANCH' of https://github.com/wxWidgets/wxWidgets
++0802369b36d290880754d3c0e753a7becfed5003	not-for-merge	branch 'WX_2_8_BRANCH' of https://github.com/wxWidgets/wxWidgets
++a79746e284fa19d8941b9c98fc5cea9620fc931d	not-for-merge	branch 'WX_2_8_MICROFIX_BRANCH' of https://github.com/wxWidgets/wxWidgets
++16ad92b6000478b2d3164d2f5949aa658990e12d	not-for-merge	branch 'WX_2_9_0_BRANCH' of https://github.com/wxWidgets/wxWidgets
++4d4c14cd656734ca42b6e845618e1a46398436ed	not-for-merge	branch 'WX_3_0_3_BRANCH' of https://github.com/wxWidgets/wxWidgets
++0ac1135ab831803c10ab7abec5d644c6876c4bb1	not-for-merge	branch 'WX_3_0_BRANCH' of https://github.com/wxWidgets/wxWidgets
++c80ba22f0a5a21bcac20d3f5a31ceb96e2359c6b	not-for-merge	branch 'ZLIB' of https://github.com/wxWidgets/wxWidgets
++85f8d6af624225355a9b60d76dddaafc1c7be22f	not-for-merge	branch 'circleci-project-setup' of https://github.com/wxWidgets/wxWidgets
++ad3030251dd723dc18d080d158de12e7f6118460	not-for-merge	branch 'html-data-object' of https://github.com/wxWidgets/wxWidgets
++1a8bddaac972c100a10e36924ae437162913a2e6	not-for-merge	branch 'karsten' of https://github.com/wxWidgets/wxWidgets
++c3cc9810f70719ea54b119b7df99d60a273b9178	not-for-merge	branch 'latest-actions-release-workflow' of https://github.com/wxWidgets/wxWidgets
++8c8415c9a886a03fcebb9fbdd278b708bdd119fc	not-for-merge	branch 'ownerdraw-refactor' of https://github.com/wxWidgets/wxWidgets
++1b539499cd270fb7f41c8b5d31331235d6c15dbf	not-for-merge	branch 'wxPy-3.0-branch' of https://github.com/wxWidgets/wxWidgets
++51f479bfb60f310f5906cd1fea57453e868bb0ff	not-for-merge	branch 'wxPy-3.0.0' of https://github.com/wxWidgets/wxWidgets
++204db7e76a8359ad76366de273e146d8566ac3e2	not-for-merge	branch 'wxPy-4.1.2' of https://github.com/wxWidgets/wxWidgets
++3dcee0777eeece2b4fa87a0368de9de86f5f4c05	not-for-merge	branch 'wxPy-4.1.2-2' of https://github.com/wxWidgets/wxWidgets
++875a6fd94b51c78c7badc10736eb25f2928fb66c	not-for-merge	branch 'wxPy_branch' of https://github.com/wxWidgets/wxWidgets
++0ad11cd978d34eef5219b53fca213cca11d009cc	not-for-merge	branch 'wxPy_newswig' of https://github.com/wxWidgets/wxWidgets
++479f7c8807390b904d377b1b426897dffc407849	not-for-merge	branch 'wxPy_temp_253_branch' of https://github.com/wxWidgets/wxWidgets
++b7cbfd64ce57e00f4e547bdc4dea14433ecd9843	not-for-merge	branch 'wxQT' of https://github.com/wxWidgets/wxWidgets
++69cc1ae7607b44325b5ebdd70e2686d8e3794efe	not-for-merge	branch 'wxSYMBIAN' of https://github.com/wxWidgets/wxWidgets
++0bcc07ef0e3d3e50ba6892870050a7c333c13287	not-for-merge	branch 'wxUNIVERSAL' of https://github.com/wxWidgets/wxWidgets
++a1e284790d9704abb7861552a510990912cdc097	not-for-merge	branch 'wxWebKitBranch-2.8' of https://github.com/wxWidgets/wxWidgets
+diff -Nur wxWidgets/.git/ORIG_HEAD wxWidgets-Qt-Android/.git/ORIG_HEAD
+--- wxWidgets/.git/ORIG_HEAD	1970-01-01 01:00:00
++++ wxWidgets-Qt-Android/.git/ORIG_HEAD	2026-07-24 10:49:58
+@@ -0,0 +1 @@
++fcdaa107fb5d295972855ca5e362e40dd37a17e8
+diff -Nur wxWidgets/.git/config wxWidgets-Qt-Android/.git/config
+--- wxWidgets/.git/config	2026-07-24 10:53:48
++++ wxWidgets-Qt-Android/.git/config	2026-07-10 15:25:15
+@@ -11,6 +11,9 @@
+ [branch "master"]
+ 	remote = origin
+ 	merge = refs/heads/master
++[submodule "3rdparty/pcre"]
++	active = true
++	url = https://github.com/wxWidgets/pcre.git
+ [submodule "3rdparty/catch"]
+ 	active = true
+ 	url = https://github.com/wxWidgets/Catch.git
+@@ -23,9 +26,6 @@
+ [submodule "3rdparty/nanosvg"]
+ 	active = true
+ 	url = https://github.com/wxWidgets/nanosvg.git
+-[submodule "3rdparty/pcre"]
+-	active = true
+-	url = https://github.com/wxWidgets/pcre.git
+ [submodule "src/expat"]
+ 	active = true
+ 	url = https://github.com/wxWidgets/libexpat.git
+Binary files wxWidgets/.git/index and wxWidgets-Qt-Android/.git/index differ
+diff -Nur wxWidgets/.git/logs/HEAD wxWidgets-Qt-Android/.git/logs/HEAD
+--- wxWidgets/.git/logs/HEAD	2026-07-24 10:53:33
++++ wxWidgets-Qt-Android/.git/logs/HEAD	2026-07-24 10:49:58
+@@ -1 +1,2 @@
+-0000000000000000000000000000000000000000 8003fd68a481c27fa657b39281957245f1a69443 Andy Vandijck <andyvand@gmail.com> 1784883213 +0200	clone: from https://github.com/wxWidgets/wxWidgets.git
++0000000000000000000000000000000000000000 fcdaa107fb5d295972855ca5e362e40dd37a17e8 Andy Vandijck <andyvand@gmail.com> 1783681091 +0200	clone: from https://github.com/wxWidgets/wxWidgets.git
++fcdaa107fb5d295972855ca5e362e40dd37a17e8 8003fd68a481c27fa657b39281957245f1a69443 Andy Vandijck <andyvand@gmail.com> 1784882998 +0200	pull: Fast-forward
+diff -Nur wxWidgets/.git/logs/refs/heads/master wxWidgets-Qt-Android/.git/logs/refs/heads/master
+--- wxWidgets/.git/logs/refs/heads/master	2026-07-24 10:53:33
++++ wxWidgets-Qt-Android/.git/logs/refs/heads/master	2026-07-24 10:49:58
+@@ -1 +1,2 @@
+-0000000000000000000000000000000000000000 8003fd68a481c27fa657b39281957245f1a69443 Andy Vandijck <andyvand@gmail.com> 1784883213 +0200	clone: from https://github.com/wxWidgets/wxWidgets.git
++0000000000000000000000000000000000000000 fcdaa107fb5d295972855ca5e362e40dd37a17e8 Andy Vandijck <andyvand@gmail.com> 1783681091 +0200	clone: from https://github.com/wxWidgets/wxWidgets.git
++fcdaa107fb5d295972855ca5e362e40dd37a17e8 8003fd68a481c27fa657b39281957245f1a69443 Andy Vandijck <andyvand@gmail.com> 1784882998 +0200	pull: Fast-forward
+diff -Nur wxWidgets/.git/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/logs/refs/remotes/origin/HEAD	2026-07-24 10:53:33
++++ wxWidgets-Qt-Android/.git/logs/refs/remotes/origin/HEAD	2026-07-10 12:58:11
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 8003fd68a481c27fa657b39281957245f1a69443 Andy Vandijck <andyvand@gmail.com> 1784883213 +0200	clone: from https://github.com/wxWidgets/wxWidgets.git
++0000000000000000000000000000000000000000 fcdaa107fb5d295972855ca5e362e40dd37a17e8 Andy Vandijck <andyvand@gmail.com> 1783681091 +0200	clone: from https://github.com/wxWidgets/wxWidgets.git
+diff -Nur wxWidgets/.git/logs/refs/remotes/origin/master wxWidgets-Qt-Android/.git/logs/refs/remotes/origin/master
+--- wxWidgets/.git/logs/refs/remotes/origin/master	1970-01-01 01:00:00
++++ wxWidgets-Qt-Android/.git/logs/refs/remotes/origin/master	2026-07-24 10:49:58
+@@ -0,0 +1 @@
++fcdaa107fb5d295972855ca5e362e40dd37a17e8 8003fd68a481c27fa657b39281957245f1a69443 Andy Vandijck <andyvand@gmail.com> 1784882998 +0200	pull: fast-forward
+Binary files wxWidgets/.git/modules/3rdparty/catch/index and wxWidgets-Qt-Android/.git/modules/3rdparty/catch/index differ
+diff -Nur wxWidgets/.git/modules/3rdparty/catch/logs/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/catch/logs/HEAD
+--- wxWidgets/.git/modules/3rdparty/catch/logs/HEAD	2026-07-24 10:55:10
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/catch/logs/HEAD	2026-07-10 15:24:52
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1784883239 +0200	clone: from https://github.com/wxWidgets/Catch.git
+-3a4a6a657d295d003e16bcdba45c2832e24b9dec 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	checkout: moving from wx to 3a4a6a657d295d003e16bcdba45c2832e24b9dec
++0000000000000000000000000000000000000000 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1783689885 +0200	clone: from https://github.com/wxWidgets/Catch.git
++3a4a6a657d295d003e16bcdba45c2832e24b9dec 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1783689892 +0200	checkout: moving from wx to 3a4a6a657d295d003e16bcdba45c2832e24b9dec
+diff -Nur wxWidgets/.git/modules/3rdparty/catch/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/3rdparty/catch/logs/refs/heads/wx
+--- wxWidgets/.git/modules/3rdparty/catch/logs/refs/heads/wx	2026-07-24 10:53:59
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/catch/logs/refs/heads/wx	2026-07-10 15:24:45
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1784883239 +0200	clone: from https://github.com/wxWidgets/Catch.git
++0000000000000000000000000000000000000000 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1783689885 +0200	clone: from https://github.com/wxWidgets/Catch.git
+diff -Nur wxWidgets/.git/modules/3rdparty/catch/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/catch/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/3rdparty/catch/logs/refs/remotes/origin/HEAD	2026-07-24 10:53:59
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/catch/logs/refs/remotes/origin/HEAD	2026-07-10 15:24:45
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1784883239 +0200	clone: from https://github.com/wxWidgets/Catch.git
++0000000000000000000000000000000000000000 3a4a6a657d295d003e16bcdba45c2832e24b9dec Andy Vandijck <andyvand@gmail.com> 1783689885 +0200	clone: from https://github.com/wxWidgets/Catch.git
+Binary files wxWidgets/.git/modules/3rdparty/libwebp/index and wxWidgets-Qt-Android/.git/modules/3rdparty/libwebp/index differ
+diff -Nur wxWidgets/.git/modules/3rdparty/libwebp/logs/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/libwebp/logs/HEAD
+--- wxWidgets/.git/modules/3rdparty/libwebp/logs/HEAD	2026-07-24 10:55:10
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/libwebp/logs/HEAD	2026-07-10 15:24:52
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1784883244 +0200	clone: from https://github.com/wxWidgets/libwebp.git
+-e83df81cc965a47c1ca7cc968d1ed99717c55ab7 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	checkout: moving from wx to e83df81cc965a47c1ca7cc968d1ed99717c55ab7
++0000000000000000000000000000000000000000 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1783689889 +0200	clone: from https://github.com/wxWidgets/libwebp.git
++e83df81cc965a47c1ca7cc968d1ed99717c55ab7 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1783689892 +0200	checkout: moving from wx to e83df81cc965a47c1ca7cc968d1ed99717c55ab7
+diff -Nur wxWidgets/.git/modules/3rdparty/libwebp/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/3rdparty/libwebp/logs/refs/heads/wx
+--- wxWidgets/.git/modules/3rdparty/libwebp/logs/refs/heads/wx	2026-07-24 10:54:04
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/libwebp/logs/refs/heads/wx	2026-07-10 15:24:49
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1784883244 +0200	clone: from https://github.com/wxWidgets/libwebp.git
++0000000000000000000000000000000000000000 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1783689889 +0200	clone: from https://github.com/wxWidgets/libwebp.git
+diff -Nur wxWidgets/.git/modules/3rdparty/libwebp/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/libwebp/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/3rdparty/libwebp/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:04
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/libwebp/logs/refs/remotes/origin/HEAD	2026-07-10 15:24:49
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1784883244 +0200	clone: from https://github.com/wxWidgets/libwebp.git
++0000000000000000000000000000000000000000 e83df81cc965a47c1ca7cc968d1ed99717c55ab7 Andy Vandijck <andyvand@gmail.com> 1783689889 +0200	clone: from https://github.com/wxWidgets/libwebp.git
+Binary files wxWidgets/.git/modules/3rdparty/lunasvg/index and wxWidgets-Qt-Android/.git/modules/3rdparty/lunasvg/index differ
+diff -Nur wxWidgets/.git/modules/3rdparty/lunasvg/logs/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/lunasvg/logs/HEAD
+--- wxWidgets/.git/modules/3rdparty/lunasvg/logs/HEAD	2026-07-24 10:55:10
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/lunasvg/logs/HEAD	2026-07-10 15:24:52
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1784883245 +0200	clone: from https://github.com/wxWidgets/lunasvg.git
+-e6ebb8d1e00c2307bc6937020c34c47bccbadf29 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	checkout: moving from wx to e6ebb8d1e00c2307bc6937020c34c47bccbadf29
++0000000000000000000000000000000000000000 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1783689891 +0200	clone: from https://github.com/wxWidgets/lunasvg.git
++e6ebb8d1e00c2307bc6937020c34c47bccbadf29 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1783689892 +0200	checkout: moving from wx to e6ebb8d1e00c2307bc6937020c34c47bccbadf29
+diff -Nur wxWidgets/.git/modules/3rdparty/lunasvg/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/3rdparty/lunasvg/logs/refs/heads/wx
+--- wxWidgets/.git/modules/3rdparty/lunasvg/logs/refs/heads/wx	2026-07-24 10:54:05
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/lunasvg/logs/refs/heads/wx	2026-07-10 15:24:51
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1784883245 +0200	clone: from https://github.com/wxWidgets/lunasvg.git
++0000000000000000000000000000000000000000 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1783689891 +0200	clone: from https://github.com/wxWidgets/lunasvg.git
+diff -Nur wxWidgets/.git/modules/3rdparty/lunasvg/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/lunasvg/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/3rdparty/lunasvg/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:05
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/lunasvg/logs/refs/remotes/origin/HEAD	2026-07-10 15:24:51
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1784883245 +0200	clone: from https://github.com/wxWidgets/lunasvg.git
++0000000000000000000000000000000000000000 e6ebb8d1e00c2307bc6937020c34c47bccbadf29 Andy Vandijck <andyvand@gmail.com> 1783689891 +0200	clone: from https://github.com/wxWidgets/lunasvg.git
+Binary files wxWidgets/.git/modules/3rdparty/nanosvg/index and wxWidgets-Qt-Android/.git/modules/3rdparty/nanosvg/index differ
+diff -Nur wxWidgets/.git/modules/3rdparty/nanosvg/logs/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/nanosvg/logs/HEAD
+--- wxWidgets/.git/modules/3rdparty/nanosvg/logs/HEAD	2026-07-24 10:55:10
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/nanosvg/logs/HEAD	2026-07-10 15:24:52
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1784883246 +0200	clone: from https://github.com/wxWidgets/nanosvg.git
+-5cefd9847949af6df13f65027fd43af5a7513633 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	checkout: moving from wx to 5cefd9847949af6df13f65027fd43af5a7513633
++0000000000000000000000000000000000000000 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1783689892 +0200	clone: from https://github.com/wxWidgets/nanosvg.git
++5cefd9847949af6df13f65027fd43af5a7513633 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1783689892 +0200	checkout: moving from wx to 5cefd9847949af6df13f65027fd43af5a7513633
+diff -Nur wxWidgets/.git/modules/3rdparty/nanosvg/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/3rdparty/nanosvg/logs/refs/heads/wx
+--- wxWidgets/.git/modules/3rdparty/nanosvg/logs/refs/heads/wx	2026-07-24 10:54:06
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/nanosvg/logs/refs/heads/wx	2026-07-10 15:24:52
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1784883246 +0200	clone: from https://github.com/wxWidgets/nanosvg.git
++0000000000000000000000000000000000000000 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1783689892 +0200	clone: from https://github.com/wxWidgets/nanosvg.git
+diff -Nur wxWidgets/.git/modules/3rdparty/nanosvg/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/nanosvg/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/3rdparty/nanosvg/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:06
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/nanosvg/logs/refs/remotes/origin/HEAD	2026-07-10 15:24:52
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1784883246 +0200	clone: from https://github.com/wxWidgets/nanosvg.git
++0000000000000000000000000000000000000000 5cefd9847949af6df13f65027fd43af5a7513633 Andy Vandijck <andyvand@gmail.com> 1783689892 +0200	clone: from https://github.com/wxWidgets/nanosvg.git
+Binary files wxWidgets/.git/modules/3rdparty/pcre/index and wxWidgets-Qt-Android/.git/modules/3rdparty/pcre/index differ
+diff -Nur wxWidgets/.git/modules/3rdparty/pcre/logs/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/pcre/logs/HEAD
+--- wxWidgets/.git/modules/3rdparty/pcre/logs/HEAD	2026-07-24 10:55:10
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/pcre/logs/HEAD	2026-07-10 15:24:37
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1784883253 +0200	clone: from https://github.com/wxWidgets/pcre.git
+-4f76619e6f20de93f77b5ef6213bf54e0399d166 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	checkout: moving from wx to 4f76619e6f20de93f77b5ef6213bf54e0399d166
++0000000000000000000000000000000000000000 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1783689877 +0200	clone: from https://github.com/wxWidgets/pcre.git
++4f76619e6f20de93f77b5ef6213bf54e0399d166 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1783689877 +0200	checkout: moving from wx to 4f76619e6f20de93f77b5ef6213bf54e0399d166
+diff -Nur wxWidgets/.git/modules/3rdparty/pcre/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/3rdparty/pcre/logs/refs/heads/wx
+--- wxWidgets/.git/modules/3rdparty/pcre/logs/refs/heads/wx	2026-07-24 10:54:13
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/pcre/logs/refs/heads/wx	2026-07-10 15:24:37
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1784883253 +0200	clone: from https://github.com/wxWidgets/pcre.git
++0000000000000000000000000000000000000000 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1783689877 +0200	clone: from https://github.com/wxWidgets/pcre.git
+diff -Nur wxWidgets/.git/modules/3rdparty/pcre/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/3rdparty/pcre/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/3rdparty/pcre/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:13
++++ wxWidgets-Qt-Android/.git/modules/3rdparty/pcre/logs/refs/remotes/origin/HEAD	2026-07-10 15:24:37
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1784883253 +0200	clone: from https://github.com/wxWidgets/pcre.git
++0000000000000000000000000000000000000000 4f76619e6f20de93f77b5ef6213bf54e0399d166 Andy Vandijck <andyvand@gmail.com> 1783689877 +0200	clone: from https://github.com/wxWidgets/pcre.git
+Binary files wxWidgets/.git/modules/src/expat/index and wxWidgets-Qt-Android/.git/modules/src/expat/index differ
+diff -Nur wxWidgets/.git/modules/src/expat/logs/HEAD wxWidgets-Qt-Android/.git/modules/src/expat/logs/HEAD
+--- wxWidgets/.git/modules/src/expat/logs/HEAD	2026-07-24 10:55:11
++++ wxWidgets-Qt-Android/.git/modules/src/expat/logs/HEAD	2026-07-10 15:25:56
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1784883262 +0200	clone: from https://github.com/wxWidgets/libexpat.git
+-25cdb80756f1fcce8536b0980ec081612858eb50 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1784883311 +0200	checkout: moving from wx to 25cdb80756f1fcce8536b0980ec081612858eb50
++0000000000000000000000000000000000000000 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1783689920 +0200	clone: from https://github.com/wxWidgets/libexpat.git
++25cdb80756f1fcce8536b0980ec081612858eb50 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1783689956 +0200	checkout: moving from wx to 25cdb80756f1fcce8536b0980ec081612858eb50
+diff -Nur wxWidgets/.git/modules/src/expat/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/src/expat/logs/refs/heads/wx
+--- wxWidgets/.git/modules/src/expat/logs/refs/heads/wx	2026-07-24 10:54:22
++++ wxWidgets-Qt-Android/.git/modules/src/expat/logs/refs/heads/wx	2026-07-10 15:25:20
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1784883262 +0200	clone: from https://github.com/wxWidgets/libexpat.git
++0000000000000000000000000000000000000000 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1783689920 +0200	clone: from https://github.com/wxWidgets/libexpat.git
+diff -Nur wxWidgets/.git/modules/src/expat/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/src/expat/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/src/expat/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:22
++++ wxWidgets-Qt-Android/.git/modules/src/expat/logs/refs/remotes/origin/HEAD	2026-07-10 15:25:20
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1784883262 +0200	clone: from https://github.com/wxWidgets/libexpat.git
++0000000000000000000000000000000000000000 25cdb80756f1fcce8536b0980ec081612858eb50 Andy Vandijck <andyvand@gmail.com> 1783689920 +0200	clone: from https://github.com/wxWidgets/libexpat.git
+Binary files wxWidgets/.git/modules/src/jpeg/index and wxWidgets-Qt-Android/.git/modules/src/jpeg/index differ
+diff -Nur wxWidgets/.git/modules/src/jpeg/logs/HEAD wxWidgets-Qt-Android/.git/modules/src/jpeg/logs/HEAD
+--- wxWidgets/.git/modules/src/jpeg/logs/HEAD	2026-07-24 10:55:11
++++ wxWidgets-Qt-Android/.git/modules/src/jpeg/logs/HEAD	2026-07-10 15:25:56
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1784883266 +0200	clone: from https://github.com/wxWidgets/libjpeg-turbo.git
+-88cf215c8eee225148e007a66ee1dea5916fc949 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1784883311 +0200	checkout: moving from wx to 88cf215c8eee225148e007a66ee1dea5916fc949
++0000000000000000000000000000000000000000 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1783689924 +0200	clone: from https://github.com/wxWidgets/libjpeg-turbo.git
++88cf215c8eee225148e007a66ee1dea5916fc949 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1783689956 +0200	checkout: moving from wx to 88cf215c8eee225148e007a66ee1dea5916fc949
+diff -Nur wxWidgets/.git/modules/src/jpeg/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/src/jpeg/logs/refs/heads/wx
+--- wxWidgets/.git/modules/src/jpeg/logs/refs/heads/wx	2026-07-24 10:54:26
++++ wxWidgets-Qt-Android/.git/modules/src/jpeg/logs/refs/heads/wx	2026-07-10 15:25:24
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1784883266 +0200	clone: from https://github.com/wxWidgets/libjpeg-turbo.git
++0000000000000000000000000000000000000000 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1783689924 +0200	clone: from https://github.com/wxWidgets/libjpeg-turbo.git
+diff -Nur wxWidgets/.git/modules/src/jpeg/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/src/jpeg/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/src/jpeg/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:26
++++ wxWidgets-Qt-Android/.git/modules/src/jpeg/logs/refs/remotes/origin/HEAD	2026-07-10 15:25:24
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1784883266 +0200	clone: from https://github.com/wxWidgets/libjpeg-turbo.git
++0000000000000000000000000000000000000000 88cf215c8eee225148e007a66ee1dea5916fc949 Andy Vandijck <andyvand@gmail.com> 1783689924 +0200	clone: from https://github.com/wxWidgets/libjpeg-turbo.git
+Binary files wxWidgets/.git/modules/src/png/index and wxWidgets-Qt-Android/.git/modules/src/png/index differ
+diff -Nur wxWidgets/.git/modules/src/png/logs/HEAD wxWidgets-Qt-Android/.git/modules/src/png/logs/HEAD
+--- wxWidgets/.git/modules/src/png/logs/HEAD	2026-07-24 10:55:11
++++ wxWidgets-Qt-Android/.git/modules/src/png/logs/HEAD	2026-07-10 15:25:56
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1784883288 +0200	clone: from https://github.com/wxWidgets/libpng.git
+-3327853174bb3489b52380033a16a7af1c37cd03 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1784883311 +0200	checkout: moving from wx to 3327853174bb3489b52380033a16a7af1c37cd03
++0000000000000000000000000000000000000000 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1783689938 +0200	clone: from https://github.com/wxWidgets/libpng.git
++3327853174bb3489b52380033a16a7af1c37cd03 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1783689956 +0200	checkout: moving from wx to 3327853174bb3489b52380033a16a7af1c37cd03
+diff -Nur wxWidgets/.git/modules/src/png/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/src/png/logs/refs/heads/wx
+--- wxWidgets/.git/modules/src/png/logs/refs/heads/wx	2026-07-24 10:54:48
++++ wxWidgets-Qt-Android/.git/modules/src/png/logs/refs/heads/wx	2026-07-10 15:25:38
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1784883288 +0200	clone: from https://github.com/wxWidgets/libpng.git
++0000000000000000000000000000000000000000 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1783689938 +0200	clone: from https://github.com/wxWidgets/libpng.git
+diff -Nur wxWidgets/.git/modules/src/png/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/src/png/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/src/png/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:48
++++ wxWidgets-Qt-Android/.git/modules/src/png/logs/refs/remotes/origin/HEAD	2026-07-10 15:25:38
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1784883288 +0200	clone: from https://github.com/wxWidgets/libpng.git
++0000000000000000000000000000000000000000 3327853174bb3489b52380033a16a7af1c37cd03 Andy Vandijck <andyvand@gmail.com> 1783689938 +0200	clone: from https://github.com/wxWidgets/libpng.git
+Binary files wxWidgets/.git/modules/src/stc/lexilla/index and wxWidgets-Qt-Android/.git/modules/src/stc/lexilla/index differ
+diff -Nur wxWidgets/.git/modules/src/stc/lexilla/logs/HEAD wxWidgets-Qt-Android/.git/modules/src/stc/lexilla/logs/HEAD
+--- wxWidgets/.git/modules/src/stc/lexilla/logs/HEAD	2026-07-24 10:55:11
++++ wxWidgets-Qt-Android/.git/modules/src/stc/lexilla/logs/HEAD	2026-07-10 15:25:57
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1784883292 +0200	clone: from https://github.com/wxWidgets/lexilla.git
+-bf6ad20062b98808ffa21419263942a427c150a9 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1784883311 +0200	checkout: moving from wx to bf6ad20062b98808ffa21419263942a427c150a9
++0000000000000000000000000000000000000000 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1783689942 +0200	clone: from https://github.com/wxWidgets/lexilla.git
++bf6ad20062b98808ffa21419263942a427c150a9 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1783689957 +0200	checkout: moving from wx to bf6ad20062b98808ffa21419263942a427c150a9
+diff -Nur wxWidgets/.git/modules/src/stc/lexilla/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/src/stc/lexilla/logs/refs/heads/wx
+--- wxWidgets/.git/modules/src/stc/lexilla/logs/refs/heads/wx	2026-07-24 10:54:52
++++ wxWidgets-Qt-Android/.git/modules/src/stc/lexilla/logs/refs/heads/wx	2026-07-10 15:25:42
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1784883292 +0200	clone: from https://github.com/wxWidgets/lexilla.git
++0000000000000000000000000000000000000000 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1783689942 +0200	clone: from https://github.com/wxWidgets/lexilla.git
+diff -Nur wxWidgets/.git/modules/src/stc/lexilla/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/src/stc/lexilla/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/src/stc/lexilla/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:52
++++ wxWidgets-Qt-Android/.git/modules/src/stc/lexilla/logs/refs/remotes/origin/HEAD	2026-07-10 15:25:42
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1784883292 +0200	clone: from https://github.com/wxWidgets/lexilla.git
++0000000000000000000000000000000000000000 bf6ad20062b98808ffa21419263942a427c150a9 Andy Vandijck <andyvand@gmail.com> 1783689942 +0200	clone: from https://github.com/wxWidgets/lexilla.git
+Binary files wxWidgets/.git/modules/src/stc/scintilla/index and wxWidgets-Qt-Android/.git/modules/src/stc/scintilla/index differ
+diff -Nur wxWidgets/.git/modules/src/stc/scintilla/logs/HEAD wxWidgets-Qt-Android/.git/modules/src/stc/scintilla/logs/HEAD
+--- wxWidgets/.git/modules/src/stc/scintilla/logs/HEAD	2026-07-24 10:55:11
++++ wxWidgets-Qt-Android/.git/modules/src/stc/scintilla/logs/HEAD	2026-07-10 15:25:57
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1784883298 +0200	clone: from https://github.com/wxWidgets/scintilla.git
+-0b90f31ced23241054e8088abb50babe9a44ae67 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1784883311 +0200	checkout: moving from wx to 0b90f31ced23241054e8088abb50babe9a44ae67
++0000000000000000000000000000000000000000 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1783689948 +0200	clone: from https://github.com/wxWidgets/scintilla.git
++0b90f31ced23241054e8088abb50babe9a44ae67 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1783689957 +0200	checkout: moving from wx to 0b90f31ced23241054e8088abb50babe9a44ae67
+diff -Nur wxWidgets/.git/modules/src/stc/scintilla/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/src/stc/scintilla/logs/refs/heads/wx
+--- wxWidgets/.git/modules/src/stc/scintilla/logs/refs/heads/wx	2026-07-24 10:54:58
++++ wxWidgets-Qt-Android/.git/modules/src/stc/scintilla/logs/refs/heads/wx	2026-07-10 15:25:48
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1784883298 +0200	clone: from https://github.com/wxWidgets/scintilla.git
++0000000000000000000000000000000000000000 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1783689948 +0200	clone: from https://github.com/wxWidgets/scintilla.git
+diff -Nur wxWidgets/.git/modules/src/stc/scintilla/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/src/stc/scintilla/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/src/stc/scintilla/logs/refs/remotes/origin/HEAD	2026-07-24 10:54:58
++++ wxWidgets-Qt-Android/.git/modules/src/stc/scintilla/logs/refs/remotes/origin/HEAD	2026-07-10 15:25:48
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1784883298 +0200	clone: from https://github.com/wxWidgets/scintilla.git
++0000000000000000000000000000000000000000 0b90f31ced23241054e8088abb50babe9a44ae67 Andy Vandijck <andyvand@gmail.com> 1783689948 +0200	clone: from https://github.com/wxWidgets/scintilla.git
+Binary files wxWidgets/.git/modules/src/tiff/index and wxWidgets-Qt-Android/.git/modules/src/tiff/index differ
+diff -Nur wxWidgets/.git/modules/src/tiff/logs/HEAD wxWidgets-Qt-Android/.git/modules/src/tiff/logs/HEAD
+--- wxWidgets/.git/modules/src/tiff/logs/HEAD	2026-07-24 10:55:11
++++ wxWidgets-Qt-Android/.git/modules/src/tiff/logs/HEAD	2026-07-10 15:25:57
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1784883308 +0200	clone: from https://github.com/wxWidgets/libtiff.git
+-a40df5ddc406a958721ee4fc6faf5058460bc97b a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1784883311 +0200	checkout: moving from wx to a40df5ddc406a958721ee4fc6faf5058460bc97b
++0000000000000000000000000000000000000000 a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1783689954 +0200	clone: from https://github.com/wxWidgets/libtiff.git
++a40df5ddc406a958721ee4fc6faf5058460bc97b a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1783689957 +0200	checkout: moving from wx to a40df5ddc406a958721ee4fc6faf5058460bc97b
+diff -Nur wxWidgets/.git/modules/src/tiff/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/src/tiff/logs/refs/heads/wx
+--- wxWidgets/.git/modules/src/tiff/logs/refs/heads/wx	2026-07-24 10:55:08
++++ wxWidgets-Qt-Android/.git/modules/src/tiff/logs/refs/heads/wx	2026-07-10 15:25:54
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1784883308 +0200	clone: from https://github.com/wxWidgets/libtiff.git
++0000000000000000000000000000000000000000 a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1783689954 +0200	clone: from https://github.com/wxWidgets/libtiff.git
+diff -Nur wxWidgets/.git/modules/src/tiff/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/src/tiff/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/src/tiff/logs/refs/remotes/origin/HEAD	2026-07-24 10:55:08
++++ wxWidgets-Qt-Android/.git/modules/src/tiff/logs/refs/remotes/origin/HEAD	2026-07-10 15:25:54
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1784883308 +0200	clone: from https://github.com/wxWidgets/libtiff.git
++0000000000000000000000000000000000000000 a40df5ddc406a958721ee4fc6faf5058460bc97b Andy Vandijck <andyvand@gmail.com> 1783689954 +0200	clone: from https://github.com/wxWidgets/libtiff.git
+Binary files wxWidgets/.git/modules/src/zlib/index and wxWidgets-Qt-Android/.git/modules/src/zlib/index differ
+diff -Nur wxWidgets/.git/modules/src/zlib/logs/HEAD wxWidgets-Qt-Android/.git/modules/src/zlib/logs/HEAD
+--- wxWidgets/.git/modules/src/zlib/logs/HEAD	2026-07-24 10:55:11
++++ wxWidgets-Qt-Android/.git/modules/src/zlib/logs/HEAD	2026-07-10 15:25:57
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	clone: from https://github.com/wxWidgets/zlib.git
+-62eba04c6ff5a91aff6ce9ffd50ff7a52994412c 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1784883311 +0200	checkout: moving from wx to 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c
++0000000000000000000000000000000000000000 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1783689956 +0200	clone: from https://github.com/wxWidgets/zlib.git
++62eba04c6ff5a91aff6ce9ffd50ff7a52994412c 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1783689957 +0200	checkout: moving from wx to 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c
+diff -Nur wxWidgets/.git/modules/src/zlib/logs/refs/heads/wx wxWidgets-Qt-Android/.git/modules/src/zlib/logs/refs/heads/wx
+--- wxWidgets/.git/modules/src/zlib/logs/refs/heads/wx	2026-07-24 10:55:10
++++ wxWidgets-Qt-Android/.git/modules/src/zlib/logs/refs/heads/wx	2026-07-10 15:25:56
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	clone: from https://github.com/wxWidgets/zlib.git
++0000000000000000000000000000000000000000 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1783689956 +0200	clone: from https://github.com/wxWidgets/zlib.git
+diff -Nur wxWidgets/.git/modules/src/zlib/logs/refs/remotes/origin/HEAD wxWidgets-Qt-Android/.git/modules/src/zlib/logs/refs/remotes/origin/HEAD
+--- wxWidgets/.git/modules/src/zlib/logs/refs/remotes/origin/HEAD	2026-07-24 10:55:10
++++ wxWidgets-Qt-Android/.git/modules/src/zlib/logs/refs/remotes/origin/HEAD	2026-07-10 15:25:56
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1784883310 +0200	clone: from https://github.com/wxWidgets/zlib.git
++0000000000000000000000000000000000000000 62eba04c6ff5a91aff6ce9ffd50ff7a52994412c Andy Vandijck <andyvand@gmail.com> 1783689956 +0200	clone: from https://github.com/wxWidgets/zlib.git
+Binary files wxWidgets/.git/objects/pack/pack-4f5e70d2f2e9efc40588747cf579c39a3b63df1a.idx and wxWidgets-Qt-Android/.git/objects/pack/pack-4f5e70d2f2e9efc40588747cf579c39a3b63df1a.idx differ
+Binary files wxWidgets/.git/objects/pack/pack-4f5e70d2f2e9efc40588747cf579c39a3b63df1a.pack and wxWidgets-Qt-Android/.git/objects/pack/pack-4f5e70d2f2e9efc40588747cf579c39a3b63df1a.pack differ
+Binary files wxWidgets/.git/objects/pack/pack-4f5e70d2f2e9efc40588747cf579c39a3b63df1a.rev and wxWidgets-Qt-Android/.git/objects/pack/pack-4f5e70d2f2e9efc40588747cf579c39a3b63df1a.rev differ
+Binary files wxWidgets/.git/objects/pack/pack-9cf72abdeac6f6e7d5ef88336112db66b53e2b26.idx and wxWidgets-Qt-Android/.git/objects/pack/pack-9cf72abdeac6f6e7d5ef88336112db66b53e2b26.idx differ
+Binary files wxWidgets/.git/objects/pack/pack-9cf72abdeac6f6e7d5ef88336112db66b53e2b26.pack and wxWidgets-Qt-Android/.git/objects/pack/pack-9cf72abdeac6f6e7d5ef88336112db66b53e2b26.pack differ
+Binary files wxWidgets/.git/objects/pack/pack-9cf72abdeac6f6e7d5ef88336112db66b53e2b26.rev and wxWidgets-Qt-Android/.git/objects/pack/pack-9cf72abdeac6f6e7d5ef88336112db66b53e2b26.rev differ
+Binary files wxWidgets/.git/objects/pack/pack-a7bb25de39ed7b6756762d512543ced006f7540b.idx and wxWidgets-Qt-Android/.git/objects/pack/pack-a7bb25de39ed7b6756762d512543ced006f7540b.idx differ
+Binary files wxWidgets/.git/objects/pack/pack-a7bb25de39ed7b6756762d512543ced006f7540b.pack and wxWidgets-Qt-Android/.git/objects/pack/pack-a7bb25de39ed7b6756762d512543ced006f7540b.pack differ
+Binary files wxWidgets/.git/objects/pack/pack-a7bb25de39ed7b6756762d512543ced006f7540b.rev and wxWidgets-Qt-Android/.git/objects/pack/pack-a7bb25de39ed7b6756762d512543ced006f7540b.rev differ
+diff -Nur wxWidgets/.git/packed-refs wxWidgets-Qt-Android/.git/packed-refs
+--- wxWidgets/.git/packed-refs	2026-07-24 10:53:33
++++ wxWidgets-Qt-Android/.git/packed-refs	2026-07-10 12:58:11
+@@ -51,7 +51,7 @@
+ ad3030251dd723dc18d080d158de12e7f6118460 refs/remotes/origin/html-data-object
+ 1a8bddaac972c100a10e36924ae437162913a2e6 refs/remotes/origin/karsten
+ c3cc9810f70719ea54b119b7df99d60a273b9178 refs/remotes/origin/latest-actions-release-workflow
+-8003fd68a481c27fa657b39281957245f1a69443 refs/remotes/origin/master
++fcdaa107fb5d295972855ca5e362e40dd37a17e8 refs/remotes/origin/master
+ 8c8415c9a886a03fcebb9fbdd278b708bdd119fc refs/remotes/origin/ownerdraw-refactor
+ 1b539499cd270fb7f41c8b5d31331235d6c15dbf refs/remotes/origin/wxPy-3.0-branch
+ 51f479bfb60f310f5906cd1fea57453e868bb0ff refs/remotes/origin/wxPy-3.0.0
+diff -Nur wxWidgets/.git/refs/remotes/origin/master wxWidgets-Qt-Android/.git/refs/remotes/origin/master
+--- wxWidgets/.git/refs/remotes/origin/master	1970-01-01 01:00:00
++++ wxWidgets-Qt-Android/.git/refs/remotes/origin/master	2026-07-24 10:49:58
+@@ -0,0 +1 @@
++8003fd68a481c27fa657b39281957245f1a69443
+Binary files wxWidgets/.github/.DS_Store and wxWidgets-Qt-Android/.github/.DS_Store differ
+diff -Nur wxWidgets/arm64/config.log wxWidgets-Qt-Android/arm64/config.log
+--- wxWidgets/arm64/config.log	1970-01-01 01:00:00
++++ wxWidgets-Qt-Android/arm64/config.log	2026-07-10 15:24:16
+@@ -0,0 +1,3663 @@
++This file contains any messages produced by compilers while
++running configure, to aid debugging if configure makes a mistake.
++
++It was created by wxWidgets configure 3.3.4, which was
++generated by GNU Autoconf 2.69.  Invocation command line was
++
++  $ ../configure --with-qt --enable-debug --build=aarch64-unknown-linux-gnu --host=aarch64-linux-android --disable-compat30 --disable-shared --disable-arttango --enable-image --disable-dragimage --disable-sockets --with-libtiff=no --without-opengl --disable-baseevtloop --disable-utf8 --prefix=/usr/local/qt-6.9.3-android-arm64
++
++## --------- ##
++## Platform. ##
++## --------- ##
++
++hostname = MacBook-Pro-van-Andy-10.local
++uname -m = arm64
++uname -r = 25.5.0
++uname -s = Darwin
++uname -v = Darwin Kernel Version 25.5.0: Mon Apr 27 20:41:19 PDT 2026; root:xnu-12377.121.6~2/RELEASE_ARM64_T8122
++
++/usr/bin/uname -p = arm
++/bin/uname -X     = unknown
++
++/bin/arch              = unknown
++/usr/bin/arch -k       = unknown
++/usr/convex/getsysinfo = unknown
++/usr/bin/hostinfo      = Mach kernel version:
++	 Darwin Kernel Version 25.5.0: Mon Apr 27 20:41:19 PDT 2026; root:xnu-12377.121.6~2/RELEASE_ARM64_T8122
++Kernel configured for up to 8 processors.
++8 processors are physically available.
++8 processors are logically available.
++Processor type: arm64e (ARM64E)
++Processors active: 0 1 2 3 4 5 6 7
++Primary memory available: 8.00 gigabytes
++Default processor set: 450 tasks, 2241 threads, 8 processors
++Load average: 2.28, Mach factor: 5.71
++/bin/machine           = unknown
++/usr/bin/oslevel       = unknown
++/bin/universe          = unknown
++
++PATH: /Users/andyvand/Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/bin
++PATH: /Library/Frameworks/Python.framework/Versions/3.14/bin
++PATH: /Library/Frameworks/Python.framework/Versions/2.7/bin
++PATH: /usr/local/bin
++PATH: /System/Cryptexes/App/usr/bin
++PATH: /usr/bin
++PATH: /bin
++PATH: /usr/sbin
++PATH: /sbin
++PATH: /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
++PATH: /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
++PATH: /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
++PATH: /pkg/env/global/bin
++PATH: /opt/X11/bin
++PATH: /Library/Apple/usr/bin
++PATH: /Applications/VMware Fusion.app/Contents/Public
++PATH: /opt/devkitpro/tools/bin
++PATH: /usr/local/share/dotnet
++PATH: ~/.dotnet/tools
++PATH: /usr/local/go/bin
++PATH: /opt/homebrew/bin
++PATH: /Library/Frameworks/Mono.framework/Versions/Current/Commands
++PATH: /Users/andyvand/.cargo/bin
++
++
++## ----------- ##
++## Core tests. ##
++## ----------- ##
++
++configure:3757: checking build system type
++configure:3771: result: aarch64-unknown-linux-gnu
++configure:3791: checking host system type
++configure:3804: result: aarch64-unknown-linux-android
++configure:4611: checking for toolkit
++configure:4674: result: qt
++configure:12962: checking for aarch64-linux-android-gcc
++configure:12989: result: aarch64-linux-android21-clang
++configure:13258: checking for C compiler version
++configure:13267: aarch64-linux-android21-clang --version >&5
++Android (13989888, +pgo, -bolt, +lto, -mlgo, based on r563880c) clang version 21.0.0 (https://android.googlesource.com/toolchain/llvm-project 5e96669f06077099aa41290cdb4c5e6fa0f59349)
++Target: aarch64-unknown-linux-android21
++Thread model: posix
++InstalledDir: /Users/andyvand/Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/bin
++configure:13278: $? = 0
++configure:13267: aarch64-linux-android21-clang -v >&5
++Android (13989888, +pgo, -bolt, +lto, -mlgo, based on r563880c) clang version 21.0.0 (https://android.googlesource.com/toolchain/llvm-project 5e96669f06077099aa41290cdb4c5e6fa0f59349)
++Target: aarch64-unknown-linux-android21
++Thread model: posix
++InstalledDir: /Users/andyvand/Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/bin
++configure:13278: $? = 0
++configure:13267: aarch64-linux-android21-clang -V >&5
++clang: error: argument to '-V' is missing (expected 1 value)
++clang: error: no input files
++configure:13278: $? = 1
++configure:13267: aarch64-linux-android21-clang -qversion >&5
++clang: error: unknown argument '-qversion'; did you mean '--version'?
++clang: error: no input files
++configure:13278: $? = 1
++configure:13298: checking whether the C compiler works
++configure:13320: aarch64-linux-android21-clang    conftest.c -llog  >&5
++configure:13324: $? = 0
++configure:13372: result: yes
++configure:13375: checking for C compiler default output file name
++configure:13377: result: a.out
++configure:13383: checking for suffix of executables
++configure:13390: aarch64-linux-android21-clang -o conftest    conftest.c -llog  >&5
++configure:13394: $? = 0
++configure:13416: result: 
++configure:13438: checking whether we are cross compiling
++configure:13476: result: yes
++configure:13481: checking for suffix of object files
++configure:13503: aarch64-linux-android21-clang -c   conftest.c >&5
++configure:13507: $? = 0
++configure:13528: result: o
++configure:13532: checking whether we are using the GNU C compiler
++configure:13551: aarch64-linux-android21-clang -c   conftest.c >&5
++configure:13551: $? = 0
++configure:13560: result: yes
++configure:13569: checking whether aarch64-linux-android21-clang accepts -g
++configure:13589: aarch64-linux-android21-clang -c -g  conftest.c >&5
++configure:13589: $? = 0
++configure:13630: result: yes
++configure:13647: checking for aarch64-linux-android21-clang option to accept ISO C89
++configure:13710: aarch64-linux-android21-clang  -c   conftest.c >&5
++conftest.c:16:14: warning: a function definition without a prototype is deprecated in all versions of C and is not supported in C23 [-Wdeprecated-non-prototype]
++   16 | static char *e (p, i)
++      |              ^
++1 warning generated.
++configure:13710: $? = 0
++configure:13723: result: none needed
++configure:13756: checking whether we are using the Intel C compiler
++configure:13776: aarch64-linux-android21-clang -c   conftest.c >&5
++conftest.c:16:17: error: use of undeclared identifier 'choke'
++   16 |                 choke me
++      |                 ^
++1 error generated.
++configure:13776: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| /* end confdefs.h.  */
++| 
++| int
++| main ()
++| {
++| 
++|              #ifndef __INTEL_COMPILER
++|                 choke me
++|              #endif
++| 
++|   ;
++|   return 0;
++| }
++configure:13786: result: no
++configure:14316: checking how to run the C preprocessor
++configure:14347: aarch64-linux-android21-clang -E  conftest.c
++configure:14347: $? = 0
++configure:14361: aarch64-linux-android21-clang -E  conftest.c
++conftest.c:10:10: fatal error: 'ac_nonexistent.h' file not found
++   10 | #include <ac_nonexistent.h>
++      |          ^~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:14361: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| /* end confdefs.h.  */
++| #include <ac_nonexistent.h>
++configure:14386: result: aarch64-linux-android21-clang -E
++configure:14406: aarch64-linux-android21-clang -E  conftest.c
++configure:14406: $? = 0
++configure:14420: aarch64-linux-android21-clang -E  conftest.c
++conftest.c:10:10: fatal error: 'ac_nonexistent.h' file not found
++   10 | #include <ac_nonexistent.h>
++      |          ^~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:14420: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| /* end confdefs.h.  */
++| #include <ac_nonexistent.h>
++configure:14449: checking for grep that handles long lines and -e
++configure:14507: result: /usr/bin/grep
++configure:14512: checking for egrep
++configure:14574: result: /usr/bin/grep -E
++configure:14580: checking whether aarch64-linux-android21-clang needs -traditional
++conftest.c:10:10: fatal error: 'sgtty.h' file not found
++   10 | #include <sgtty.h>
++      |          ^~~~~~~~~
++1 error generated.
++configure:14614: result: no
++configure:14735: checking for C++ compiler version
++configure:14744: aarch64-linux-android21-clang++ --version >&5
++Android (13989888, +pgo, -bolt, +lto, -mlgo, based on r563880c) clang version 21.0.0 (https://android.googlesource.com/toolchain/llvm-project 5e96669f06077099aa41290cdb4c5e6fa0f59349)
++Target: aarch64-unknown-linux-android21
++Thread model: posix
++InstalledDir: /Users/andyvand/Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/bin
++configure:14755: $? = 0
++configure:14744: aarch64-linux-android21-clang++ -v >&5
++Android (13989888, +pgo, -bolt, +lto, -mlgo, based on r563880c) clang version 21.0.0 (https://android.googlesource.com/toolchain/llvm-project 5e96669f06077099aa41290cdb4c5e6fa0f59349)
++Target: aarch64-unknown-linux-android21
++Thread model: posix
++InstalledDir: /Users/andyvand/Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/bin
++configure:14755: $? = 0
++configure:14744: aarch64-linux-android21-clang++ -V >&5
++clang++: error: argument to '-V' is missing (expected 1 value)
++clang++: error: no input files
++configure:14755: $? = 1
++configure:14744: aarch64-linux-android21-clang++ -qversion >&5
++clang++: error: unknown argument '-qversion'; did you mean '--version'?
++clang++: error: no input files
++configure:14755: $? = 1
++configure:14759: checking whether we are using the GNU C++ compiler
++configure:14778: aarch64-linux-android21-clang++ -c   conftest.cpp >&5
++configure:14778: $? = 0
++configure:14787: result: yes
++configure:14796: checking whether aarch64-linux-android21-clang++ accepts -g
++configure:14816: aarch64-linux-android21-clang++ -c -g  conftest.cpp >&5
++configure:14816: $? = 0
++configure:14857: result: yes
++configure:14893: checking whether we are using the Intel C++ compiler
++configure:14913: aarch64-linux-android21-clang++ -c   conftest.cpp >&5
++conftest.cpp:16:17: error: unknown type name 'choke'
++   16 |                 choke me
++      |                 ^
++1 error generated.
++configure:14913: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| /* end confdefs.h.  */
++| 
++| int
++| main ()
++| {
++| 
++|              #ifndef __INTEL_COMPILER
++|                 choke me
++|              #endif
++| 
++|   ;
++|   return 0;
++| }
++configure:14923: result: no
++configure:15115: checking whether we are using the IBM xlC C++ compiler
++configure:15135: aarch64-linux-android21-clang++ -c   conftest.cpp >&5
++conftest.cpp:16:17: error: unknown type name 'choke'
++   16 |                 choke me
++      |                 ^
++1 error generated.
++configure:15135: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| /* end confdefs.h.  */
++| 
++| int
++| main ()
++| {
++| 
++|              #ifndef __xlC__
++|                 choke me
++|              #endif
++| 
++|   ;
++|   return 0;
++| }
++configure:15145: result: no
++configure:15476: checking whether aarch64-linux-android21-clang++ supports C++11 features by default
++configure:15772: aarch64-linux-android21-clang++ -c   conftest.cpp >&5
++configure:15772: $? = 0
++configure:15779: result: yes
++configure:22896: checking for aarch64-linux-android-ar
++configure:22926: result: no
++configure:22936: checking for ar
++configure:22952: found /usr/bin/ar
++configure:22963: result: ar
++configure:22975: WARNING: using cross tools not prefixed with host triplet
++configure:23416: checking for ANSI C header files
++configure:23436: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23436: $? = 0
++configure:23520: result: yes
++configure:23533: checking for sys/types.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for sys/stat.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for stdlib.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for string.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for memory.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for strings.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for inttypes.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for stdint.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23533: checking for unistd.h
++configure:23533: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23533: $? = 0
++configure:23533: result: yes
++configure:23548: checking for langinfo.h
++configure:23548: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23548: $? = 0
++configure:23548: result: yes
++configure:23548: checking for wchar.h
++configure:23548: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23548: $? = 0
++configure:23548: result: yes
++configure:23563: checking for sys/select.h
++configure:23563: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23563: $? = 0
++configure:23563: result: yes
++configure:23583: checking for cxxabi.h
++configure:23583: aarch64-linux-android21-clang++ -c   conftest.cpp >&5
++configure:23583: $? = 0
++configure:23583: result: yes
++configure:23603: checking for an ANSI C-conforming const
++configure:23669: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23669: $? = 0
++configure:23676: result: yes
++configure:23684: checking for inline
++configure:23700: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23700: $? = 0
++configure:23708: result: inline
++configure:23731: checking size of short
++configure:23736: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23736: $? = 0
++configure:23736: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:63:24: error: 'test_array' declared as an array with a negative size
++   63 | static int test_array [1 - 2 * !(((long int) (sizeof (short))) <= 0)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23736: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (short))) <= 0)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23736: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:63:24: error: 'test_array' declared as an array with a negative size
++   63 | static int test_array [1 - 2 * !(((long int) (sizeof (short))) <= 1)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23736: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (short))) <= 1)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23736: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23736: $? = 0
++configure:23736: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23736: $? = 0
++configure:23750: result: 2
++configure:23764: checking size of void *
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23769: $? = 0
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:64:24: error: 'test_array' declared as an array with a negative size
++   64 | static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 0)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23769: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 0)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:64:24: error: 'test_array' declared as an array with a negative size
++   64 | static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 1)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23769: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 1)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:64:24: error: 'test_array' declared as an array with a negative size
++   64 | static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 3)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23769: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 3)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:64:24: error: 'test_array' declared as an array with a negative size
++   64 | static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 7)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23769: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (void *))) <= 7)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23769: $? = 0
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23769: $? = 0
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23769: $? = 0
++configure:23769: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23769: $? = 0
++configure:23783: result: 8
++configure:23797: checking size of int
++configure:23802: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23802: $? = 0
++configure:23802: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:65:24: error: 'test_array' declared as an array with a negative size
++   65 | static int test_array [1 - 2 * !(((long int) (sizeof (int))) <= 0)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23802: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (int))) <= 0)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23802: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:65:24: error: 'test_array' declared as an array with a negative size
++   65 | static int test_array [1 - 2 * !(((long int) (sizeof (int))) <= 1)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23802: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (int))) <= 1)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23802: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:65:24: error: 'test_array' declared as an array with a negative size
++   65 | static int test_array [1 - 2 * !(((long int) (sizeof (int))) <= 3)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23802: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (int))) <= 3)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23802: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23802: $? = 0
++configure:23802: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23802: $? = 0
++configure:23802: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23802: $? = 0
++configure:23816: result: 4
++configure:23830: checking size of long
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23835: $? = 0
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:66:24: error: 'test_array' declared as an array with a negative size
++   66 | static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 0)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23835: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 0)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:66:24: error: 'test_array' declared as an array with a negative size
++   66 | static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 1)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23835: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 1)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:66:24: error: 'test_array' declared as an array with a negative size
++   66 | static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 3)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23835: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 3)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:66:24: error: 'test_array' declared as an array with a negative size
++   66 | static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 7)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23835: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long))) <= 7)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23835: $? = 0
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23835: $? = 0
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23835: $? = 0
++configure:23835: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23835: $? = 0
++configure:23849: result: 8
++configure:23863: checking size of size_t
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23868: $? = 0
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:67:24: error: 'test_array' declared as an array with a negative size
++   67 | static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 0)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23868: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 0)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:67:24: error: 'test_array' declared as an array with a negative size
++   67 | static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 1)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23868: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 1)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:67:24: error: 'test_array' declared as an array with a negative size
++   67 | static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 3)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23868: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 3)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:67:24: error: 'test_array' declared as an array with a negative size
++   67 | static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 7)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23868: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (size_t))) <= 7)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23868: $? = 0
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23868: $? = 0
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23868: $? = 0
++configure:23868: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23868: $? = 0
++configure:23882: result: 8
++configure:23972: checking size of long long
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23977: $? = 0
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:68:24: error: 'test_array' declared as an array with a negative size
++   68 | static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 0)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23977: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 0)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:68:24: error: 'test_array' declared as an array with a negative size
++   68 | static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 1)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23977: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 1)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:68:24: error: 'test_array' declared as an array with a negative size
++   68 | static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 3)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23977: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 3)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:68:24: error: 'test_array' declared as an array with a negative size
++   68 | static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 7)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:23977: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| /* end confdefs.h.  */
++| #include <stdio.h>
++| #ifdef HAVE_SYS_TYPES_H
++| # include <sys/types.h>
++| #endif
++| #ifdef HAVE_SYS_STAT_H
++| # include <sys/stat.h>
++| #endif
++| #ifdef STDC_HEADERS
++| # include <stdlib.h>
++| # include <stddef.h>
++| #else
++| # ifdef HAVE_STDLIB_H
++| #  include <stdlib.h>
++| # endif
++| #endif
++| #ifdef HAVE_STRING_H
++| # if !defined STDC_HEADERS && defined HAVE_MEMORY_H
++| #  include <memory.h>
++| # endif
++| # include <string.h>
++| #endif
++| #ifdef HAVE_STRINGS_H
++| # include <strings.h>
++| #endif
++| #ifdef HAVE_INTTYPES_H
++| # include <inttypes.h>
++| #endif
++| #ifdef HAVE_STDINT_H
++| # include <stdint.h>
++| #endif
++| #ifdef HAVE_UNISTD_H
++| # include <unistd.h>
++| #endif
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (long long))) <= 7)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23977: $? = 0
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23977: $? = 0
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23977: $? = 0
++configure:23977: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:23977: $? = 0
++configure:23991: result: 8
++configure:24007: checking size of wchar_t
++configure:24012: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:24012: $? = 0
++configure:24012: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:52:24: error: 'test_array' declared as an array with a negative size
++   52 | static int test_array [1 - 2 * !(((long int) (sizeof (wchar_t))) <= 0)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:24012: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| #define SIZEOF_LONG_LONG 8
++| /* end confdefs.h.  */
++| 
++|         /* DJGPP's wchar_t is now a keyword in C++ (still not C though) */
++|         #if defined(__DJGPP__) && !( (__GNUC_MINOR__ >= 8 && __GNUC__ == 2 ) || __GNUC__ >= 3 )
++|         #  error "fake wchar_t"
++|         #endif
++|         #ifdef __CYGWIN__
++|         #  include <stddef.h>
++|         #endif
++|         #include <wchar.h>
++|         #ifdef HAVE_STDLIB_H
++|         #  include <stdlib.h>
++|         #endif
++|         #include <stdio.h>
++| 
++| 
++| 
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (wchar_t))) <= 0)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:24012: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:52:24: error: 'test_array' declared as an array with a negative size
++   52 | static int test_array [1 - 2 * !(((long int) (sizeof (wchar_t))) <= 1)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:24012: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| #define SIZEOF_LONG_LONG 8
++| /* end confdefs.h.  */
++| 
++|         /* DJGPP's wchar_t is now a keyword in C++ (still not C though) */
++|         #if defined(__DJGPP__) && !( (__GNUC_MINOR__ >= 8 && __GNUC__ == 2 ) || __GNUC__ >= 3 )
++|         #  error "fake wchar_t"
++|         #endif
++|         #ifdef __CYGWIN__
++|         #  include <stddef.h>
++|         #endif
++|         #include <wchar.h>
++|         #ifdef HAVE_STDLIB_H
++|         #  include <stdlib.h>
++|         #endif
++|         #include <stdio.h>
++| 
++| 
++| 
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (wchar_t))) <= 1)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:24012: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:52:24: error: 'test_array' declared as an array with a negative size
++   52 | static int test_array [1 - 2 * !(((long int) (sizeof (wchar_t))) <= 3)];
++      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++1 error generated.
++configure:24012: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| #define SIZEOF_LONG_LONG 8
++| /* end confdefs.h.  */
++| 
++|         /* DJGPP's wchar_t is now a keyword in C++ (still not C though) */
++|         #if defined(__DJGPP__) && !( (__GNUC_MINOR__ >= 8 && __GNUC__ == 2 ) || __GNUC__ >= 3 )
++|         #  error "fake wchar_t"
++|         #endif
++|         #ifdef __CYGWIN__
++|         #  include <stddef.h>
++|         #endif
++|         #include <wchar.h>
++|         #ifdef HAVE_STDLIB_H
++|         #  include <stdlib.h>
++|         #endif
++|         #include <stdio.h>
++| 
++| 
++| 
++| int
++| main ()
++| {
++| static int test_array [1 - 2 * !(((long int) (sizeof (wchar_t))) <= 3)];
++| test_array [0] = 0;
++| return test_array [0];
++| 
++|   ;
++|   return 0;
++| }
++configure:24012: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:24012: $? = 0
++configure:24012: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:24012: $? = 0
++configure:24012: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:24012: $? = 0
++configure:24041: result: 4
++configure:24055: checking for va_copy
++configure:24087: aarch64-linux-android21-clang++ -o conftest    conftest.cpp -llog  >&5
++conftest.cpp:47:25: warning: ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
++   47 |                     foo("hi", 17);
++      |                         ^
++1 warning generated.
++configure:24087: $? = 0
++configure:24104: result: yes
++configure:24173: checking for _FILE_OFFSET_BITS value needed for large files
++configure:24194: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:24194: $? = 0
++configure:24203: result: 64
++configure:24259: checking if large file support is available
++configure:24265: result: yes
++configure:24338: checking for _LARGEFILE_SOURCE value needed for large files
++configure:24357: aarch64-linux-android21-clang++ -o conftest   -D_FILE_OFFSET_BITS=64  conftest.cpp -llog  >&5
++configure:24357: $? = 0
++configure:24385: result: no
++configure:24417: checking whether byte ordering is bigendian
++configure:24432: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:39:9: error: unknown type name 'not'
++   39 |                not a universal capable compiler
++      |                ^
++conftest.c:39:14: error: expected ';' after top level declarator
++   39 |                not a universal capable compiler
++      |                     ^
++      |                     ;
++2 errors generated.
++configure:24432: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| #define SIZEOF_LONG_LONG 8
++| #define SIZEOF_WCHAR_T 4
++| #define HAVE_VA_COPY 1
++| #define _FILE_OFFSET_BITS 64
++| #define HAVE_LARGEFILE_SUPPORT 1
++| #define HAVE_FSEEKO 1
++| /* end confdefs.h.  */
++| #ifndef __APPLE_CC__
++| 	       not a universal capable compiler
++| 	     #endif
++| 	     typedef int dummy;
++| 
++configure:24477: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++configure:24477: $? = 0
++configure:24495: aarch64-linux-android21-clang -c -D_GNU_SOURCE   conftest.c >&5
++conftest.c:45:4: error: use of undeclared identifier 'not'
++   45 |                  not big endian
++      |                  ^
++1 error generated.
++configure:24495: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| #define SIZEOF_LONG_LONG 8
++| #define SIZEOF_WCHAR_T 4
++| #define HAVE_VA_COPY 1
++| #define _FILE_OFFSET_BITS 64
++| #define HAVE_LARGEFILE_SUPPORT 1
++| #define HAVE_FSEEKO 1
++| /* end confdefs.h.  */
++| #include <sys/types.h>
++| 		#include <sys/param.h>
++| 
++| int
++| main ()
++| {
++| #if BYTE_ORDER != BIG_ENDIAN
++| 		 not big endian
++| 		#endif
++| 
++|   ;
++|   return 0;
++| }
++configure:24623: result: no
++configure:24755: checking for __sync_xxx_and_fetch builtins
++configure:24776: aarch64-linux-android21-clang -o conftest -D_GNU_SOURCE    conftest.c -llog  >&5
++configure:24776: $? = 0
++configure:24786: result: yes
++configure:24835: checking for libraries directories
++configure:24917: result: /usr/lib
++configure:25058: checking for cos
++configure:25058: aarch64-linux-android21-clang -o conftest -D_GNU_SOURCE    conftest.c -llog  >&5
++conftest.c:62:6: warning: incompatible redeclaration of library function 'cos' [-Wincompatible-library-redeclaration]
++   62 | char cos ();
++      |      ^
++conftest.c:62:6: note: 'cos' is a builtin with type 'double (double)'
++1 warning generated.
++ld.lld: error: undefined symbol: cos
++>>> referenced by conftest.c
++>>>               /var/folders/hq/s7n8_wx50wd3vxklqrz_yt6m0000gn/T/conftest-29613b.o:(main)
++clang: error: linker command failed with exit code 1 (use -v to see invocation)
++configure:25058: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| #define SIZEOF_LONG_LONG 8
++| #define SIZEOF_WCHAR_T 4
++| #define HAVE_VA_COPY 1
++| #define _FILE_OFFSET_BITS 64
++| #define HAVE_LARGEFILE_SUPPORT 1
++| #define HAVE_FSEEKO 1
++| #define HAVE_GCC_ATOMIC_BUILTINS 1
++| /* end confdefs.h.  */
++| /* Define cos to an innocuous variant, in case <limits.h> declares cos.
++|    For example, HP-UX 11i <limits.h> declares gettimeofday.  */
++| #define cos innocuous_cos
++| 
++| /* System header to define __stub macros and hopefully few prototypes,
++|     which can conflict with char cos (); below.
++|     Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
++|     <limits.h> exists even on freestanding compilers.  */
++| 
++| #ifdef __STDC__
++| # include <limits.h>
++| #else
++| # include <assert.h>
++| #endif
++| 
++| #undef cos
++| 
++| /* Override any GCC internal prototype to avoid an error.
++|    Use char because int might match the return type of a GCC
++|    builtin and then its argument prototype would still apply.  */
++| #ifdef __cplusplus
++| extern "C"
++| #endif
++| char cos ();
++| /* The GNU C library defines this for functions which it implements
++|     to always fail with ENOSYS.  Some functions are actually named
++|     something starting with __ and the normal name is an alias.  */
++| #if defined __stub_cos || defined __stub___cos
++| choke me
++| #endif
++| 
++| int
++| main ()
++| {
++| return cos ();
++|   ;
++|   return 0;
++| }
++configure:25058: result: no
++configure:25069: checking for floor
++configure:25069: aarch64-linux-android21-clang -o conftest -D_GNU_SOURCE    conftest.c -llog  >&5
++conftest.c:62:6: warning: incompatible redeclaration of library function 'floor' [-Wincompatible-library-redeclaration]
++   62 | char floor ();
++      |      ^
++conftest.c:62:6: note: 'floor' is a builtin with type 'double (double)'
++1 warning generated.
++ld.lld: error: undefined symbol: floor
++>>> referenced by conftest.c
++>>>               /var/folders/hq/s7n8_wx50wd3vxklqrz_yt6m0000gn/T/conftest-1d6041.o:(main)
++clang: error: linker command failed with exit code 1 (use -v to see invocation)
++configure:25069: $? = 1
++configure: failed program was:
++| /* confdefs.h */
++| #define PACKAGE_NAME "wxWidgets"
++| #define PACKAGE_TARNAME "wxwidgets"
++| #define PACKAGE_VERSION "3.3.4"
++| #define PACKAGE_STRING "wxWidgets 3.3.4"
++| #define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++| #define PACKAGE_URL ""
++| #define __LINUX__ 1
++| #define HAVE_CXX11 1
++| #define _GNU_SOURCE 1
++| #define __UNIX__ 1
++| #define STDC_HEADERS 1
++| #define HAVE_SYS_TYPES_H 1
++| #define HAVE_SYS_STAT_H 1
++| #define HAVE_STDLIB_H 1
++| #define HAVE_STRING_H 1
++| #define HAVE_MEMORY_H 1
++| #define HAVE_STRINGS_H 1
++| #define HAVE_INTTYPES_H 1
++| #define HAVE_STDINT_H 1
++| #define HAVE_UNISTD_H 1
++| #define HAVE_LANGINFO_H 1
++| #define HAVE_WCHAR_H 1
++| #define HAVE_SYS_SELECT_H 1
++| #define HAVE_CXXABI_H 1
++| #define SIZEOF_SHORT 2
++| #define SIZEOF_VOID_P 8
++| #define SIZEOF_INT 4
++| #define SIZEOF_LONG 8
++| #define SIZEOF_SIZE_T 8
++| #define SIZEOF_LONG_LONG 8
++| #define SIZEOF_WCHAR_T 4
++| #define HAVE_VA_COPY 1
++| #define _FILE_OFFSET_BITS 64
++| #define HAVE_LARGEFILE_SUPPORT 1
++| #define HAVE_FSEEKO 1
++| #define HAVE_GCC_ATOMIC_BUILTINS 1
++| /* end confdefs.h.  */
++| /* Define floor to an innocuous variant, in case <limits.h> declares floor.
++|    For example, HP-UX 11i <limits.h> declares gettimeofday.  */
++| #define floor innocuous_floor
++| 
++| /* System header to define __stub macros and hopefully few prototypes,
++|     which can conflict with char floor (); below.
++|     Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
++|     <limits.h> exists even on freestanding compilers.  */
++| 
++| #ifdef __STDC__
++| # include <limits.h>
++| #else
++| # include <assert.h>
++| #endif
++| 
++| #undef floor
++| 
++| /* Override any GCC internal prototype to avoid an error.
++|    Use char because int might match the return type of a GCC
++|    builtin and then its argument prototype would still apply.  */
++| #ifdef __cplusplus
++| extern "C"
++| #endif
++| char floor ();
++| /* The GNU C library defines this for functions which it implements
++|     to always fail with ENOSYS.  Some functions are actually named
++|     something starting with __ and the normal name is an alias.  */
++| #if defined __stub_floor || defined __stub___floor
++| choke me
++| #endif
++| 
++| int
++| main ()
++| {
++| return floor ();
++|   ;
++|   return 0;
++| }
++configure:25069: result: no
++configure:25078: checking if floating point functions link without -lm
++configure:25084: result: no
++configure:25092: checking for sin
++configure:25092: aarch64-linux-android21-clang -o conftest -D_GNU_SOURCE    conftest.c -llog  -lm >&5
++conftest.c:62:6: warning: incompatible redeclaration of library function 'sin' [-Wincompatible-library-redeclaration]
++   62 | char sin ();
++      |      ^
++conftest.c:62:6: note: 'sin' is a builtin with type 'double (double)'
++1 warning generated.
++configure:25092: $? = 0
++configure:25092: result: yes
++configure:25103: checking for ceil
++configure:25103: aarch64-linux-android21-clang -o conftest -D_GNU_SOURCE    conftest.c -llog  -lm >&5
++conftest.c:63:6: warning: incompatible redeclaration of library function 'ceil' [-Wincompatible-library-redeclaration]
++   63 | char ceil ();
++      |      ^
++conftest.c:63:6: note: 'ceil' is a builtin with type 'double (double)'
++1 warning generated.
++configure:25103: $? = 0
++configure:25103: result: yes
++configure:25112: checking if floating point functions link with -lm
++configure:25115: result: yes
++configure:25135: checking for aarch64-linux-android-pkg-config
++configure:25168: result: no
++configure:25178: checking for pkg-config
++configure:25196: found /usr/local/bin/pkg-config
++configure:25208: result: /usr/local/bin/pkg-config
++configure:25233: checking pkg-config is at least version 0.9.0
++configure:25236: result: yes
++configure:25292: checking for libpcre2-32
++configure:25299: $PKG_CONFIG --exists --print-errors "libpcre2-$pcre_suffix"
++Package libpcre2-32 was not found in the pkg-config search path.
++Perhaps you should add the directory containing `libpcre2-32.pc'
++to the PKG_CONFIG_PATH environment variable
++No package 'libpcre2-32' found
++configure:25302: $? = 1
++configure:25316: $PKG_CONFIG --exists --print-errors "libpcre2-$pcre_suffix"
++Package libpcre2-32 was not found in the pkg-config search path.
++Perhaps you should add the directory containing `libpcre2-32.pc'
++to the PKG_CONFIG_PATH environment variable
++No package 'libpcre2-32' found
++configure:25319: $? = 1
++configure:25333: result: no
++No package 'libpcre2-32' found
++configure:25374: checking whether pcre submodule exists
++configure:25377: result: no
++configure:25379: error: 
++    Configured to use built-in PCRE library, but the file
++    ../3rdparty/pcre/pcre2-config.in couldn't be found.
++    You might need to run:
++
++        git submodule update --init 3rdparty/pcre
++
++    to fix this.
++
++## ---------------- ##
++## Cache variables. ##
++## ---------------- ##
++
++ac_cv_build=aarch64-unknown-linux-gnu
++ac_cv_c_bigendian=no
++ac_cv_c_compiler_gnu=yes
++ac_cv_c_const=yes
++ac_cv_c_inline=inline
++ac_cv_cxx_compiler_gnu=yes
++ac_cv_env_CAIRO_CFLAGS_set=
++ac_cv_env_CAIRO_CFLAGS_value=
++ac_cv_env_CAIRO_LIBS_set=
++ac_cv_env_CAIRO_LIBS_value=
++ac_cv_env_CATCH2_CFLAGS_set=
++ac_cv_env_CATCH2_CFLAGS_value=
++ac_cv_env_CATCH2_LIBS_set=
++ac_cv_env_CATCH2_LIBS_value=
++ac_cv_env_CCC_set=
++ac_cv_env_CCC_value=
++ac_cv_env_CC_set=set
++ac_cv_env_CC_value=aarch64-linux-android21-clang
++ac_cv_env_CFLAGS_set=
++ac_cv_env_CFLAGS_value=
++ac_cv_env_CPPFLAGS_set=
++ac_cv_env_CPPFLAGS_value=
++ac_cv_env_CPP_set=
++ac_cv_env_CPP_value=
++ac_cv_env_CXXFLAGS_set=
++ac_cv_env_CXXFLAGS_value=
++ac_cv_env_CXX_set=set
++ac_cv_env_CXX_value=aarch64-linux-android21-clang++
++ac_cv_env_DIRECTFB_CFLAGS_set=
++ac_cv_env_DIRECTFB_CFLAGS_value=
++ac_cv_env_DIRECTFB_LIBS_set=
++ac_cv_env_DIRECTFB_LIBS_value=
++ac_cv_env_EGL_CFLAGS_set=
++ac_cv_env_EGL_CFLAGS_value=
++ac_cv_env_EGL_LIBS_set=
++ac_cv_env_EGL_LIBS_value=
++ac_cv_env_GL_CFLAGS_set=
++ac_cv_env_GL_CFLAGS_value=
++ac_cv_env_GL_LIBS_set=
++ac_cv_env_GL_LIBS_value=
++ac_cv_env_GNOMEVFS_CFLAGS_set=
++ac_cv_env_GNOMEVFS_CFLAGS_value=
++ac_cv_env_GNOMEVFS_LIBS_set=
++ac_cv_env_GNOMEVFS_LIBS_value=
++ac_cv_env_GSPELL_CFLAGS_set=
++ac_cv_env_GSPELL_CFLAGS_value=
++ac_cv_env_GSPELL_LIBS_set=
++ac_cv_env_GSPELL_LIBS_value=
++ac_cv_env_GST_CFLAGS_set=
++ac_cv_env_GST_CFLAGS_value=
++ac_cv_env_GST_LIBS_set=
++ac_cv_env_GST_LIBS_value=
++ac_cv_env_GTHREAD_CFLAGS_set=
++ac_cv_env_GTHREAD_CFLAGS_value=
++ac_cv_env_GTHREAD_LIBS_set=
++ac_cv_env_GTHREAD_LIBS_value=
++ac_cv_env_GTKPRINT_CFLAGS_set=
++ac_cv_env_GTKPRINT_CFLAGS_value=
++ac_cv_env_GTKPRINT_LIBS_set=
++ac_cv_env_GTKPRINT_LIBS_value=
++ac_cv_env_GTK_CFLAGS_set=
++ac_cv_env_GTK_CFLAGS_value=
++ac_cv_env_GTK_LIBS_set=
++ac_cv_env_GTK_LIBS_value=
++ac_cv_env_LDFLAGS_set=
++ac_cv_env_LDFLAGS_value=
++ac_cv_env_LIBCURL_CFLAGS_set=
++ac_cv_env_LIBCURL_CFLAGS_value=
++ac_cv_env_LIBCURL_LIBS_set=
++ac_cv_env_LIBCURL_LIBS_value=
++ac_cv_env_LIBNOTIFY_CFLAGS_set=
++ac_cv_env_LIBNOTIFY_CFLAGS_value=
++ac_cv_env_LIBNOTIFY_LIBS_set=
++ac_cv_env_LIBNOTIFY_LIBS_value=
++ac_cv_env_LIBPCRE_CFLAGS_set=
++ac_cv_env_LIBPCRE_CFLAGS_value=
++ac_cv_env_LIBPCRE_LIBS_set=
++ac_cv_env_LIBPCRE_LIBS_value=
++ac_cv_env_LIBSECRET_CFLAGS_set=
++ac_cv_env_LIBSECRET_CFLAGS_value=
++ac_cv_env_LIBSECRET_LIBS_set=
++ac_cv_env_LIBSECRET_LIBS_value=
++ac_cv_env_LIBS_set=
++ac_cv_env_LIBS_value=
++ac_cv_env_LIBTIFF_CFLAGS_set=
++ac_cv_env_LIBTIFF_CFLAGS_value=
++ac_cv_env_LIBTIFF_LIBS_set=
++ac_cv_env_LIBTIFF_LIBS_value=
++ac_cv_env_MesaGL_CFLAGS_set=
++ac_cv_env_MesaGL_CFLAGS_value=
++ac_cv_env_MesaGL_LIBS_set=
++ac_cv_env_MesaGL_LIBS_value=
++ac_cv_env_PANGOFT2_CFLAGS_set=
++ac_cv_env_PANGOFT2_CFLAGS_value=
++ac_cv_env_PANGOFT2_LIBS_set=
++ac_cv_env_PANGOFT2_LIBS_value=
++ac_cv_env_PANGOXFT_CFLAGS_set=
++ac_cv_env_PANGOXFT_CFLAGS_value=
++ac_cv_env_PANGOXFT_LIBS_set=
++ac_cv_env_PANGOXFT_LIBS_value=
++ac_cv_env_PKG_CONFIG_LIBDIR_set=
++ac_cv_env_PKG_CONFIG_LIBDIR_value=
++ac_cv_env_PKG_CONFIG_PATH_set=
++ac_cv_env_PKG_CONFIG_PATH_value=
++ac_cv_env_PKG_CONFIG_set=
++ac_cv_env_PKG_CONFIG_value=
++ac_cv_env_PRIVATE_FONTS_CFLAGS_set=
++ac_cv_env_PRIVATE_FONTS_CFLAGS_value=
++ac_cv_env_PRIVATE_FONTS_LIBS_set=
++ac_cv_env_PRIVATE_FONTS_LIBS_value=
++ac_cv_env_QT5_CFLAGS_set=
++ac_cv_env_QT5_CFLAGS_value=
++ac_cv_env_QT5_LIBS_set=
++ac_cv_env_QT5_LIBS_value=
++ac_cv_env_QT6_CFLAGS_set=
++ac_cv_env_QT6_CFLAGS_value=
++ac_cv_env_QT6_LIBS_set=
++ac_cv_env_QT6_LIBS_value=
++ac_cv_env_SDL_CFLAGS_set=
++ac_cv_env_SDL_CFLAGS_value=
++ac_cv_env_SDL_LIBS_set=
++ac_cv_env_SDL_LIBS_value=
++ac_cv_env_SM_CFLAGS_set=
++ac_cv_env_SM_CFLAGS_value=
++ac_cv_env_SM_LIBS_set=
++ac_cv_env_SM_LIBS_value=
++ac_cv_env_WAYLAND_CLIENT_CFLAGS_set=
++ac_cv_env_WAYLAND_CLIENT_CFLAGS_value=
++ac_cv_env_WAYLAND_CLIENT_LIBS_set=
++ac_cv_env_WAYLAND_CLIENT_LIBS_value=
++ac_cv_env_WAYLAND_EGL_CFLAGS_set=
++ac_cv_env_WAYLAND_EGL_CFLAGS_value=
++ac_cv_env_WAYLAND_EGL_LIBS_set=
++ac_cv_env_WAYLAND_EGL_LIBS_value=
++ac_cv_env_WEBKIT_CFLAGS_set=
++ac_cv_env_WEBKIT_CFLAGS_value=
++ac_cv_env_WEBKIT_LIBS_set=
++ac_cv_env_WEBKIT_LIBS_value=
++ac_cv_env_WebP_CFLAGS_set=
++ac_cv_env_WebP_CFLAGS_value=
++ac_cv_env_WebP_LIBS_set=
++ac_cv_env_WebP_LIBS_value=
++ac_cv_env_XKBCOMMON_CFLAGS_set=
++ac_cv_env_XKBCOMMON_CFLAGS_value=
++ac_cv_env_XKBCOMMON_LIBS_set=
++ac_cv_env_XKBCOMMON_LIBS_value=
++ac_cv_env_XMKMF_set=
++ac_cv_env_XMKMF_value=
++ac_cv_env_XTST_CFLAGS_set=
++ac_cv_env_XTST_CFLAGS_value=
++ac_cv_env_XTST_LIBS_set=
++ac_cv_env_XTST_LIBS_value=
++ac_cv_env_Xinerama_CFLAGS_set=
++ac_cv_env_Xinerama_CFLAGS_value=
++ac_cv_env_Xinerama_LIBS_set=
++ac_cv_env_Xinerama_LIBS_value=
++ac_cv_env_Xxf86vm_CFLAGS_set=
++ac_cv_env_Xxf86vm_CFLAGS_value=
++ac_cv_env_Xxf86vm_LIBS_set=
++ac_cv_env_Xxf86vm_LIBS_value=
++ac_cv_env_build_alias_set=set
++ac_cv_env_build_alias_value=aarch64-unknown-linux-gnu
++ac_cv_env_host_alias_set=set
++ac_cv_env_host_alias_value=aarch64-linux-android
++ac_cv_env_target_alias_set=
++ac_cv_env_target_alias_value=
++ac_cv_func_ceil=yes
++ac_cv_func_cos=no
++ac_cv_func_floor=no
++ac_cv_func_sin=yes
++ac_cv_header_cxxabi_h=yes
++ac_cv_header_inttypes_h=yes
++ac_cv_header_langinfo_h=yes
++ac_cv_header_memory_h=yes
++ac_cv_header_stdc=yes
++ac_cv_header_stdint_h=yes
++ac_cv_header_stdlib_h=yes
++ac_cv_header_string_h=yes
++ac_cv_header_strings_h=yes
++ac_cv_header_sys_select_h=yes
++ac_cv_header_sys_stat_h=yes
++ac_cv_header_sys_types_h=yes
++ac_cv_header_unistd_h=yes
++ac_cv_header_wchar_h=yes
++ac_cv_host=aarch64-unknown-linux-android
++ac_cv_objext=o
++ac_cv_path_EGREP='/usr/bin/grep -E'
++ac_cv_path_GREP=/usr/bin/grep
++ac_cv_path_ac_pt_PKG_CONFIG=/usr/local/bin/pkg-config
++ac_cv_prog_CC=aarch64-linux-android21-clang
++ac_cv_prog_CPP='aarch64-linux-android21-clang -E'
++ac_cv_prog_ac_ct_AR=ar
++ac_cv_prog_cc_c89=
++ac_cv_prog_cc_g=yes
++ac_cv_prog_cxx_g=yes
++ac_cv_prog_gcc_traditional=no
++ac_cv_sizeof_int=4
++ac_cv_sizeof_long=8
++ac_cv_sizeof_long_long=8
++ac_cv_sizeof_short=2
++ac_cv_sizeof_size_t=8
++ac_cv_sizeof_void_p=8
++ac_cv_sizeof_wchar_t=4
++ac_cv_sys_file_offset_bits=64
++ac_cv_sys_largefile_source=no
++ax_cv_cxx_compile_cxx11=yes
++bakefile_cv_c_compiler___INTEL_COMPILER=no
++bakefile_cv_cxx_compiler___INTEL_COMPILER=no
++bakefile_cv_cxx_compiler___xlC__=no
++wx_cv_cc_gcc_atomic_builtins=yes
++wx_cv_func_va_copy=yes
++wx_cv_std_libfullpath=/usr/lib
++wx_cv_std_libpath=lib
++wx_cv_use_aboutdlg='wxUSE_ABOUTDLG=${DEFAULT_wxUSE_ABOUTDLG:-yes}'
++wx_cv_use_accel='wxUSE_ACCEL=${DEFAULT_wxUSE_ACCEL:-yes}'
++wx_cv_use_accessibility='wxUSE_ACCESSIBILITY=${DEFAULT_wxUSE_ACCESSIBILITY:-yes}'
++wx_cv_use_actindicator='wxUSE_ACTIVITYINDICATOR=${DEFAULT_wxUSE_ACTIVITYINDICATOR:-yes}'
++wx_cv_use_addremovectrl='wxUSE_ADDREMOVECTRL=${DEFAULT_wxUSE_ADDREMOVECTRL:-yes}'
++wx_cv_use_all_features='wxUSE_ALL_FEATURES=${DEFAULT_wxUSE_ALL_FEATURES:-yes}'
++wx_cv_use_animatectrl='wxUSE_ANIMATIONCTRL=${DEFAULT_wxUSE_ANIMATIONCTRL:-yes}'
++wx_cv_use_any='wxUSE_ANY=${DEFAULT_wxUSE_ANY:-yes}'
++wx_cv_use_apple_ieee='wxUSE_APPLE_IEEE=${DEFAULT_wxUSE_APPLE_IEEE:-yes}'
++wx_cv_use_arcstream='wxUSE_ARCHIVE_STREAMS=${DEFAULT_wxUSE_ARCHIVE_STREAMS:-yes}'
++wx_cv_use_artstd='wxUSE_ARTPROVIDER_STD=${DEFAULT_wxUSE_ARTPROVIDER_STD:-yes}'
++wx_cv_use_arttango=wxUSE_ARTPROVIDER_TANGO=no
++wx_cv_use_aui='wxUSE_AUI=${DEFAULT_wxUSE_AUI:-yes}'
++wx_cv_use_autoidman='wxUSE_AUTOID_MANAGEMENT=${DEFAULT_wxUSE_AUTOID_MANAGEMENT:-yes}'
++wx_cv_use_backtrace='wxUSE_STACKWALKER=${DEFAULT_wxUSE_STACKWALKER:-yes}'
++wx_cv_use_bannerwindow='wxUSE_BANNERWINDOW=${DEFAULT_wxUSE_BANNERWINDOW:-yes}'
++wx_cv_use_base64='wxUSE_BASE64=${DEFAULT_wxUSE_BASE64:-yes}'
++wx_cv_use_baseevtloop=wxUSE_CONSOLE_EVENTLOOP=no
++wx_cv_use_bmpbutton='wxUSE_BMPBUTTON=${DEFAULT_wxUSE_BMPBUTTON:-yes}'
++wx_cv_use_bmpcombobox='wxUSE_BITMAPCOMBOBOX=${DEFAULT_wxUSE_BITMAPCOMBOBOX:-yes}'
++wx_cv_use_busyinfo='wxUSE_BUSYINFO=${DEFAULT_wxUSE_BUSYINFO:-yes}'
++wx_cv_use_button='wxUSE_BUTTON=${DEFAULT_wxUSE_BUTTON:-yes}'
++wx_cv_use_cairo='wxUSE_CAIRO=${DEFAULT_wxUSE_CAIRO:-yes}'
++wx_cv_use_calendar='wxUSE_CALCTRL=${DEFAULT_wxUSE_CALCTRL:-yes}'
++wx_cv_use_caret='wxUSE_CARET=${DEFAULT_wxUSE_CARET:-yes}'
++wx_cv_use_catch2=wxUSE_CATCH2=builtin
++wx_cv_use_catch_segvs='wxUSE_ON_FATAL_EXCEPTION=${DEFAULT_wxUSE_ON_FATAL_EXCEPTION:-yes}'
++wx_cv_use_cef_debug='wxUSE_CEF_DEBUG=${DEFAULT_wxUSE_CEF_DEBUG:-no}'
++wx_cv_use_checkbox='wxUSE_CHECKBOX=${DEFAULT_wxUSE_CHECKBOX:-yes}'
++wx_cv_use_checklst='wxUSE_CHECKLST=${DEFAULT_wxUSE_CHECKLST:-yes}'
++wx_cv_use_choice='wxUSE_CHOICE=${DEFAULT_wxUSE_CHOICE:-yes}'
++wx_cv_use_choicebook='wxUSE_CHOICEBOOK=${DEFAULT_wxUSE_CHOICEBOOK:-yes}'
++wx_cv_use_choicedlg='wxUSE_CHOICEDLG=${DEFAULT_wxUSE_CHOICEDLG:-yes}'
++wx_cv_use_clipboard='wxUSE_CLIPBOARD=${DEFAULT_wxUSE_CLIPBOARD:-yes}'
++wx_cv_use_cmdline='wxUSE_CMDLINE_PARSER=${DEFAULT_wxUSE_CMDLINE_PARSER:-yes}'
++wx_cv_use_coldlg='wxUSE_COLOURDLG=${DEFAULT_wxUSE_COLOURDLG:-yes}'
++wx_cv_use_collpane='wxUSE_COLLPANE=${DEFAULT_wxUSE_COLLPANE:-yes}'
++wx_cv_use_colourpicker='wxUSE_COLOURPICKERCTRL=${DEFAULT_wxUSE_COLOURPICKERCTRL:-yes}'
++wx_cv_use_combobox='wxUSE_COMBOBOX=${DEFAULT_wxUSE_COMBOBOX:-yes}'
++wx_cv_use_comboctrl='wxUSE_COMBOCTRL=${DEFAULT_wxUSE_COMBOCTRL:-yes}'
++wx_cv_use_commandlinkbutton='wxUSE_COMMANDLINKBUTTON=${DEFAULT_wxUSE_COMMANDLINKBUTTON:-yes}'
++wx_cv_use_compat30=WXWIN_COMPATIBILITY_3_0=no
++wx_cv_use_compat32='WXWIN_COMPATIBILITY_3_2=${DEFAULT_WXWIN_COMPATIBILITY_3_2:-yes}'
++wx_cv_use_config='wxUSE_CONFIG=${DEFAULT_wxUSE_CONFIG:-yes}'
++wx_cv_use_constraints='wxUSE_CONSTRAINTS=${DEFAULT_wxUSE_CONSTRAINTS:-yes}'
++wx_cv_use_controls='wxUSE_CONTROLS=${DEFAULT_wxUSE_CONTROLS:-yes}'
++wx_cv_use_creddlg='wxUSE_CREDENTIALDLG=${DEFAULT_wxUSE_CREDENTIALDLG:-yes}'
++wx_cv_use_dataobj='wxUSE_DATAOBJ=${DEFAULT_wxUSE_DATAOBJ:-yes}'
++wx_cv_use_dataviewctrl='wxUSE_DATAVIEWCTRL=${DEFAULT_wxUSE_DATAVIEWCTRL:-yes}'
++wx_cv_use_datepick='wxUSE_DATEPICKCTRL=${DEFAULT_wxUSE_DATEPICKCTRL:-yes}'
++wx_cv_use_datetime='wxUSE_DATETIME=${DEFAULT_wxUSE_DATETIME:-yes}'
++wx_cv_use_dccache='wxUSE_DC_CACHEING=${DEFAULT_wxUSE_DC_CACHEING:-yes}'
++wx_cv_use_dctransform='wxUSE_DC_TRANSFORM_MATRIX=${DEFAULT_wxUSE_DC_TRANSFORM_MATRIX:-yes}'
++wx_cv_use_debug_flag='wxUSE_DEBUG_FLAG=${DEFAULT_wxUSE_DEBUG_FLAG:-yes}'
++wx_cv_use_debug_gdb='wxUSE_DEBUG_GDB=${DEFAULT_wxUSE_DEBUG_GDB:-no}'
++wx_cv_use_debug_info='wxUSE_DEBUG_INFO=${DEFAULT_wxUSE_DEBUG_INFO:-no}'
++wx_cv_use_debugreport='wxUSE_DEBUGREPORT=${DEFAULT_wxUSE_DEBUGREPORT:-yes}'
++wx_cv_use_detect_sm='wxUSE_DETECT_SM=${DEFAULT_wxUSE_DETECT_SM:-yes}'
++wx_cv_use_dialupman='wxUSE_DIALUP_MANAGER=${DEFAULT_wxUSE_DIALUP_MANAGER:-yes}'
++wx_cv_use_dirdlg='wxUSE_DIRDLG=${DEFAULT_wxUSE_DIRDLG:-yes}'
++wx_cv_use_dirpicker='wxUSE_DIRPICKERCTRL=${DEFAULT_wxUSE_DIRPICKERCTRL:-yes}'
++wx_cv_use_display='wxUSE_DISPLAY=${DEFAULT_wxUSE_DISPLAY:-yes}'
++wx_cv_use_dmalloc='wxUSE_DMALLOC=${DEFAULT_wxUSE_DMALLOC:-yes}'
++wx_cv_use_dnd='wxUSE_DRAG_AND_DROP=${DEFAULT_wxUSE_DRAG_AND_DROP:-yes}'
++wx_cv_use_docview='wxUSE_DOC_VIEW_ARCHITECTURE=${DEFAULT_wxUSE_DOC_VIEW_ARCHITECTURE:-yes}'
++wx_cv_use_dragimage=wxUSE_DRAGIMAGE=no
++wx_cv_use_dynamicloader='wxUSE_DYNAMIC_LOADER=${DEFAULT_wxUSE_DYNAMIC_LOADER:-yes}'
++wx_cv_use_dynlib='wxUSE_DYNLIB_CLASS=${DEFAULT_wxUSE_DYNLIB_CLASS:-yes}'
++wx_cv_use_editablebox='wxUSE_EDITABLELISTBOX=${DEFAULT_wxUSE_EDITABLELISTBOX:-yes}'
++wx_cv_use_epollloop='wxUSE_EPOLL_DISPATCHER=${DEFAULT_wxUSE_EPOLL_DISPATCHER:-yes}'
++wx_cv_use_exceptions='wxUSE_EXCEPTIONS=${DEFAULT_wxUSE_EXCEPTIONS:-yes}'
++wx_cv_use_expat=wxUSE_EXPAT=yes
++wx_cv_use_extended_rtti='wxUSE_EXTENDED_RTTI=${DEFAULT_wxUSE_EXTENDED_RTTI:-no}'
++wx_cv_use_ffile='wxUSE_FFILE=${DEFAULT_wxUSE_FFILE:-yes}'
++wx_cv_use_file='wxUSE_FILE=${DEFAULT_wxUSE_FILE:-yes}'
++wx_cv_use_filectrl='wxUSE_FILECTRL=${DEFAULT_wxUSE_FILECTRL:-yes}'
++wx_cv_use_filedlg='wxUSE_FILEDLG=${DEFAULT_wxUSE_FILEDLG:-yes}'
++wx_cv_use_filehistory='wxUSE_FILE_HISTORY=${DEFAULT_wxUSE_FILE_HISTORY:-yes}'
++wx_cv_use_filepicker='wxUSE_FILEPICKERCTRL=${DEFAULT_wxUSE_FILEPICKERCTRL:-yes}'
++wx_cv_use_fileproto='wxUSE_PROTOCOL_FILE=${DEFAULT_wxUSE_PROTOCOL_FILE:-yes}'
++wx_cv_use_filesystem='wxUSE_FILESYSTEM=${DEFAULT_wxUSE_FILESYSTEM:-yes}'
++wx_cv_use_finddlg='wxUSE_FINDREPLDLG=${DEFAULT_wxUSE_FINDREPLDLG:-yes}'
++wx_cv_use_fontdlg='wxUSE_FONTDLG=${DEFAULT_wxUSE_FONTDLG:-yes}'
++wx_cv_use_fontenum='wxUSE_FONTENUM=${DEFAULT_wxUSE_FONTENUM:-yes}'
++wx_cv_use_fontmap='wxUSE_FONTMAP=${DEFAULT_wxUSE_FONTMAP:-yes}'
++wx_cv_use_fontpicker='wxUSE_FONTPICKERCTRL=${DEFAULT_wxUSE_FONTPICKERCTRL:-yes}'
++wx_cv_use_fs_archive='wxUSE_FS_ARCHIVE=${DEFAULT_wxUSE_FS_ARCHIVE:-yes}'
++wx_cv_use_fs_inet='wxUSE_FS_INET=${DEFAULT_wxUSE_FS_INET:-yes}'
++wx_cv_use_fs_zip='wxUSE_FS_ZIP=${DEFAULT_wxUSE_FS_ZIP:-yes}'
++wx_cv_use_fswatcher='wxUSE_FSWATCHER=${DEFAULT_wxUSE_FSWATCHER:-yes}'
++wx_cv_use_ftp='wxUSE_PROTOCOL_FTP=${DEFAULT_wxUSE_PROTOCOL_FTP:-yes}'
++wx_cv_use_gauge='wxUSE_GAUGE=${DEFAULT_wxUSE_GAUGE:-yes}'
++wx_cv_use_gif='wxUSE_GIF=${DEFAULT_wxUSE_GIF:-yes}'
++wx_cv_use_glcanvasegl='wxUSE_GLCANVAS_EGL=${DEFAULT_wxUSE_GLCANVAS_EGL:-yes}'
++wx_cv_use_gnomevfs='wxUSE_LIBGNOMEVFS=${DEFAULT_wxUSE_LIBGNOMEVFS:-yes}'
++wx_cv_use_graphics_ctx='wxUSE_GRAPHICS_CONTEXT=${DEFAULT_wxUSE_GRAPHICS_CONTEXT:-yes}'
++wx_cv_use_grid='wxUSE_GRID=${DEFAULT_wxUSE_GRID:-yes}'
++wx_cv_use_gtkprint='wxUSE_GTKPRINT=${DEFAULT_wxUSE_GTKPRINT:-yes}'
++wx_cv_use_gui='wxUSE_GUI=${DEFAULT_wxUSE_GUI:-yes}'
++wx_cv_use_headerctrl='wxUSE_HEADERCTRL=${DEFAULT_wxUSE_HEADERCTRL:-yes}'
++wx_cv_use_help='wxUSE_HELP=${DEFAULT_wxUSE_HELP:-yes}'
++wx_cv_use_hotkey='wxUSE_HOTKEY=${DEFAULT_wxUSE_HOTKEY:-yes}'
++wx_cv_use_html='wxUSE_HTML=${DEFAULT_wxUSE_HTML:-yes}'
++wx_cv_use_htmlhelp='wxUSE_WXHTML_HELP=${DEFAULT_wxUSE_WXHTML_HELP:-yes}'
++wx_cv_use_http='wxUSE_PROTOCOL_HTTP=${DEFAULT_wxUSE_PROTOCOL_HTTP:-yes}'
++wx_cv_use_hyperlink='wxUSE_HYPERLINKCTRL=${DEFAULT_wxUSE_HYPERLINKCTRL:-yes}'
++wx_cv_use_ico_cur='wxUSE_ICO_CUR=${DEFAULT_wxUSE_ICO_CUR:-yes}'
++wx_cv_use_iff='wxUSE_IFF=${DEFAULT_wxUSE_IFF:-yes}'
++wx_cv_use_image=wxUSE_IMAGE=yes
++wx_cv_use_imaglist='wxUSE_IMAGLIST=${DEFAULT_wxUSE_IMAGLIST:-yes}'
++wx_cv_use_infobar='wxUSE_INFOBAR=${DEFAULT_wxUSE_INFOBAR:-yes}'
++wx_cv_use_intl='wxUSE_INTL=${DEFAULT_wxUSE_INTL:-yes}'
++wx_cv_use_ipc='wxUSE_IPC=${DEFAULT_wxUSE_IPC:-yes}'
++wx_cv_use_ipv6='wxUSE_IPV6=${DEFAULT_wxUSE_IPV6:-yes}'
++wx_cv_use_joystick='wxUSE_JOYSTICK=${DEFAULT_wxUSE_JOYSTICK:-yes}'
++wx_cv_use_libcurl='wxUSE_LIBCURL=${DEFAULT_wxUSE_LIBCURL:-yes}'
++wx_cv_use_libiconv='wxUSE_LIBICONV=${DEFAULT_wxUSE_LIBICONV:-yes}'
++wx_cv_use_libjbig='wxUSE_LIBJBIG=${DEFAULT_wxUSE_LIBJBIG:-yes}'
++wx_cv_use_libjpeg=wxUSE_LIBJPEG=yes
++wx_cv_use_liblzma='wxUSE_LIBLZMA=${DEFAULT_wxUSE_LIBLZMA:-yes}'
++wx_cv_use_libmspack='wxUSE_LIBMSPACK=${DEFAULT_wxUSE_LIBMSPACK:-yes}'
++wx_cv_use_libnotify='wxUSE_LIBNOTIFY=${DEFAULT_wxUSE_LIBNOTIFY:-yes}'
++wx_cv_use_libpng=wxUSE_LIBPNG=yes
++wx_cv_use_libtiff=wxUSE_LIBTIFF=no
++wx_cv_use_libwebp=wxUSE_LIBWEBP=yes
++wx_cv_use_libxpm=wxUSE_LIBXPM=yes
++wx_cv_use_listbook='wxUSE_LISTBOOK=${DEFAULT_wxUSE_LISTBOOK:-yes}'
++wx_cv_use_listbox='wxUSE_LISTBOX=${DEFAULT_wxUSE_LISTBOX:-yes}'
++wx_cv_use_listctrl='wxUSE_LISTCTRL=${DEFAULT_wxUSE_LISTCTRL:-yes}'
++wx_cv_use_log='wxUSE_LOG=${DEFAULT_wxUSE_LOG:-yes}'
++wx_cv_use_logdialog='wxUSE_LOGDIALOG=${DEFAULT_wxUSE_LOGDIALOG:-yes}'
++wx_cv_use_loggui='wxUSE_LOGGUI=${DEFAULT_wxUSE_LOGGUI:-yes}'
++wx_cv_use_logwin='wxUSE_LOGWINDOW=${DEFAULT_wxUSE_LOGWINDOW:-yes}'
++wx_cv_use_lunasvg='wxUSE_LUNASVG=${DEFAULT_wxUSE_LUNASVG:-yes}'
++wx_cv_use_markup='wxUSE_MARKUP=${DEFAULT_wxUSE_MARKUP:-yes}'
++wx_cv_use_mdi='wxUSE_MDI=${DEFAULT_wxUSE_MDI:-yes}'
++wx_cv_use_mdidoc='wxUSE_MDI_ARCHITECTURE=${DEFAULT_wxUSE_MDI_ARCHITECTURE:-yes}'
++wx_cv_use_mediactrl='wxUSE_MEDIACTRL=${DEFAULT_wxUSE_MEDIACTRL:-yes}'
++wx_cv_use_menubar='wxUSE_MENUBAR=${DEFAULT_wxUSE_MENUBAR:-yes}'
++wx_cv_use_menus='wxUSE_MENUS=${DEFAULT_wxUSE_MENUS:-yes}'
++wx_cv_use_metafile='wxUSE_METAFILE=${DEFAULT_wxUSE_METAFILE:-yes}'
++wx_cv_use_mimetype='wxUSE_MIMETYPE=${DEFAULT_wxUSE_MIMETYPE:-yes}'
++wx_cv_use_miniframe='wxUSE_MINIFRAME=${DEFAULT_wxUSE_MINIFRAME:-yes}'
++wx_cv_use_monolithic='wxUSE_MONOLITHIC=${DEFAULT_wxUSE_MONOLITHIC:-no}'
++wx_cv_use_mousewheel='wxUSE_MOUSEWHEEL=${DEFAULT_wxUSE_MOUSEWHEEL:-yes}'
++wx_cv_use_msgdlg='wxUSE_MSGDLG=${DEFAULT_wxUSE_MSGDLG:-yes}'
++wx_cv_use_mshtmlhelp='wxUSE_MS_HTML_HELP=${DEFAULT_wxUSE_MS_HTML_HELP:-yes}'
++wx_cv_use_nanosvg='wxUSE_NANOSVG=${DEFAULT_wxUSE_NANOSVG:-yes}'
++wx_cv_use_nanox='wxUSE_NANOX=${DEFAULT_wxUSE_NANOX:-no}'
++wx_cv_use_nativedvc='wxUSE_NATIVE_DATAVIEWCTRL=${DEFAULT_wxUSE_NATIVE_DATAVIEWCTRL:-yes}'
++wx_cv_use_no_exceptions='wxUSE_NO_EXCEPTIONS=${DEFAULT_wxUSE_NO_EXCEPTIONS:-no}'
++wx_cv_use_no_rtti='wxUSE_NO_RTTI=${DEFAULT_wxUSE_NO_RTTI:-no}'
++wx_cv_use_notebook='wxUSE_NOTEBOOK=${DEFAULT_wxUSE_NOTEBOOK:-yes}'
++wx_cv_use_notifmsg='wxUSE_NOTIFICATION_MESSAGE=${DEFAULT_wxUSE_NOTIFICATION_MESSAGE:-yes}'
++wx_cv_use_numberdlg='wxUSE_NUMBERDLG=${DEFAULT_wxUSE_NUMBERDLG:-yes}'
++wx_cv_use_odcombobox='wxUSE_ODCOMBOBOX=${DEFAULT_wxUSE_ODCOMBOBOX:-yes}'
++wx_cv_use_official_build='wxUSE_OFFICIAL_BUILD=${DEFAULT_wxUSE_OFFICIAL_BUILD:-no}'
++wx_cv_use_ole='wxUSE_OLE=${DEFAULT_wxUSE_OLE:-yes}'
++wx_cv_use_opengl=wxUSE_OPENGL=no
++wx_cv_use_optimise='wxUSE_OPTIMISE=${DEFAULT_wxUSE_OPTIMISE:-yes}'
++wx_cv_use_ownerdrawn='wxUSE_OWNER_DRAWN=${DEFAULT_wxUSE_OWNER_DRAWN:-yes}'
++wx_cv_use_palette='wxUSE_PALETTE=${DEFAULT_wxUSE_PALETTE:-yes}'
++wx_cv_use_pch='wxUSE_PCH=${DEFAULT_wxUSE_PCH:-no}'
++wx_cv_use_pcx='wxUSE_PCX=${DEFAULT_wxUSE_PCX:-yes}'
++wx_cv_use_permissive='wxUSE_PERMISSIVE=${DEFAULT_wxUSE_PERMISSIVE:-no}'
++wx_cv_use_pic='wxUSE_PIC=${DEFAULT_wxUSE_PIC:-yes}'
++wx_cv_use_plugins='wxUSE_PLUGINS=${DEFAULT_wxUSE_PLUGINS:-no}'
++wx_cv_use_pnm='wxUSE_PNM=${DEFAULT_wxUSE_PNM:-yes}'
++wx_cv_use_popupwin='wxUSE_POPUPWIN=${DEFAULT_wxUSE_POPUPWIN:-yes}'
++wx_cv_use_postscript='wxUSE_POSTSCRIPT=${DEFAULT_wxUSE_POSTSCRIPT:-yes}'
++wx_cv_use_prefseditor='wxUSE_PREFERENCES_EDITOR=${DEFAULT_wxUSE_PREFERENCES_EDITOR:-yes}'
++wx_cv_use_printarch='wxUSE_PRINTING_ARCHITECTURE=${DEFAULT_wxUSE_PRINTING_ARCHITECTURE:-yes}'
++wx_cv_use_printfposparam='wxUSE_PRINTF_POS_PARAMS=${DEFAULT_wxUSE_PRINTF_POS_PARAMS:-yes}'
++wx_cv_use_privatefonts='wxUSE_PRIVATE_FONTS=${DEFAULT_wxUSE_PRIVATE_FONTS:-yes}'
++wx_cv_use_profile='wxUSE_PROFILE=${DEFAULT_wxUSE_PROFILE:-no}'
++wx_cv_use_progressdlg='wxUSE_PROGRESSDLG=${DEFAULT_wxUSE_PROGRESSDLG:-yes}'
++wx_cv_use_propgrid='wxUSE_PROPGRID=${DEFAULT_wxUSE_PROPGRID:-yes}'
++wx_cv_use_protocol='wxUSE_PROTOCOL=${DEFAULT_wxUSE_PROTOCOL:-yes}'
++wx_cv_use_protocol_file='wxUSE_PROTOCOL_FILE=${DEFAULT_wxUSE_PROTOCOL_FILE:-yes}'
++wx_cv_use_protocol_ftp='wxUSE_PROTOCOL_FTP=${DEFAULT_wxUSE_PROTOCOL_FTP:-yes}'
++wx_cv_use_protocol_http='wxUSE_PROTOCOL_HTTP=${DEFAULT_wxUSE_PROTOCOL_HTTP:-yes}'
++wx_cv_use_protocols='wxUSE_PROTOCOL=${DEFAULT_wxUSE_PROTOCOL:-yes}'
++wx_cv_use_ps_in_msw='wxUSE_POSTSCRIPT_ARCHITECTURE_IN_MSW=${DEFAULT_wxUSE_POSTSCRIPT_ARCHITECTURE_IN_MSW:-yes}'
++wx_cv_use_radiobox='wxUSE_RADIOBOX=${DEFAULT_wxUSE_RADIOBOX:-yes}'
++wx_cv_use_radiobtn='wxUSE_RADIOBTN=${DEFAULT_wxUSE_RADIOBTN:-yes}'
++wx_cv_use_rearrangectrl='wxUSE_REARRANGECTRL=${DEFAULT_wxUSE_REARRANGECTRL:-yes}'
++wx_cv_use_regex=wxUSE_REGEX=yes
++wx_cv_use_regkey='wxUSE_REGKEY=${DEFAULT_wxUSE_REGKEY:-yes}'
++wx_cv_use_repro_build='wxUSE_REPRODUCIBLE_BUILD=${DEFAULT_wxUSE_REPRODUCIBLE_BUILD:-no}'
++wx_cv_use_ribbon='wxUSE_RIBBON=${DEFAULT_wxUSE_RIBBON:-yes}'
++wx_cv_use_richmsgdlg='wxUSE_RICHMSGDLG=${DEFAULT_wxUSE_RICHMSGDLG:-yes}'
++wx_cv_use_richtext='wxUSE_RICHTEXT=${DEFAULT_wxUSE_RICHTEXT:-yes}'
++wx_cv_use_richtooltip='wxUSE_RICHTOOLTIP=${DEFAULT_wxUSE_RICHTOOLTIP:-yes}'
++wx_cv_use_rpath='wxUSE_RPATH=${DEFAULT_wxUSE_RPATH:-yes}'
++wx_cv_use_sash='wxUSE_SASH=${DEFAULT_wxUSE_SASH:-yes}'
++wx_cv_use_scrollbar='wxUSE_SCROLLBAR=${DEFAULT_wxUSE_SCROLLBAR:-yes}'
++wx_cv_use_sdl='wxUSE_LIBSDL=${DEFAULT_wxUSE_LIBSDL:-yes}'
++wx_cv_use_searchctrl='wxUSE_SEARCHCTRL=${DEFAULT_wxUSE_SEARCHCTRL:-yes}'
++wx_cv_use_secretstore='wxUSE_SECRETSTORE=${DEFAULT_wxUSE_SECRETSTORE:-yes}'
++wx_cv_use_selectloop='wxUSE_SELECT_DISPATCHER=${DEFAULT_wxUSE_SELECT_DISPATCHER:-yes}'
++wx_cv_use_shared=wxUSE_SHARED=no
++wx_cv_use_slider='wxUSE_SLIDER=${DEFAULT_wxUSE_SLIDER:-yes}'
++wx_cv_use_snglinst='wxUSE_SNGLINST_CHECKER=${DEFAULT_wxUSE_SNGLINST_CHECKER:-yes}'
++wx_cv_use_sockets=wxUSE_SOCKETS=no
++wx_cv_use_sound='wxUSE_SOUND=${DEFAULT_wxUSE_SOUND:-yes}'
++wx_cv_use_spellcheck='wxUSE_SPELLCHECK=${DEFAULT_wxUSE_SPELLCHECK:-yes}'
++wx_cv_use_spinbtn='wxUSE_SPINBTN=${DEFAULT_wxUSE_SPINBTN:-yes}'
++wx_cv_use_spinctrl='wxUSE_SPINCTRL=${DEFAULT_wxUSE_SPINCTRL:-yes}'
++wx_cv_use_splash='wxUSE_SPLASH=${DEFAULT_wxUSE_SPLASH:-yes}'
++wx_cv_use_splines='wxUSE_SPLINES=${DEFAULT_wxUSE_SPLINES:-yes}'
++wx_cv_use_splitter='wxUSE_SPLITTER=${DEFAULT_wxUSE_SPLITTER:-yes}'
++wx_cv_use_statbmp='wxUSE_STATBMP=${DEFAULT_wxUSE_STATBMP:-yes}'
++wx_cv_use_statbox='wxUSE_STATBOX=${DEFAULT_wxUSE_STATBOX:-yes}'
++wx_cv_use_statline='wxUSE_STATLINE=${DEFAULT_wxUSE_STATLINE:-yes}'
++wx_cv_use_stattext='wxUSE_STATTEXT=${DEFAULT_wxUSE_STATTEXT:-yes}'
++wx_cv_use_statusbar='wxUSE_STATUSBAR=${DEFAULT_wxUSE_STATUSBAR:-yes}'
++wx_cv_use_stc='wxUSE_STC=${DEFAULT_wxUSE_STC:-yes}'
++wx_cv_use_std_containers='wxUSE_STD_CONTAINERS=${DEFAULT_wxUSE_STD_CONTAINERS:-yes}'
++wx_cv_use_std_iostreams='wxUSE_STD_IOSTREAM=${DEFAULT_wxUSE_STD_IOSTREAM:-yes}'
++wx_cv_use_std_string_conv_in_wxstring='wxUSE_STD_STRING_CONV_IN_WXSTRING=${DEFAULT_wxUSE_STD_STRING_CONV_IN_WXSTRING:-no}'
++wx_cv_use_stdpaths='wxUSE_STDPATHS=${DEFAULT_wxUSE_STDPATHS:-yes}'
++wx_cv_use_stl='wxUSE_STL=${DEFAULT_wxUSE_STL:-no}'
++wx_cv_use_stopwatch='wxUSE_STOPWATCH=${DEFAULT_wxUSE_STOPWATCH:-yes}'
++wx_cv_use_streams='wxUSE_STREAMS=${DEFAULT_wxUSE_STREAMS:-yes}'
++wx_cv_use_subdirs='wxWITH_SUBDIRS=${DEFAULT_wxWITH_SUBDIRS:-yes}'
++wx_cv_use_svg='wxUSE_SVG=${DEFAULT_wxUSE_SVG:-yes}'
++wx_cv_use_symver='wxUSE_ELF_SYMVER=${DEFAULT_wxUSE_ELF_SYMVER:-yes}'
++wx_cv_use_sys_libs='wxUSE_SYS_LIBS=${DEFAULT_wxUSE_SYS_LIBS:-yes}'
++wx_cv_use_sysoptions='wxUSE_SYSTEM_OPTIONS=${DEFAULT_wxUSE_SYSTEM_OPTIONS:-yes}'
++wx_cv_use_tarstream='wxUSE_TARSTREAM=${DEFAULT_wxUSE_TARSTREAM:-yes}'
++wx_cv_use_taskbarbutton='wxUSE_TASKBARBUTTON=${DEFAULT_wxUSE_TASKBARBUTTON:-yes}'
++wx_cv_use_taskbaricon='wxUSE_TASKBARICON=${DEFAULT_wxUSE_TASKBARICON:-yes}'
++wx_cv_use_tbarnative='wxUSE_TOOLBAR_NATIVE=${DEFAULT_wxUSE_TOOLBAR_NATIVE:-yes}'
++wx_cv_use_tests='wxUSE_TESTS_SUBDIR=${DEFAULT_wxUSE_TESTS_SUBDIR:-yes}'
++wx_cv_use_textbuf='wxUSE_TEXTBUFFER=${DEFAULT_wxUSE_TEXTBUFFER:-yes}'
++wx_cv_use_textctrl='wxUSE_TEXTCTRL=${DEFAULT_wxUSE_TEXTCTRL:-yes}'
++wx_cv_use_textdlg='wxUSE_TEXTDLG=${DEFAULT_wxUSE_TEXTDLG:-yes}'
++wx_cv_use_textfile='wxUSE_TEXTFILE=${DEFAULT_wxUSE_TEXTFILE:-yes}'
++wx_cv_use_tga='wxUSE_TGA=${DEFAULT_wxUSE_TGA:-yes}'
++wx_cv_use_threads='wxUSE_THREADS=${DEFAULT_wxUSE_THREADS:-yes}'
++wx_cv_use_timepick='wxUSE_TIMEPICKCTRL=${DEFAULT_wxUSE_TIMEPICKCTRL:-yes}'
++wx_cv_use_timer='wxUSE_TIMER=${DEFAULT_wxUSE_TIMER:-yes}'
++wx_cv_use_tipdlg='wxUSE_STARTUP_TIPS=${DEFAULT_wxUSE_STARTUP_TIPS:-yes}'
++wx_cv_use_tipwindow='wxUSE_TIPWINDOW=${DEFAULT_wxUSE_TIPWINDOW:-yes}'
++wx_cv_use_togglebtn='wxUSE_TOGGLEBTN=${DEFAULT_wxUSE_TOGGLEBTN:-yes}'
++wx_cv_use_toolbar='wxUSE_TOOLBAR=${DEFAULT_wxUSE_TOOLBAR:-yes}'
++wx_cv_use_toolbook='wxUSE_TOOLBOOK=${DEFAULT_wxUSE_TOOLBOOK:-yes}'
++wx_cv_use_tooltips='wxUSE_TOOLTIPS=${DEFAULT_wxUSE_TOOLTIPS:-yes}'
++wx_cv_use_treebook='wxUSE_TREEBOOK=${DEFAULT_wxUSE_TREEBOOK:-yes}'
++wx_cv_use_treectrl='wxUSE_TREECTRL=${DEFAULT_wxUSE_TREECTRL:-yes}'
++wx_cv_use_treelist='wxUSE_TREELISTCTRL=${DEFAULT_wxUSE_TREELISTCTRL:-yes}'
++wx_cv_use_uiactionsim='wxUSE_UIACTIONSIMULATOR=${DEFAULT_wxUSE_UIACTIONSIMULATOR:-yes}'
++wx_cv_use_universal='wxUSE_UNIVERSAL=${DEFAULT_wxUSE_UNIVERSAL:-no}'
++wx_cv_use_unsafe_conv_in_wxstring='wxUSE_UNSAFE_WXSTRING_CONV=${DEFAULT_wxUSE_UNSAFE_WXSTRING_CONV:-yes}'
++wx_cv_use_url='wxUSE_URL=${DEFAULT_wxUSE_URL:-yes}'
++wx_cv_use_utf8='wxUSE_UNICODE_UTF8='\''no'\'''
++wx_cv_use_utf8only='wxUSE_UNICODE_UTF8_LOCALE=${DEFAULT_wxUSE_UNICODE_UTF8_LOCALE:-no}'
++wx_cv_use_validators='wxUSE_VALIDATORS=${DEFAULT_wxUSE_VALIDATORS:-yes}'
++wx_cv_use_variant='wxUSE_VARIANT=${DEFAULT_wxUSE_VARIANT:-yes}'
++wx_cv_use_visibility='wxUSE_VISIBILITY=${DEFAULT_wxUSE_VISIBILITY:-yes}'
++wx_cv_use_wayland='wxUSE_WAYLAND=${DEFAULT_wxUSE_WAYLAND:-yes}'
++wx_cv_use_webrequest='wxUSE_WEBREQUEST=${DEFAULT_wxUSE_WEBREQUEST:-yes}'
++wx_cv_use_webview='wxUSE_WEBVIEW=${DEFAULT_wxUSE_WEBVIEW:-yes}'
++wx_cv_use_webviewchromium='wxUSE_WEBVIEW_CHROMIUM=${DEFAULT_wxUSE_WEBVIEW_CHROMIUM:-no}'
++wx_cv_use_webviewedge='wxUSE_WEBVIEW_EDGE=${DEFAULT_wxUSE_WEBVIEW_EDGE:-yes}'
++wx_cv_use_webviewie='wxUSE_WEBVIEW_IE=${DEFAULT_wxUSE_WEBVIEW_IE:-yes}'
++wx_cv_use_webviewwebkit='wxUSE_WEBVIEW_WEBKIT=${DEFAULT_wxUSE_WEBVIEW_WEBKIT:-yes}'
++wx_cv_use_wizarddlg='wxUSE_WIZARDDLG=${DEFAULT_wxUSE_WIZARDDLG:-yes}'
++wx_cv_use_wxdib='wxUSE_DIB=${DEFAULT_wxUSE_DIB:-yes}'
++wx_cv_use_xlocale='wxUSE_XLOCALE=${DEFAULT_wxUSE_XLOCALE:-yes}'
++wx_cv_use_xpm='wxUSE_XPM=${DEFAULT_wxUSE_XPM:-yes}'
++wx_cv_use_xrc='wxUSE_XRC=${DEFAULT_wxUSE_XRC:-yes}'
++wx_cv_use_xtest='wxUSE_XTEST=${DEFAULT_wxUSE_XTEST:-yes}'
++wx_cv_use_zipstream='wxUSE_ZIPSTREAM=${DEFAULT_wxUSE_ZIPSTREAM:-yes}'
++wx_cv_use_zlib=wxUSE_ZLIB=yes
++
++## ----------------- ##
++## Output variables. ##
++## ----------------- ##
++
++AIX_CXX_LD=''
++AR='ar'
++AROPTIONS=''
++BK_DEPS=''
++BK_MAKE_PCH=''
++BUILT_WX_LIBS=''
++CAIRO_CFLAGS=''
++CAIRO_LIBS=''
++CATCH2_CFLAGS=''
++CATCH2_LIBS=''
++CC='aarch64-linux-android21-clang'
++CFLAGS='-D_GNU_SOURCE '
++CFLAGS_VISIBILITY=''
++COND_BUILD_debug=''
++COND_BUILD_debug_DEBUG_INFO_default=''
++COND_BUILD_release=''
++COND_BUILD_release_DEBUG_INFO_default=''
++COND_DEBUG_FLAG_0=''
++COND_DEBUG_INFO_0=''
++COND_DEBUG_INFO_1=''
++COND_DEPS_TRACKING_0=''
++COND_DEPS_TRACKING_1=''
++COND_GCC_PCH_1=''
++COND_ICC_PCH_1=''
++COND_MONOLITHIC_0=''
++COND_MONOLITHIC_0_SHARED_0=''
++COND_MONOLITHIC_0_SHARED_0_USE_AUI_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_GUI_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_GUI_1_USE_HTML_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_GUI_1_USE_MEDIA_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_GUI_1_USE_QA_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_GUI_1_USE_WEBVIEW_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_PROPGRID_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_RIBBON_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_RICHTEXT_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_STC_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_XML_1=''
++COND_MONOLITHIC_0_SHARED_0_USE_XRC_1=''
++COND_MONOLITHIC_0_SHARED_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_AUI_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_GUI_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_GUI_1_USE_HTML_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_GUI_1_USE_MEDIA_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_GUI_1_USE_QA_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_GUI_1_USE_WEBVIEW_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_PROPGRID_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_RIBBON_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_RICHTEXT_1_USE_XML_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_STC_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_XML_1=''
++COND_MONOLITHIC_0_SHARED_1_USE_XML_1_USE_XRC_1=''
++COND_MONOLITHIC_0_USE_AUI_1=''
++COND_MONOLITHIC_0_USE_GUI_1=''
++COND_MONOLITHIC_0_USE_GUI_1_USE_MEDIA_1=''
++COND_MONOLITHIC_0_USE_HTML_1=''
++COND_MONOLITHIC_0_USE_MEDIA_1=''
++COND_MONOLITHIC_0_USE_PROPGRID_1=''
++COND_MONOLITHIC_0_USE_QA_1=''
++COND_MONOLITHIC_0_USE_RIBBON_1=''
++COND_MONOLITHIC_0_USE_RICHTEXT_1=''
++COND_MONOLITHIC_0_USE_STC_1=''
++COND_MONOLITHIC_0_USE_WEBVIEW_1=''
++COND_MONOLITHIC_0_USE_XML_1=''
++COND_MONOLITHIC_0_USE_XRC_1=''
++COND_MONOLITHIC_1=''
++COND_MONOLITHIC_1_SHARED_0=''
++COND_MONOLITHIC_1_SHARED_1=''
++COND_MONOLITHIC_1_USE_STC_1=''
++COND_OFFICIAL_BUILD_0_PLATFORM_WIN32_1=''
++COND_OFFICIAL_BUILD_1_PLATFORM_WIN32_1=''
++COND_PLATFORM_MACOSX_0_USE_SOVERCYGWIN_0_USE_SOVERSION_1=''
++COND_PLATFORM_MACOSX_0_USE_SOVERSION_1=''
++COND_PLATFORM_MACOSX_1=''
++COND_PLATFORM_MACOSX_1_PLATFORM_WIN32_1_SHARED_0=''
++COND_PLATFORM_MACOSX_1_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1=''
++COND_PLATFORM_MACOSX_1_TOOLKIT_GTK_TOOLKIT_VERSION_3_USE_GUI_1=''
++COND_PLATFORM_MACOSX_1_TOOLKIT_GTK_TOOLKIT_VERSION_4_USE_GUI_1=''
++COND_PLATFORM_MACOSX_1_TOOLKIT_OSX_COCOA_USE_GUI_1=''
++COND_PLATFORM_MACOSX_1_TOOLKIT_OSX_COCOA_USE_GUI_1_WXUNIV_0=''
++COND_PLATFORM_MACOSX_1_TOOLKIT_OSX_IPHONE_USE_GUI_1=''
++COND_PLATFORM_MACOSX_1_TOOLKIT_OSX_IPHONE_USE_GUI_1_WXUNIV_0=''
++COND_PLATFORM_MACOSX_1_USE_GUI_1=''
++COND_PLATFORM_MACOSX_1_USE_OPENGL_1=''
++COND_PLATFORM_MACOSX_1_USE_SOVERSION_1=''
++COND_PLATFORM_MACOSX_1_USE_WEBVIEW_CHROMIUM_1=''
++COND_PLATFORM_OS2_1=''
++COND_PLATFORM_UNIX_0=''
++COND_PLATFORM_UNIX_1=''
++COND_PLATFORM_UNIX_1_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1=''
++COND_PLATFORM_UNIX_1_TOOLKIT_GTK_TOOLKIT_VERSION_3_USE_GUI_1=''
++COND_PLATFORM_UNIX_1_TOOLKIT_GTK_TOOLKIT_VERSION_4_USE_GUI_1=''
++COND_PLATFORM_UNIX_1_TOOLKIT_QT_USE_GUI_1_WXUNIV_0=''
++COND_PLATFORM_UNIX_1_USE_GUI_1=''
++COND_PLATFORM_UNIX_1_USE_PLUGINS_0=''
++COND_PLATFORM_UNIX_1_USE_WEBVIEW_CHROMIUM_1=''
++COND_PLATFORM_WIN32_0=''
++COND_PLATFORM_WIN32_1=''
++COND_PLATFORM_WIN32_1_SHARED_0=''
++COND_PLATFORM_WIN32_1_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1=''
++COND_PLATFORM_WIN32_1_TOOLKIT_GTK_TOOLKIT_VERSION_3_USE_GUI_1=''
++COND_PLATFORM_WIN32_1_TOOLKIT_GTK_TOOLKIT_VERSION_4_USE_GUI_1=''
++COND_PLATFORM_WIN32_1_TOOLKIT_QT_USE_GUI_1_WXUNIV_0=''
++COND_PYTHON=''
++COND_SHARED_0=''
++COND_SHARED_0_TOOLKIT_MAC_WXUNIV_0=''
++COND_SHARED_0_TOOLKIT_MSW_WXUNIV_0=''
++COND_SHARED_0_USE_GUI_1_USE_LUNASVG_1=''
++COND_SHARED_0_USE_GUI_1_USE_OPENGL_1=''
++COND_SHARED_0_USE_GUI_1_wxUSE_LIBJPEG_builtin=''
++COND_SHARED_0_USE_GUI_1_wxUSE_LIBPNG_builtin=''
++COND_SHARED_0_USE_GUI_1_wxUSE_LIBTIFF_builtin=''
++COND_SHARED_0_USE_GUI_1_wxUSE_LIBWEBP_builtin=''
++COND_SHARED_0_USE_STC_1=''
++COND_SHARED_0_wxUSE_EXPAT_builtin=''
++COND_SHARED_0_wxUSE_REGEX_builtin=''
++COND_SHARED_0_wxUSE_ZLIB_builtin=''
++COND_SHARED_1=''
++COND_SHARED_1_USE_GUI_1_USE_OPENGL_1=''
++COND_TOOLKIT_COCOA=''
++COND_TOOLKIT_DFB=''
++COND_TOOLKIT_DFB_USE_GUI_1=''
++COND_TOOLKIT_GTK=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_2=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1_WXUNIV_0=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_3=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_3_USE_GUI_1=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_3_USE_GUI_1_WXUNIV_0=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_4=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_4_USE_GUI_1=''
++COND_TOOLKIT_GTK_TOOLKIT_VERSION_4_USE_GUI_1_WXUNIV_0=''
++COND_TOOLKIT_GTK_USE_GUI_1=''
++COND_TOOLKIT_MAC=''
++COND_TOOLKIT_MSW=''
++COND_TOOLKIT_MSW_USE_GUI_1=''
++COND_TOOLKIT_MSW_USE_GUI_1_WXUNIV_0=''
++COND_TOOLKIT_OSX_CARBON=''
++COND_TOOLKIT_OSX_COCOA=''
++COND_TOOLKIT_OSX_COCOA_USE_GUI_1=''
++COND_TOOLKIT_OSX_COCOA_USE_GUI_1_WXUNIV_0=''
++COND_TOOLKIT_OSX_COCOA_WXUNIV_0=''
++COND_TOOLKIT_OSX_IPHONE=''
++COND_TOOLKIT_OSX_IPHONE_USE_GUI_1=''
++COND_TOOLKIT_OSX_IPHONE_USE_GUI_1_WXUNIV_0=''
++COND_TOOLKIT_QT=''
++COND_TOOLKIT_QT_USE_GUI_1_WXUNIV_0=''
++COND_TOOLKIT_X11=''
++COND_TOOLKIT_X11_USE_GUI_1=''
++COND_USE_CAIRO_1=''
++COND_USE_EXCEPTIONS_0=''
++COND_USE_EXCEPTIONS_1=''
++COND_USE_GUI_0=''
++COND_USE_GUI_1=''
++COND_USE_GUI_1_USE_LUNASVG_1=''
++COND_USE_GUI_1_USE_OPENGL_1=''
++COND_USE_GUI_1_WXUNIV_0=''
++COND_USE_GUI_1_WXUNIV_1=''
++COND_USE_GUI_1_wxUSE_LIBJPEG_builtin=''
++COND_USE_GUI_1_wxUSE_LIBPNG_builtin=''
++COND_USE_GUI_1_wxUSE_LIBTIFF_builtin=''
++COND_USE_GUI_1_wxUSE_LIBWEBP_builtin=''
++COND_USE_LUNASVG_1=''
++COND_USE_OPENGL_1=''
++COND_USE_PCH_1=''
++COND_USE_PLUGINS_0=''
++COND_USE_RTTI_0=''
++COND_USE_RTTI_1=''
++COND_USE_SOTWOSYMLINKS_1=''
++COND_USE_SOVERCYGWIN_1_USE_SOVERSION_1=''
++COND_USE_SOVERLINUX_1=''
++COND_USE_SOVERSION_0=''
++COND_USE_SOVERSION_1_USE_SOVERSOLARIS_1=''
++COND_USE_SOVERSOLARIS_1=''
++COND_USE_STC_1=''
++COND_USE_THREADS_0=''
++COND_USE_THREADS_1=''
++COND_USE_WEBVIEW_WEBKIT2_1=''
++COND_USE_XML_1=''
++COND_WINDOWS_IMPLIB_1=''
++COND_WITH_PLUGIN_SDL_1=''
++COND_WXUNIV_1=''
++COND_wxUSE_EXPAT_builtin=''
++COND_wxUSE_LIBJPEG_builtin=''
++COND_wxUSE_LIBPNG_builtin=''
++COND_wxUSE_LIBTIFF_builtin=''
++COND_wxUSE_LIBWEBP_builtin=''
++COND_wxUSE_REGEX_builtin=''
++COND_wxUSE_ZLIB_builtin=''
++CPP='aarch64-linux-android21-clang -E'
++CPPFLAGS=''
++CXX='aarch64-linux-android21-clang++'
++CXXFLAGS=''
++CXXFLAGS_VISIBILITY=''
++DEBUG_FLAG=''
++DEBUG_INFO=''
++DEFS=''
++DEPS_TRACKING=''
++DIRECTFB_CFLAGS=''
++DIRECTFB_LIBS=''
++DISTDIR=''
++DLLIMP_SUFFIX=''
++DLLPREFIX=''
++DLLPREFIX_MODULE=''
++DLLTOOL=''
++DMALLOC_LIBS=''
++DYLIB_RPATH_FLAG=''
++DYLIB_RPATH_INSTALL=''
++DYLIB_RPATH_POSTLINK=''
++ECHO_C='\c'
++ECHO_N=''
++ECHO_T=''
++EGL_CFLAGS=''
++EGL_LIBS=''
++EGREP='/usr/bin/grep -E'
++EXEEXT=''
++EXTRALDFLAGS_WEBVIEW=''
++EXTRALIBS=''
++EXTRALIBS_GUI=''
++EXTRALIBS_HTML=''
++EXTRALIBS_MEDIA=''
++EXTRALIBS_OPENGL=''
++EXTRALIBS_SDL=''
++EXTRALIBS_STC=''
++EXTRALIBS_WEBVIEW=''
++EXTRALIBS_XML=''
++GCC='yes'
++GCC_PCH=''
++GL_CFLAGS=''
++GL_LIBS=''
++GNOMEVFS_CFLAGS=''
++GNOMEVFS_LIBS=''
++GREP='/usr/bin/grep'
++GSPELL_CFLAGS=''
++GSPELL_LIBS=''
++GST_CFLAGS=''
++GST_LIBS=''
++GTHREAD_CFLAGS=''
++GTHREAD_LIBS=''
++GTKPRINT_CFLAGS=''
++GTKPRINT_LIBS=''
++GTK_CFLAGS=''
++GTK_LIBS=''
++GUIDIST=''
++HAVE_CXX11='1'
++HAVE_CXX14=''
++HAVE_CXX17=''
++HAVE_CXX20=''
++HEADER_PAD_OPTION=''
++HOST_SUFFIX='-aarch64-linux-android'
++ICC_PCH=''
++ICC_PCH_CREATE_SWITCH=''
++ICC_PCH_USE_SWITCH=''
++IF_GNU_MAKE=''
++INSTALL_DATA=''
++INSTALL_DIR=''
++INSTALL_PROGRAM=''
++INSTALL_SCRIPT=''
++LDFLAGS=''
++LDFLAGS_GL=''
++LDFLAGS_GUI=''
++LIBCURL_CFLAGS=''
++LIBCURL_LIBS=''
++LIBEXT=''
++LIBICONV=''
++LIBNOTIFY_CFLAGS=''
++LIBNOTIFY_LIBS=''
++LIBOBJS=''
++LIBPCRE_CFLAGS=''
++LIBPCRE_LIBS=''
++LIBPREFIX=''
++LIBS='-llog  -lm'
++LIBSECRET_CFLAGS=''
++LIBSECRET_LIBS=''
++LIBTIFF_CFLAGS=''
++LIBTIFF_LIBS=''
++LN_S=''
++LTLIBOBJS=''
++MAKE_SET=''
++MONOLITHIC=''
++MesaGL_CFLAGS=''
++MesaGL_LIBS=''
++NM=''
++OBJCXXFLAGS=' '
++OBJEXT='o'
++OFFICIAL_BUILD=''
++OPENGL_LIBS=''
++PACKAGE_BUGREPORT='wx-dev@googlegroups.com'
++PACKAGE_NAME='wxWidgets'
++PACKAGE_STRING='wxWidgets 3.3.4'
++PACKAGE_TARNAME='wxwidgets'
++PACKAGE_URL=''
++PACKAGE_VERSION='3.3.4'
++PANGOFT2_CFLAGS=''
++PANGOFT2_LIBS=''
++PANGOXFT_CFLAGS=''
++PANGOXFT_LIBS=''
++PATH_SEPARATOR=':'
++PIC_FLAG=''
++PKG_CONFIG='/usr/local/bin/pkg-config'
++PKG_CONFIG_LIBDIR=''
++PKG_CONFIG_PATH='/Users/andyvand/Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/local/lib/pkgconfig:/Users/andyvand/Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/lib/pkgconfig'
++PLATFORM_BEOS=''
++PLATFORM_MAC=''
++PLATFORM_MACOS=''
++PLATFORM_MACOSX=''
++PLATFORM_UNIX=''
++PLATFORM_WIN32=''
++PRIVATE_FONTS_CFLAGS=''
++PRIVATE_FONTS_LIBS=''
++PYTHON=''
++QT5_CFLAGS=''
++QT5_LIBS=''
++QT6_CFLAGS=''
++QT6_LIBS=''
++RANLIB=''
++RESCOMP=''
++SAMPLES_CXXFLAGS=''
++SAMPLES_SUBDIRS=''
++SDL_CFLAGS=''
++SDL_CONFIG=''
++SDL_LIBS=''
++SET_MAKE=''
++SHARED=''
++SHARED_LD_CC=''
++SHARED_LD_CXX=''
++SHARED_LD_MODULE_CC=''
++SHARED_LD_MODULE_CXX=''
++SHELL='/bin/sh'
++SM_CFLAGS=''
++SM_LIBS=''
++SONAME_FLAG=''
++SO_SUFFIX=''
++SO_SUFFIX_MODULE=''
++STD_BASE_LIBS=''
++STD_GUI_LIBS=''
++STRIP=''
++TOOLCHAIN_FULLNAME=''
++TOOLCHAIN_NAME=''
++TOOLKIT=''
++TOOLKIT_DIR=''
++TOOLKIT_LOWERCASE=''
++TOOLKIT_VERSION=''
++USE_DPI_AWARE_MANIFEST='2'
++USE_GUI=''
++USE_MACVERSION=''
++USE_PLUGINS=''
++USE_SOTWOSYMLINKS=''
++USE_SOVERCYGWIN=''
++USE_SOVERLINUX=''
++USE_SOVERSION=''
++USE_SOVERSOLARIS=''
++USE_XML=''
++VENDOR='custom'
++WAYLAND_CLIENT_CFLAGS=''
++WAYLAND_CLIENT_LIBS=''
++WAYLAND_EGL_CFLAGS=''
++WAYLAND_EGL_LIBS=''
++WEBKIT_CFLAGS=''
++WEBKIT_LIBS=''
++WIDGET_SET=''
++WINDOWS_IMPLIB=''
++WINDRES=''
++WITH_PLUGIN_SDL=''
++WXCONFIG_CFLAGS=''
++WXCONFIG_CPPFLAGS=' -D_FILE_OFFSET_BITS=64'
++WXCONFIG_CXXFLAGS=''
++WXCONFIG_LDFLAGS=''
++WXCONFIG_LDFLAGS_GUI=''
++WXCONFIG_LIBS=''
++WXCONFIG_RESFLAGS=''
++WXCONFIG_RPATH=''
++WXCONFIG_STC_LIBS=''
++WXUNIV=''
++WX_CFLAGS=''
++WX_CPPFLAGS=''
++WX_CXXFLAGS=''
++WX_FLAVOUR=''
++WX_LDFLAGS=''
++WX_LIBRARY_BASENAME_GUI=''
++WX_LIBRARY_BASENAME_NOGUI=''
++WX_LIB_FLAVOUR=''
++WX_RELEASE='3.3'
++WX_SUBVERSION='3.3.4.0'
++WX_VERSION='3.3.4'
++WX_VERSION_TAG=''
++WebP_CFLAGS=''
++WebP_LIBS=''
++XKBCOMMON_CFLAGS=''
++XKBCOMMON_LIBS=''
++XMKMF=''
++XTST_CFLAGS=''
++XTST_LIBS=''
++X_CFLAGS=''
++X_EXTRA_LIBS=''
++X_LIBS=''
++X_PRE_LIBS=''
++Xinerama_CFLAGS=''
++Xinerama_LIBS=''
++Xxf86vm_CFLAGS=''
++Xxf86vm_LIBS=''
++ac_ct_CC=''
++ac_ct_CXX=''
++bindir='${exec_prefix}/bin'
++build='aarch64-unknown-linux-gnu'
++build_alias='aarch64-unknown-linux-gnu'
++build_cpu='aarch64'
++build_os='linux-gnu'
++build_vendor='unknown'
++cross_compiling='yes'
++datadir='${datarootdir}'
++datarootdir='${prefix}/share'
++dlldir=''
++docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
++dvidir='${docdir}'
++exec_prefix='NONE'
++host='aarch64-unknown-linux-android'
++host_alias='aarch64-linux-android'
++host_cpu='aarch64'
++host_os='linux-android'
++host_vendor='unknown'
++htmldir='${docdir}'
++includedir='${prefix}/include'
++infodir='${datarootdir}/info'
++libdir='${exec_prefix}/lib'
++libexecdir='${exec_prefix}/libexec'
++localedir='${datarootdir}/locale'
++localstatedir='${prefix}/var'
++mandir='${datarootdir}/man'
++oldincludedir='/usr/include'
++pdfdir='${docdir}'
++prefix='/usr/local/qt-6.9.3-android-arm64'
++program_transform_name='s,x,x,'
++psdir='${docdir}'
++runstatedir='${localstatedir}/run'
++sbindir='${exec_prefix}/sbin'
++sharedstatedir='${prefix}/com'
++subdirs_extra=''
++sysconfdir='${prefix}/etc'
++target_alias=''
++wxCFLAGS_C99=''
++wxPCRE2_CODE_UNIT_WIDTH=''
++wxUSE_EXPAT='yes'
++wxUSE_LIBJPEG='yes'
++wxUSE_LIBPNG='yes'
++wxUSE_LIBTIFF='no'
++wxUSE_LIBWEBP='yes'
++wxUSE_REGEX='builtin'
++wxUSE_XML=''
++wxUSE_ZLIB='yes'
++wx_top_builddir='/Users/andyvand/Downloads/wxWidgets/arm64'
++
++## ----------- ##
++## confdefs.h. ##
++## ----------- ##
++
++/* confdefs.h */
++#define PACKAGE_NAME "wxWidgets"
++#define PACKAGE_TARNAME "wxwidgets"
++#define PACKAGE_VERSION "3.3.4"
++#define PACKAGE_STRING "wxWidgets 3.3.4"
++#define PACKAGE_BUGREPORT "wx-dev@googlegroups.com"
++#define PACKAGE_URL ""
++#define __LINUX__ 1
++#define HAVE_CXX11 1
++#define _GNU_SOURCE 1
++#define __UNIX__ 1
++#define STDC_HEADERS 1
++#define HAVE_SYS_TYPES_H 1
++#define HAVE_SYS_STAT_H 1
++#define HAVE_STDLIB_H 1
++#define HAVE_STRING_H 1
++#define HAVE_MEMORY_H 1
++#define HAVE_STRINGS_H 1
++#define HAVE_INTTYPES_H 1
++#define HAVE_STDINT_H 1
++#define HAVE_UNISTD_H 1
++#define HAVE_LANGINFO_H 1
++#define HAVE_WCHAR_H 1
++#define HAVE_SYS_SELECT_H 1
++#define HAVE_CXXABI_H 1
++#define SIZEOF_SHORT 2
++#define SIZEOF_VOID_P 8
++#define SIZEOF_INT 4
++#define SIZEOF_LONG 8
++#define SIZEOF_SIZE_T 8
++#define SIZEOF_LONG_LONG 8
++#define SIZEOF_WCHAR_T 4
++#define HAVE_VA_COPY 1
++#define _FILE_OFFSET_BITS 64
++#define HAVE_LARGEFILE_SUPPORT 1
++#define HAVE_FSEEKO 1
++#define HAVE_GCC_ATOMIC_BUILTINS 1
++#define HAVE_SIN 1
++#define HAVE_CEIL 1
++#define wxUSE_REGEX 1
++
++configure: exit 1
+diff -Nur wxWidgets/include/wx/unix/apptrait.h wxWidgets-Qt-Android/include/wx/unix/apptrait.h
+--- wxWidgets/include/wx/unix/apptrait.h	2026-07-24 10:53:33
++++ wxWidgets-Qt-Android/include/wx/unix/apptrait.h	2026-07-10 16:30:07
+@@ -84,7 +84,7 @@
+ #endif // wxUSE_SOCKETS
+ 
+ #if wxUSE_EVENTLOOP_SOURCE
+-    virtual wxEventLoopSourcesManagerBase* GetEventLoopSourcesManager() override;
++    virtual wxEventLoopSourcesManagerBase* GetEventLoopSourcesManager();
+ #endif
+ };
+ 
+diff -Nur wxWidgets/src/common/intl.cpp wxWidgets-Qt-Android/src/common/intl.cpp
+--- wxWidgets/src/common/intl.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/common/intl.cpp	2026-07-10 16:26:49
+@@ -33,6 +33,7 @@
+ #endif // WX_PRECOMP
+ 
+ #include <locale.h>
++#include <langinfo.h>
+ 
+ // standard headers
+ #include <ctype.h>
+diff -Nur wxWidgets/src/qt/accel.cpp wxWidgets-Qt-Android/src/qt/accel.cpp
+--- wxWidgets/src/qt/accel.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/accel.cpp	2026-07-10 16:31:58
+@@ -13,7 +13,8 @@
+ #include "wx/accel.h"
+ #include "wx/qt/private/converter.h"
+ #include <QtCore/QVariant>
+-#include <QShortcut>
++//#include <QShortcut>
++#include <QtGui/qshortcut.h>
+ 
+ // ----------------------------------------------------------------------------
+ // wxAccelRefData: the data used by wxAcceleratorTable
+diff -Nur wxWidgets/src/qt/app.cpp wxWidgets-Qt-Android/src/qt/app.cpp
+--- wxWidgets/src/qt/app.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/app.cpp	2026-07-10 16:32:30
+@@ -15,7 +15,8 @@
+ #include "wx/qt/private/converter.h"
+ #include <QtCore/QStringList>
+ #include <QtWidgets/QApplication>
+-#include <QSurfaceFormat>
++//#include <QSurfaceFormat>
++#include <QtGui/qsurfaceformat.h>
+ 
+ #include <algorithm>
+ #include <vector>
+diff -Nur wxWidgets/src/qt/dcprint.cpp wxWidgets-Qt-Android/src/qt/dcprint.cpp
+--- wxWidgets/src/qt/dcprint.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/dcprint.cpp	2026-07-10 16:34:41
+@@ -17,7 +17,8 @@
+ 
+ #include <QtGui/QPainter>
+ 
+-#include <QPrinter>
++//#include <QPrinter>
++#include <QtPrintSupport/qprinter.h>
+ 
+ wxIMPLEMENT_ABSTRACT_CLASS(wxPrinterDCImpl, wxQtDCImpl)
+ 
+diff -Nur wxWidgets/src/qt/evtloop.cpp wxWidgets-Qt-Android/src/qt/evtloop.cpp
+--- wxWidgets/src/qt/evtloop.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/evtloop.cpp	2026-07-10 16:36:31
+@@ -257,13 +257,15 @@
+     }
+ };
+ 
++#if 0
+ wxEventLoopSourcesManagerBase* wxGUIAppTraits::GetEventLoopSourcesManager()
+ {
+     static wxQtEventLoopSourcesManager s_eventLoopSourcesManager;
+     return &s_eventLoopSourcesManager;
+ }
++#endif
+ 
+-#if !wxUSE_CONSOLE_EVENTLOOP
++#if 0
+ 
+ // Use the GUI event loop sources manager if console support is disabled
+ // (needed by some common code, will raise an undefinied reference if not done)
+diff -Nur wxWidgets/src/qt/graphics.cpp wxWidgets-Qt-Android/src/qt/graphics.cpp
+--- wxWidgets/src/qt/graphics.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/graphics.cpp	2026-07-10 16:48:57
+@@ -13,12 +13,12 @@
+ 
+ #if wxUSE_GRAPHICS_CONTEXT
+ 
+-#include <QApplication>
+-#include <QBitmap>
+-#include <QPainter>
+-#include <QPainterPath>
+-#include <QPicture>
+-#include <QWidget>
++#include <QtWidgets/qapplication.h>
++#include <QtGui/QBitmap>
++#include <QtGui/QPainter>
++#include <QtGui/QPainterPath>
++#include <QtGui/QPicture>
++#include <QtWidgets/QWidget>
+ 
+ #ifndef WX_PRECOMP
+     #include "wx/bitmap.h"
+diff -Nur wxWidgets/src/qt/menu.cpp wxWidgets-Qt-Android/src/qt/menu.cpp
+--- wxWidgets/src/qt/menu.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/menu.cpp	2026-07-10 16:37:38
+@@ -14,7 +14,7 @@
+ #include "wx/qt/private/winevent.h"
+ #include "wx/stockitem.h"
+ 
+-#include <QActionGroup>
++#include <QtWidgets/qactiongroup.h>
+ #include <QtWidgets/QMenu>
+ #include <QtWidgets/QMenuBar>
+ 
+diff -Nur wxWidgets/src/qt/menuitem.cpp wxWidgets-Qt-Android/src/qt/menuitem.cpp
+--- wxWidgets/src/qt/menuitem.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/menuitem.cpp	2026-07-10 16:41:24
+@@ -15,9 +15,9 @@
+ #include "wx/qt/private/converter.h"
+ #include "wx/qt/private/winevent.h"
+ 
+-#include <QAction>
+-#include <QMenuBar>
+-#include <QRegularExpression>
++#include <QtWidgets/qaction.h>
++#include <QtWidgets/qmenubar.h>
++#include <QtGui/qvalidator.h>
+ 
+ class wxQtAction : public QAction
+ {
+diff -Nur wxWidgets/src/qt/printdlg.cpp wxWidgets-Qt-Android/src/qt/printdlg.cpp
+--- wxWidgets/src/qt/printdlg.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/printdlg.cpp	2026-07-10 16:43:31
+@@ -17,11 +17,10 @@
+ #include "wx/qt/printdlg.h"
+ #include "wx/qt/private/converter.h"
+ 
+-#include <QPrinter>
+-#include <QPrinterInfo>
+-#include <QPrintDialog>
+-#include <QPageSetupDialog>
+-#include <QPageSize>
++#include <QtPrintSupport/qprinter.h>
++#include <QtPrintSupport/qprinterinfo.h>
++#include <QtPrintSupport/qprintdialog.h>
++#include <QtPrintSupport/qpagesetupdialog.h>
+ 
+ 
+ namespace // anonymous
+diff -Nur wxWidgets/src/qt/printqt.cpp wxWidgets-Qt-Android/src/qt/printqt.cpp
+--- wxWidgets/src/qt/printqt.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/printqt.cpp	2026-07-10 16:43:58
+@@ -17,7 +17,7 @@
+ #include "wx/qt/printdlg.h"
+ #include "wx/private/print.h"
+ 
+-#include <QPrinter>
++#include <QtPrintSupport/qprinter.h>
+ 
+ wxIMPLEMENT_DYNAMIC_CLASS(wxQtPrinter, wxPrinterBase);
+ 
+diff -Nur wxWidgets/src/qt/textentry.cpp wxWidgets-Qt-Android/src/qt/textentry.cpp
+--- wxWidgets/src/qt/textentry.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/textentry.cpp	2026-07-10 16:45:06
+@@ -15,7 +15,7 @@
+ 
+ #include <QtCore/QStringListModel>
+ #include <QtWidgets/QCompleter>
+-#include <QFileSystemModel>
++#include <QtGui/QFileSystemModel>
+ 
+ #include <QtWidgets/QComboBox>
+ #include <QtWidgets/QLineEdit>
+diff -Nur wxWidgets/src/qt/toolbar.cpp wxWidgets-Qt-Android/src/qt/toolbar.cpp
+--- wxWidgets/src/qt/toolbar.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/toolbar.cpp	2026-07-10 16:45:32
+@@ -11,7 +11,7 @@
+ 
+ #if wxUSE_TOOLBAR
+ 
+-#include <QActionGroup>
++#include <QtGui/QActionGroup>
+ #include <QtWidgets/QToolButton>
+ #include <QtWidgets/QToolBar>
+ 
+diff -Nur wxWidgets/src/qt/window.cpp wxWidgets-Qt-Android/src/qt/window.cpp
+--- wxWidgets/src/qt/window.cpp	2026-07-24 10:53:34
++++ wxWidgets-Qt-Android/src/qt/window.cpp	2026-07-10 16:45:55
+@@ -19,7 +19,7 @@
+ #include <QtWidgets/QScrollArea>
+ #include <QtWidgets/QMainWindow>
+ #include <QtWidgets/QMenu>
+-#include <QShortcut>
++#include <QtGui/QShortcut>
+ 
+ #ifndef WX_PRECOMP
+     #include "wx/app.h"

@@ -14,6 +14,7 @@ vcpkg_from_github(
         win-backcompat.patch
         force-exceptions.patch
         wx-macOS.patch
+        wxWidgets-Qt-Android.diff
 )
 
 # Submodule dependencies
