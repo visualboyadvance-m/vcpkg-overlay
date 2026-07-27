@@ -96,7 +96,7 @@
         {
           "name": "sdl2",
           "default-features": false,
-          "platform": "!windows & !osx & !ios && !android"
+          "platform": "!windows & !osx & !ios & !android"
         }
       ]
     },
