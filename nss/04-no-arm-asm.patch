@@ -1,0 +1,133 @@
+diff -Nur nss-3.113.1/nss/lib/freebl/Makefile nss-3.113.1-patched/nss/lib/freebl/Makefile
+--- nss-3.113.1/nss/lib/freebl/Makefile	2025-07-01 19:10:10
++++ nss-3.113.1-patched/nss/lib/freebl/Makefile	2026-07-30 14:57:51
+@@ -155,28 +155,6 @@
+         endif
+     endif
+ endif
+-ifeq ($(CPU_ARCH),arm)
+-ifndef NSS_DISABLE_ARM32_NEON
+-    EXTRA_SRCS += gcm-arm32-neon.c
+-endif
+-    ifdef CC_IS_CLANG
+-        DEFINES += -DUSE_HW_AES -DUSE_HW_SHA1 -DUSE_HW_SHA2
+-        EXTRA_SRCS += aes-armv8.c sha1-armv8.c sha256-armv8.c
+-    else ifeq (1,$(CC_IS_GCC))
+-        # GCC versions older than 4.9 don't support ARM AES. The check
+-        # is done in two parts, first allows "major.minor" == "4.9",
+-        # and then rejects any major versions prior to 5. Note that
+-        # there has been no GCC 4.10, as it was renamed to GCC 5.
+-        ifneq (,$(filter 4.9,$(word 1,$(GCC_VERSION)).$(word 2,$(GCC_VERSION))))
+-            DEFINES += -DUSE_HW_AES -DUSE_HW_SHA1 -DUSE_HW_SHA2
+-            EXTRA_SRCS += aes-armv8.c sha1-armv8.c sha256-armv8.c
+-        endif
+-        ifeq (,$(filter 0 1 2 3 4,$(word 1,$(GCC_VERSION))))
+-            DEFINES += -DUSE_HW_AES -DUSE_HW_SHA1 -DUSE_HW_SHA2
+-            EXTRA_SRCS += aes-armv8.c sha1-armv8.c sha256-armv8.c
+-        endif
+-    endif
+-endif
+ 
+ ifeq (,$(filter-out WINNT,$(OS_TARGET)))
+ ifndef USE_64
+diff -Nur nss-3.113.1/nss/lib/freebl/freebl.gyp nss-3.113.1-patched/nss/lib/freebl/freebl.gyp
+--- nss-3.113.1/nss/lib/freebl/freebl.gyp	2025-07-01 19:10:10
++++ nss-3.113.1-patched/nss/lib/freebl/freebl.gyp	2026-07-30 14:57:24
+@@ -458,12 +458,10 @@
+       ]
+     },
+     {
+-      'target_name': 'armv8_c_lib',
++      'target_name': 'armv7_c_lib',
+       'type': 'static_library',
+       'sources': [
+-        'aes-armv8.c',
+-        'sha1-armv8.c',
+-        'sha256-armv8.c',
++        'sha512.c',
+       ],
+       'dependencies': [
+         '<(DEPTH)/exports.gyp:nss_exports'
+@@ -471,16 +469,27 @@
+       'conditions': [
+         [ 'target_arch=="arm"', {
+           'cflags': [
+-            '-march=armv8-a',
+-            '-mfpu=crypto-neon-fp-armv8',
+-            '<@(softfp_cflags)',
++            '-march=armv7-a'
+           ],
+           'cflags_mozilla': [
+-            '-march=armv8-a',
+-            '-mfpu=crypto-neon-fp-armv8',
+-            '<@(softfp_cflags)',
++            '-march=armv7-a'
+           ],
+-        }, 'target_arch=="arm64" or target_arch=="aarch64"', {
++        }]
++      ]
++    },
++    {
++      'target_name': 'armv8_c_lib',
++      'type': 'static_library',
++      'sources': [
++        'aes-armv8.c',
++        'sha1-armv8.c',
++        'sha256-armv8.c',
++      ],
++      'dependencies': [
++        '<(DEPTH)/exports.gyp:nss_exports'
++      ],
++      'conditions': [
++        [ 'target_arch=="arm64" or target_arch=="aarch64"', {
+           'cflags': [
+             '-march=armv8-a+crypto'
+           ],
+@@ -519,11 +528,16 @@
+           'dependencies': [
+             'gcm-aes-x86_c_lib',
+           ],
+-        }, '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
++        }, '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and ( target_arch=="arm64" or target_arch=="aarch64")', {
+           'dependencies': [
+             'armv8_c_lib'
+           ],
+         }],
++        [ 'target_arch=="arm"', {
++          'dependencies': [
++            'armv7_c_lib',
++          ],
++        }],
+         [ '(target_arch=="ia32" or target_arch=="x64") and disable_intel_hw_sha==0', {
+           'dependencies': [
+             'sha-x86_c_lib',
+@@ -606,7 +620,7 @@
+           'dependencies': [
+             'gcm-aes-x86_c_lib',
+           ]
+-        }, 'target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64"', {
++        }, 'target_arch=="arm64" or target_arch=="aarch64"', {
+           'dependencies': [
+             'armv8_c_lib',
+           ],
+@@ -919,17 +933,17 @@
+               'USE_HW_SHA2',
+             ],
+           }],
+-          [ 'disable_arm_hw_aes==0 and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
++          [ 'disable_arm_hw_aes==0 and (target_arch=="arm64" or target_arch=="aarch64")', {
+             'defines': [
+               'USE_HW_AES',
+             ],
+           }],
+-          [ 'disable_arm_hw_sha1==0 and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
++          [ 'disable_arm_hw_sha1==0 and (target_arch=="arm64" or target_arch=="aarch64")', {
+             'defines': [
+               'USE_HW_SHA1',
+             ],
+           }],
+-          [ 'disable_arm_hw_sha2==0 and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
++          [ 'disable_arm_hw_sha2==0 and (target_arch=="arm64" or target_arch=="aarch64")', {
+             'defines': [
+               'USE_HW_SHA2',
+             ],
