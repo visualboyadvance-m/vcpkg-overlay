@@ -15,6 +15,7 @@ vcpkg_from_github(
         force-exceptions.patch
         wx-macOS.patch
         wxWidgets-Qt-Android.diff
+        wxWidgets-riscv64-magic.diff
 )
 
 # Submodule dependencies

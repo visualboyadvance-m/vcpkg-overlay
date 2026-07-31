@@ -1,0 +1,84 @@
+diff -Nur master-3a369ffebd.clean/src/common/zipstrm.cpp master-3a369ffebd.clean-patched/src/common/zipstrm.cpp
+--- master-3a369ffebd.clean/src/common/zipstrm.cpp	2026-07-30 23:57:16
++++ master-3a369ffebd.clean-patched/src/common/zipstrm.cpp	2026-07-31 13:35:57
+@@ -39,7 +39,7 @@
+ enum {
+     CENTRAL_MAGIC = 0x02014b50,     // central directory record
+     LOCAL_MAGIC   = 0x04034b50,     // local header
+-    END_MAGIC     = 0x06054b50,     // end of central directory record
++    ZEND_MAGIC     = 0x06054b50,     // end of central directory record
+     SUMS_MAGIC    = 0x08074b50,     // data descriptor (info-zip)
+     Z64_LOC_MAGIC = 0x07064b50,     // zip64 end of central directory locator
+     Z64_END_MAGIC = 0x06064b50      // zip64 end of central directory record
+@@ -1479,7 +1479,7 @@
+         ds.Write32(1); // total number of disks
+     }
+ 
+-    ds << END_MAGIC;
++    ds << ZEND_MAGIC;
+ 
+     ds.Write16(LimitUint16(m_DiskNumber));
+     ds.Write16(LimitUint16(m_StartDisk));
+@@ -1538,7 +1538,7 @@
+         wxZipHeader dsEnd(stream, Z64_END_SIZE);
+         if ( !dsEnd )
+             return false;
+-        if ( dsEnd.Read32() != Z64_END_MAGIC ||
++        if ( dsEnd.Read32() != Z64_ZEND_MAGIC ||
+             dsEnd.Read64() < Z64_END_SIZE - 12 ) // Check record size
+             return false;
+ 
+@@ -1713,7 +1713,7 @@
+     m_TotalEntries = endrec.GetTotalEntries();
+     m_Comment = endrec.GetComment();
+ 
+-    wxUint32 magic = m_TotalEntries ? CENTRAL_MAGIC : END_MAGIC;
++    wxUint32 magic = m_TotalEntries ? CENTRAL_MAGIC : ZEND_MAGIC;
+ 
+     // Now find the central-directory. we have the file offset of
+     // the CD, so look there first.
+@@ -1766,7 +1766,7 @@
+     char magic[4];
+     if (m_parent_i_stream->Read(magic, 4).LastRead() != 4)
+         return false;
+-    if ((m_signature = CrackUint32(magic)) == END_MAGIC)
++    if ((m_signature = CrackUint32(magic)) == ZEND_MAGIC)
+         return true;
+ 
+     // unfortunately, the record has a comment field that can be up to 65535
+@@ -1794,7 +1794,7 @@
+         char *p = buf.data() + len;
+ 
+         while (p-- > buf.data()) {
+-            if ((m_signature = CrackUint32(p)) == END_MAGIC) {
++            if ((m_signature = CrackUint32(p)) == ZEND_MAGIC) {
+                 size_t remainder = buf.data() + len - p;
+                 if (remainder > 4)
+                     m_parent_i_stream->Ungetch(p + 4, remainder - 4);
+@@ -1826,7 +1826,7 @@
+     if (!AtHeader())
+         CloseEntry();
+ 
+-    if (m_signature == END_MAGIC || m_signature == Z64_END_MAGIC)
++    if (m_signature == ZEND_MAGIC || m_signature == Z64_END_MAGIC)
+         return wxSTREAM_EOF;
+ 
+     if (m_signature != CENTRAL_MAGIC) {
+@@ -1873,7 +1873,7 @@
+     if (!m_signature)
+         m_signature = ReadSignature();
+ 
+-    if (m_signature == CENTRAL_MAGIC || m_signature == END_MAGIC ||
++    if (m_signature == CENTRAL_MAGIC || m_signature == ZEND_MAGIC ||
+         m_signature == Z64_END_MAGIC) {
+         if (m_streamlink && !m_streamlink->GetOutputStream()) {
+             m_streamlink->Release(this);
+@@ -1907,7 +1907,7 @@
+         m_signature = ReadSignature();
+     }
+ 
+-    if (m_signature == END_MAGIC || m_signature == Z64_END_MAGIC) {
++    if (m_signature == ZEND_MAGIC || m_signature == Z64_END_MAGIC) {
+         if (readEndRec || m_streamlink) {
+             wxZipEndRec endrec;
+             endrec.Read(*m_parent_i_stream, GetConv());
