@@ -1,0 +1,22 @@
+diff -Nur here-src-6-1a25e1f175.clean/src/tools/androiddeployqt/main.cpp here-src-6-1a25e1f175.clean-patched/src/tools/androiddeployqt/main.cpp
+--- here-src-6-1a25e1f175.clean/src/tools/androiddeployqt/main.cpp	2026-05-07 09:50:01
++++ here-src-6-1a25e1f175.clean-patched/src/tools/androiddeployqt/main.cpp	2026-07-31 14:57:06
+@@ -263,7 +263,8 @@
+     {"aarch64", "arm64-v8a"},
+     {"arm", "armeabi-v7a"},
+     {"i386", "x86"},
+-    {"x86_64", "x86_64"}
++    {"x86_64", "x86_64"},
++    {"riscv64", "riscv64"}
+ };
+ 
+ bool goodToCopy(const Options *options, const QString &file, QStringList *unmetDependencies);
+@@ -274,7 +275,7 @@
+ 
+ QString architectureFromName(const QString &name)
+ {
+-    QRegularExpression architecture(QStringLiteral("_(armeabi-v7a|arm64-v8a|x86|x86_64).so$"));
++    QRegularExpression architecture(QStringLiteral("_(armeabi-v7a|arm64-v8a|x86|x86_64|riscv64).so$"));
+     auto match = architecture.match(name);
+     if (!match.hasMatch())
+         return {};
