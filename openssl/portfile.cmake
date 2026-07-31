@@ -30,6 +30,7 @@ vcpkg_list(SET CONFIGURE_OPTIONS
     enable-capieng
     no-tests
     no-docs
+    no-asm
 )
 
 # https://github.com/openssl/openssl/blob/master/INSTALL.md#enable-ec_nistp_64_gcc_128
@@ -67,10 +68,6 @@ endif()
 
 if(DEFINED OPENSSL_USE_NOPINSHARED)
     vcpkg_list(APPEND CONFIGURE_OPTIONS no-pinshared)
-endif()
-
-if(ANDROID AND VCPKG_TARGET_ARCHITECTURE MATCHES "x86")
-    vcpkg_list(APPEND CONFIGURE_OPTIONS no-asm)
 endif()
 
 if(OPENSSL_NO_AUTOLOAD_CONFIG)
