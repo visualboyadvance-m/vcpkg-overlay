@@ -36,7 +36,7 @@ if (VCPKG_TARGET_ARCHITECTURE STREQUAL "x86" OR VCPKG_TARGET_ARCHITECTURE STREQU
     vcpkg_add_to_path("${NASM_EXE_PATH}")
 endif()
 
-set(OPTIONS "--enable-pic --disable-doc --enable-runtime-cpudetect --disable-autodetect")
+set(OPTIONS "--enable-pic --disable-doc --enable-runtime-cpudetect --disable-autodetect --disable-asm")
 
 set(WITH_SCHANNEL OFF)
 set(WITH_SECURETRANSPORT OFF)
