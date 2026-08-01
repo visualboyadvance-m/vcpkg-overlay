@@ -1,21 +1,32 @@
+set(wx_patches
+    install-layout.patch
+    relocatable-wx-config.patch
+    nanosvg-ext-depend.patch
+    fix-libs-export.patch
+    fix-pcre2.patch
+    gtk3-link-libraries.patch
+    sdl2.patch
+    win-backcompat.patch
+    force-exceptions.patch
+    wx-macOS.patch
+    wxWidgets-riscv64-magic.diff
+)
+
+# This patch is only for the Qt port, which is only used for Android below, and
+# must not be applied elsewhere: it adds an unconditional <langinfo.h> include
+# to src/common/intl.cpp, which doesn't exist under Windows, and drops an
+# "override" in include/wx/unix/apptrait.h.
+if(VCPKG_TARGET_IS_ANDROID)
+    list(APPEND wx_patches wxWidgets-Qt-Android.diff)
+endif()
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO wxWidgets/wxWidgets
     REF master
     SHA512 20d89057a19aba4c408e7198d552a5a8f6f76cb2b04834751425d0e382d29d296b28ebec3be6a4ccddc315555fc718e921ef9afd1f52b348e7b15d45145b6c27
     PATCHES
-        install-layout.patch
-        relocatable-wx-config.patch
-        nanosvg-ext-depend.patch
-        fix-libs-export.patch
-        fix-pcre2.patch
-        gtk3-link-libraries.patch
-        sdl2.patch
-        win-backcompat.patch
-        force-exceptions.patch
-        wx-macOS.patch
-        wxWidgets-Qt-Android.diff
-        wxWidgets-riscv64-magic.diff
+        ${wx_patches}
 )
 
 # Submodule dependencies
@@ -92,10 +103,6 @@ if("webview" IN_LIST FEATURES)
     endif()
 endif()
 
-if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86" AND VCPKG_TARGET_IS_MINGW)
-    list(APPEND OPTIONS -DwxUSE_PROGRESSDLG=OFF)
-endif()
-
 vcpkg_find_acquire_program(PKGCONFIG)
 
 # This may be set to ON by users in a custom triplet.
@@ -115,16 +122,26 @@ if(NOT DEFINED WXWIDGETS_USE_STD_CONTAINERS)
     set(WXWIDGETS_USE_STD_CONTAINERS OFF)
 endif()
 
+set(c_flags "${CMAKE_C_FLAGS} ${VCPKG_C_FLAGS}")
 set(cxx_flags "${CMAKE_CXX_FLAGS} ${VCPKG_CXX_FLAGS}")
 
-if(VCPKG_TARGET_IS_MINGW )
-    set(cxx_flags "${cxx_Flags} -fpermissive ")
+if(VCPKG_TARGET_IS_MINGW)
+    string(APPEND cxx_flags " -fpermissive")
 endif()
 
-if(VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
-    set(cxx_flags "${cxx_Flags} -DWINVER=0x0501 -D_WIN32_WINNT=0x0501")
-elseif(VCPKG_TARGET_IS_WINDOWS AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-    set(cxx_flags "${cxx_Flags} -DWINVER=0x0601 -D_WIN32_WINNT=0x0601")
+if(VCPKG_TARGET_IS_WINDOWS)
+    # Only MinGW can still target Windows XP: the MSVC toolset able to do it
+    # was removed after VS 2017, so use Windows 7 as the baseline there.
+    if(VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+        set(win32_winnt 0x0501)
+    else()
+        set(win32_winnt 0x0601)
+    endif()
+
+    # These must be set for both C and C++: wxWidgets checks _WIN32_WINNT in
+    # wx/msw/chkconf.h to decide which features can be enabled at all.
+    string(APPEND c_flags " -DWINVER=${win32_winnt} -D_WIN32_WINNT=${win32_winnt}")
+    string(APPEND cxx_flags " -DWINVER=${win32_winnt} -D_WIN32_WINNT=${win32_winnt}")
 endif()
 
 vcpkg_cmake_configure(
@@ -154,6 +171,7 @@ vcpkg_cmake_configure(
         # The minimum cmake version requirement for Cotire is 2.8.12.
         # however, we need to declare that the minimum cmake version requirement is at least 3.1 to use CMAKE_PREFIX_PATH as the path to find .pc.
         -DPKG_CONFIG_USE_CMAKE_PREFIX_PATH=ON
+        -DCMAKE_C_FLAGS=${c_flags}
         -DCMAKE_CXX_FLAGS=${cxx_flags}
     OPTIONS_RELEASE
         ${OPTIONS_RELEASE}
