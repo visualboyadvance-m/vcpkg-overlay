@@ -1,7 +1,7 @@
-diff -ruN ".\\ffmpeg-8.1.2.orig/configure" ".\\ffmpeg-8.1.2/configure"
---- ".\\ffmpeg-8.1.2.orig/configure"	1900-01-00 00:00:00 +0000
-+++ ".\\ffmpeg-8.1.2/configure"	1900-01-00 00:00:00 +0000
-@@ -2563,7 +2563,6 @@
+diff -Nur FFmpeg-n9.0/configure FFmpeg-n9.0-no-bcrypt/configure
+--- FFmpeg-n9.0/configure	2026-08-03 21:52:07
++++ FFmpeg-n9.0-no-bcrypt/configure	2026-08-13 16:01:19
+@@ -2611,7 +2611,6 @@
  "
  
  SYSTEM_LIBRARIES="
@@ -9,16 +9,16 @@ diff -ruN ".\\ffmpeg-8.1.2.orig/configure" ".\\ffmpeg-8.1.2/configure"
      vaapi_drm
      vaapi_x11
      vaapi_win32
-@@ -4300,7 +4299,7 @@
- avfilter_suggest="libm stdatomic zlib spirv_library"
+@@ -4362,7 +4361,7 @@
+ avfilter_suggest="libm stdatomic zlib"
  avformat_deps="avcodec avutil"
  avformat_suggest="libm network zlib stdatomic"
--avutil_suggest="clock_gettime ffnvcodec gcrypt libm zlib libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia bcrypt stdatomic"
-+avutil_suggest="clock_gettime ffnvcodec gcrypt libm zlib libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia stdatomic"
+-avutil_suggest="amf clock_gettime ffnvcodec gcrypt libm zlib libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia bcrypt stdatomic"
++avutil_suggest="amf clock_gettime ffnvcodec gcrypt libm zlib libdrm libmfx opencl openssl user32 vaapi vulkan videotoolbox corefoundation corevideo coremedia stdatomic"
  swresample_deps="avutil"
  swresample_suggest="libm libsoxr stdatomic"
  swscale_deps="avutil"
-@@ -7009,8 +7008,6 @@
+@@ -7097,8 +7096,6 @@
  done
  
  check_lib advapi32 "windows.h"            RegCloseKey          -ladvapi32
@@ -27,9 +27,9 @@ diff -ruN ".\\ffmpeg-8.1.2.orig/configure" ".\\ffmpeg-8.1.2/configure"
  check_lib ole32    "windows.h objbase.h"  CoTaskMemFree        -lole32
  check_lib shell32  "windows.h shellapi.h" CommandLineToArgvW   -lshell32
  check_lib psapi    "windows.h psapi.h"    GetProcessMemoryInfo -lpsapi
-diff -ruN ".\\ffmpeg-8.1.2.orig/libavutil/random_seed.c" ".\\ffmpeg-8.1.2/libavutil/random_seed.c"
---- ".\\ffmpeg-8.1.2.orig/libavutil/random_seed.c"	1900-01-00 00:00:00 +0000
-+++ ".\\ffmpeg-8.1.2/libavutil/random_seed.c"	1900-01-00 00:00:00 +0000
+diff -Nur FFmpeg-n9.0/libavutil/random_seed.c FFmpeg-n9.0-no-bcrypt/libavutil/random_seed.c
+--- FFmpeg-n9.0/libavutil/random_seed.c	2026-08-03 21:52:07
++++ FFmpeg-n9.0-no-bcrypt/libavutil/random_seed.c	2026-08-13 16:01:54
 @@ -26,10 +26,6 @@
  #if HAVE_IO_H
  #include <io.h>
@@ -41,10 +41,11 @@ diff -ruN ".\\ffmpeg-8.1.2.orig/libavutil/random_seed.c" ".\\ffmpeg-8.1.2/libavu
  #if CONFIG_GCRYPT
  #include <gcrypt.h>
  #elif CONFIG_OPENSSL
-@@ -160,18 +156,6 @@
+@@ -159,18 +155,6 @@
+ int av_random_bytes(uint8_t* buf, size_t len)
  {
      int err;
- 
+-
 -#if HAVE_BCRYPT
 -    BCRYPT_ALG_HANDLE algo_handle;
 -    NTSTATUS ret = BCryptOpenAlgorithmProvider(&algo_handle, BCRYPT_RNG_ALGORITHM,
@@ -56,7 +57,6 @@ diff -ruN ".\\ffmpeg-8.1.2.orig/libavutil/random_seed.c" ".\\ffmpeg-8.1.2/libavu
 -            return 0;
 -    }
 -#endif
--
+ 
  #if HAVE_ARC4RANDOM_BUF
      arc4random_buf(buf, len);
-     return 0;

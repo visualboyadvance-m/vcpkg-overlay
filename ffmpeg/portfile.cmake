@@ -2,10 +2,9 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO ffmpeg/ffmpeg
     REF "n${VERSION}"
-    SHA512 c72f4062aecc16d8b2b1e8678d5efe3af4cfaa0cc7c0997052248f9e499e60c2463acf07877cf3b78b246ce3e8078cb043e8d97e90a6b50d06af32ff7369a788
+    SHA512 4327d259b2ed9cc35a6139606643bf9c9db5fb0372a9eb259fed61af50505a2b59f0c3d94c51fec89d2e0cd552a413c5f50514683931c94c429824198d56ec56
     HEAD_REF master
     PATCHES
-        0002-fix-msvc-link.patch
         0003-fix-windowsinclude.patch
         0004-dependencies.patch
         0005-fix-nasm.patch
@@ -16,10 +15,10 @@ vcpkg_from_github(
         0045-use-prebuilt-bin2c.patch
         0046-fix-msvc-detection.patch
         0047-fix-msvc-utf8.patch
-        0048-backport-23039.patch
         0049-fix-twolame-pkgconfig.patch
         0050-fix-test-ld-absolute-lib-paths.patch
-        0044-ffmpeg-xp.patch
+        0051-fix-msvc-undef-flags.patch
+        0052-fix-disable-unstable-swscale-link.patch
         0052_no_bcrypt.patch
         0053_cancelio_xp.patch
 )
@@ -38,15 +37,11 @@ endif()
 
 set(OPTIONS "--enable-pic --disable-doc --enable-runtime-cpudetect --disable-autodetect --disable-asm")
 
-set(WITH_SCHANNEL OFF)
-set(WITH_SECURETRANSPORT OFF)
-
 if(VCPKG_TARGET_IS_MINGW)
-    string(APPEND OPTIONS " --disable-w32threads --enable-pthreads --disable-d3d11va --disable-d3d12va  --disable-mediafoundation")
     if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
-        string(APPEND OPTIONS " --target-os=mingw32 --extra-cflags=-D_WIN32_WINNT=0x0501 --disable-schannel")
+        string(APPEND OPTIONS " --target-os=mingw32")
     elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
-        string(APPEND OPTIONS " --target-os=mingw64 --extra-cflags=-D_WIN32_WINNT=0x0601")
+        string(APPEND OPTIONS " --target-os=mingw64")
     endif()
 elseif(VCPKG_TARGET_IS_LINUX)
     string(APPEND OPTIONS " --target-os=linux --enable-pthreads")
@@ -59,7 +54,7 @@ elseif(VCPKG_TARGET_IS_OSX)
 elseif(VCPKG_TARGET_IS_IOS)
     string(APPEND OPTIONS " --enable-avfoundation --enable-coreimage --enable-videotoolbox")
 elseif(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "Android")
-    string(APPEND OPTIONS " --target-os=android --enable-jni --enable-mediacodec")
+    string(APPEND OPTIONS " --target-os=android --enable-jni --enable-mediacodec --disable-asm")
 elseif(VCPKG_CMAKE_SYSTEM_NAME STREQUAL "QNX")
     string(APPEND OPTIONS " --target-os=qnx")
 endif()
@@ -92,6 +87,19 @@ if(VCPKG_DETECTED_CMAKE_C_COMPILER)
     get_filename_component(CC_filename "${VCPKG_DETECTED_CMAKE_C_COMPILER}" NAME)
     set(ENV{CC} "${CC_filename}")
     string(APPEND OPTIONS " --cc=${CC_filename}")
+
+    # FFmpeg 9.0 builds a native helper for the unstable AArch64 swscale
+    # backend. Using the target cl.exe as HOSTCC produces an ARM64 executable
+    # that cannot run on the x64 build host. Disable only that unstable backend
+    # for Windows ARM64; 0052 keeps the legacy swscale path linkable.
+    if(VCPKG_HOST_IS_WINDOWS AND VCPKG_DETECTED_MSVC)
+        if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
+            string(APPEND OPTIONS " --disable-unstable")
+        else()
+            string(APPEND OPTIONS " --host-cc=${CC_filename}")
+        endif()
+    endif()
+
     list(APPEND prog_env "${CC_path}")
 endif()
 
@@ -111,7 +119,11 @@ if(VCPKG_DETECTED_CMAKE_RC_COMPILER)
     list(APPEND prog_env "${RC_path}")
 endif()
 
-if(VCPKG_DETECTED_CMAKE_LINKER AND VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
+# A GNU-frontend clang links through the compiler driver (the detected
+# CMAKE_LINKER flags are driver-style, not lld-link-style), so leave
+# configure's default LD=CC in place there.
+if(VCPKG_DETECTED_CMAKE_LINKER AND VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW
+   AND NOT VCPKG_DETECTED_CMAKE_C_COMPILER MATCHES "clang(-[0-9]+)?(\\.exe)?$")
     get_filename_component(LD_path "${VCPKG_DETECTED_CMAKE_LINKER}" DIRECTORY)
     get_filename_component(LD_filename "${VCPKG_DETECTED_CMAKE_LINKER}" NAME)
     set(ENV{LD} "${LD_filename}")
@@ -312,6 +324,14 @@ else()
     set(WITH_DAV1D OFF)
 endif()
 
+if("svt-av1" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-libsvtav1")
+    set(WITH_SVTAV1 ON)
+else()
+    set(OPTIONS "${OPTIONS} --disable-libsvtav1")
+    set(WITH_SVTAV1 OFF)
+endif()
+
 if("fdk-aac" IN_LIST FEATURES)
     set(OPTIONS "${OPTIONS} --enable-libfdk-aac")
     set(WITH_AAC ON)
@@ -430,35 +450,16 @@ else()
 endif()
 
 set(WITH_OPENSSL OFF)
-# Selecting "openssl" implies networking even if the "network" feature was not
-# explicitly requested (e.g. forcing OpenSSL over the platform TLS backend).
-if("network" IN_LIST FEATURES OR "openssl" IN_LIST FEATURES)
-    if("openssl" IN_LIST FEATURES)
-        set(OPTIONS "${OPTIONS} --enable-openssl")
-        set(WITH_OPENSSL ON)
-    else()
-        set(OPTIONS "${OPTIONS} --disable-openssl")
-        if(VCPKG_TARGET_IS_WINDOWS
-                AND NOT VCPKG_TARGET_IS_UWP
-                AND NOT (VCPKG_TARGET_IS_MINGW AND VCPKG_TARGET_ARCHITECTURE STREQUAL "x86"))
-            string(APPEND OPTIONS " --enable-schannel")
-            set(WITH_SCHANNEL ON)
-        elseif(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
-            # SecureTransport is Apple's platform TLS backend (the macOS/iOS
-            # equivalent of schannel). autodetect is off, so enable it explicitly
-            # to secure network protocols without pulling in OpenSSL.
-            string(APPEND OPTIONS " --enable-securetransport")
-            set(WITH_SECURETRANSPORT ON)
-        endif()
-    endif()
+set(WITH_SCHANNEL OFF)
+if("openssl" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-openssl")
+    set(WITH_OPENSSL ON)
 else()
-    # No "network" feature: build without networking. Disable network support and
-    # every protocol except the local file protocol, plus the TLS backends that
-    # exist only to secure network protocols (schannel on Windows, SecureTransport
-    # on macOS/iOS, OpenSSL everywhere). Equivalent to ffmpeg's
-    #   --disable-schannel --disable-network --disable-protocols --enable-protocol=file
-    string(APPEND OPTIONS " --disable-network --disable-protocols --enable-protocol=file")
-    string(APPEND OPTIONS " --disable-openssl --disable-schannel --disable-securetransport")
+    set(OPTIONS "${OPTIONS} --disable-openssl")
+    if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_UWP)
+        string(APPEND OPTIONS " --enable-schannel")
+        set(WITH_SCHANNEL ON)
+    endif()
 endif()
 
 if("opus" IN_LIST FEATURES)
@@ -469,11 +470,7 @@ else()
     set(WITH_OPUS OFF)
 endif()
 
-if("sdl2" IN_LIST FEATURES)
-    set(OPTIONS "${OPTIONS} --enable-sdl2")
-else()
     set(OPTIONS "${OPTIONS} --disable-sdl2")
-endif()
 
 if("snappy" IN_LIST FEATURES)
     set(OPTIONS "${OPTIONS} --enable-libsnappy")
@@ -565,21 +562,11 @@ else()
     set(WITH_WEBP OFF)
 endif()
 
-if("x264" IN_LIST FEATURES)
-    set(OPTIONS "${OPTIONS} --enable-libx264")
+    set(OPTIONS "${OPTIONS} --enable-libx264 --enable-gpl")
     set(WITH_X264 ON)
-else()
-    set(OPTIONS "${OPTIONS} --disable-libx264")
-    set(WITH_X264 OFF)
-endif()
 
-if("x265" IN_LIST FEATURES)
     set(OPTIONS "${OPTIONS} --enable-libx265")
     set(WITH_X265 ON)
-else()
-    set(OPTIONS "${OPTIONS} --disable-libx265")
-    set(WITH_X265 OFF)
-endif()
 
 if("xml2" IN_LIST FEATURES)
     set(OPTIONS "${OPTIONS} --enable-libxml2")
@@ -635,30 +622,6 @@ else()
     set(WITH_RUBBERBAND OFF)
 endif()
 
-if ("vaapi" IN_LIST FEATURES)
-    set(OPTIONS "${OPTIONS} --enable-vaapi")
-    set(WITH_VAAPI ON)
-else()
-    set(OPTIONS "${OPTIONS} --disable-vaapi")
-    set(WITH_VAAPI OFF)
-endif()
-
-if("zmq" IN_LIST FEATURES)
-    set(OPTIONS "${OPTIONS} --enable-libzmq")
-    set(WITH_ZMQ ON)
-else()
-    set(OPTIONS "${OPTIONS} --disable-libzmq")
-    set(WITH_ZMQ OFF)
-endif()
-
-if("rubberband" IN_LIST FEATURES)
-    set(OPTIONS "${OPTIONS} --enable-librubberband")
-    set(WITH_RUBBERBAND ON)
-else()
-    set(OPTIONS "${OPTIONS} --disable-librubberband")
-    set(WITH_RUBBERBAND OFF)
-endif()
-
 set(OPTIONS_CROSS "--enable-cross-compile")
 
 # ffmpeg needs --cross-prefix option to use appropriate tools for cross-compiling.
@@ -685,6 +648,7 @@ endif()
 if(VCPKG_TARGET_IS_UWP)
     set(ENV{LIBPATH} "$ENV{LIBPATH};$ENV{_WKITS10}references\\windows.foundation.foundationcontract\\2.0.0.0\\;$ENV{_WKITS10}references\\windows.foundation.universalapicontract\\3.0.0.0\\")
     string(APPEND OPTIONS " --disable-programs")
+    string(APPEND OPTIONS " --disable-filter=gfxcapture")
     string(APPEND OPTIONS " --extra-cflags=-DWINAPI_FAMILY=WINAPI_FAMILY_APP --extra-cflags=-D_WIN32_WINNT=0x0A00")
     string(APPEND OPTIONS " --extra-ldflags=-APPCONTAINER --extra-ldflags=WindowsApp.lib --extra-ldflags=dxguid.lib")
 endif()
@@ -769,10 +733,9 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     set(OPTIONS "${OPTIONS} --disable-static --enable-shared")
 endif()
 
-#if(VCPKG_TARGET_IS_MINGW)
-#    set(OPTIONS "${OPTIONS} --extra-cflags=-D_WIN32_WINNT=0x0601")
-#elseif(VCPKG_TARGET_IS_WINDOWS)
-if(VCPKG_TARGET_IS_WINDOWS)
+if(VCPKG_TARGET_IS_MINGW)
+    set(OPTIONS "${OPTIONS} --extra_cflags=-D_WIN32_WINNT=0x0601")
+elseif(VCPKG_TARGET_IS_WINDOWS)
     set(OPTIONS "${OPTIONS} --extra-cflags=-DHAVE_UNISTD_H=0")
 endif()
 
@@ -898,15 +861,33 @@ if(VCPKG_TARGET_IS_WINDOWS)
             message(FATAL_ERROR "Unsupported target architecture")
         endif()
 
+        # llvm-lib implements the lib.exe interface; use it when building on
+        # a host without the MSVC tools
+        if(CMAKE_HOST_WIN32)
+            set(LIB_TOOL lib.exe)
+        else()
+            find_program(LIB_TOOL NAMES llvm-lib llvm-lib-22 llvm-lib-19 REQUIRED)
+        endif()
         foreach(DEF_FILE ${DEF_FILES})
             get_filename_component(DEF_FILE_DIR "${DEF_FILE}" DIRECTORY)
             get_filename_component(DEF_FILE_NAME "${DEF_FILE}" NAME)
             string(REGEX REPLACE "-[0-9]*\\.def" "${VCPKG_TARGET_STATIC_LIBRARY_SUFFIX}" OUT_FILE_NAME "${DEF_FILE_NAME}")
+            if(NOT CMAKE_HOST_WIN32)
+                # ffmpeg's makedef emits no LIBRARY statement; lib.exe infers the
+                # DLL name from the def filename but llvm-lib leaves it EMPTY,
+                # producing import entries no Windows loader can resolve.
+                get_filename_component(DEF_BASE_NAME "${DEF_FILE}" NAME_WE)
+                file(READ "${DEF_FILE}" DEF_CONTENTS)
+                if(NOT DEF_CONTENTS MATCHES "LIBRARY")
+                    file(WRITE "${CURRENT_BUILDTREES_DIR}/${DEF_FILE_NAME}" "LIBRARY ${DEF_BASE_NAME}\n${DEF_CONTENTS}")
+                    set(DEF_FILE "${CURRENT_BUILDTREES_DIR}/${DEF_FILE_NAME}")
+                endif()
+            endif()
             file(TO_NATIVE_PATH "${DEF_FILE}" DEF_FILE_NATIVE)
             file(TO_NATIVE_PATH "${DEF_FILE_DIR}/${OUT_FILE_NAME}" OUT_FILE_NATIVE)
             message(STATUS "Generating ${OUT_FILE_NATIVE}")
             vcpkg_execute_required_process(
-                COMMAND lib.exe "/def:${DEF_FILE_NATIVE}" "/out:${OUT_FILE_NATIVE}" ${LIB_MACHINE_ARG}
+                COMMAND "${LIB_TOOL}" "/def:${DEF_FILE_NATIVE}" "/out:${OUT_FILE_NATIVE}" ${LIB_MACHINE_ARG}
                 WORKING_DIRECTORY "${CURRENT_PACKAGES_DIR}"
                 LOGNAME "libconvert-${TARGET_TRIPLET}"
             )
@@ -1102,4 +1083,8 @@ you may need to add the following link option for your library:
 ")
 endif()
 
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/${LICENSE_FILE}")
+vcpkg_install_copyright(
+    FILE_LIST
+        "${SOURCE_PATH}/${LICENSE_FILE}"
+        "${SOURCE_PATH}/LICENSE.md"
+)
