@@ -5,7 +5,7 @@ set(wx_patches
     fix-libs-export.patch
     fix-pcre2.patch
     gtk3-link-libraries.patch
-    sdl2.patch
+#   sdl2.patch
     win-backcompat.patch
     force-exceptions.patch
     wx-macOS.patch
