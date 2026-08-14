@@ -1,0 +1,16 @@
+diff -Nur FFmpeg-n9.0/libavutil/hwcontext_vulkan.c FFmpeg-n9.0-vulkan/libavutil/hwcontext_vulkan.c
+--- FFmpeg-n9.0/libavutil/hwcontext_vulkan.c	2026-08-03 21:52:07
++++ FFmpeg-n9.0-vulkan/libavutil/hwcontext_vulkan.c	2026-08-14 10:07:37
+@@ -789,9 +789,9 @@
+ 
+ static VKAPI_ATTR
+ VkBool32 VKAPI_CALL vk_dbg_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+-                                    VkDebugUtilsMessageTypeFlagsEXT messageType,
+-                                    const VkDebugUtilsMessengerCallbackDataEXT *data,
+-                                    void *priv)
++                                            VkDebugUtilsMessageTypeFlagsEXT messageType,
++                                            const VkDebugUtilsMessengerCallbackDataEXT *data,
++                                            void *priv)
+ {
+     int l;
+     AVHWDeviceContext *ctx = priv;
