@@ -12,7 +12,7 @@ vcpkg_from_github(
         0013-define-WINVER.patch
         0024-fix-osx-host-c11.patch
         0040-ffmpeg-add-av_stream_get_first_dts-for-chromium.patch # Do not remove this patch. It is required by chromium
-        0044-ffmmpeg-xp.patch
+        0044-ffmpeg-xp.patch
         0044-fix-vulkan-debug-callback-abi.patch
         0045-use-prebuilt-bin2c.patch
         0046-fix-msvc-detection.patch
