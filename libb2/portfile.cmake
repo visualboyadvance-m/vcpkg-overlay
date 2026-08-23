@@ -19,11 +19,6 @@ vcpkg_make_install()
 vcpkg_fixup_pkgconfig()
 vcpkg_copy_pdbs()
 
-install(
-  FILES "${CMAKE_CURRENT_BINARY_DIR}/libb2.pc"
-  DESTINATION "lib/pkgconfig"
-)
-
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
