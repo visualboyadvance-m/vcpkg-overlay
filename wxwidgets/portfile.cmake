@@ -79,13 +79,19 @@ else()
     list(APPEND OPTIONS -DwxUSE_WEBREQUEST_CURL=ON)
 endif()
 
+# Prefer copies over symlinks for the wx-config / wxrc install artifacts.
+# On Windows symlinks require admin; on any platform vcpkg expects real files
+# in its install tree so downstream relocation works.  wx installs
+# bin/wx-config as a relative symlink into ../lib/wx/config, which the move
+# into tools/${PORT} further down would leave dangling.
+list(APPEND OPTIONS -DwxBUILD_INSTALL_USE_SYMLINK=OFF)
+
 if(VCPKG_TARGET_IS_WINDOWS)
     if(VCPKG_CRT_LINKAGE STREQUAL "dynamic")
         list(APPEND OPTIONS -DwxBUILD_USE_STATIC_RUNTIME=OFF)
     else()
         list(APPEND OPTIONS -DwxBUILD_USE_STATIC_RUNTIME=ON)
     endif()
-    list(APPEND OPTIONS -DwxBUILD_INSTALL_USE_SYMLINK=OFF)
 endif()
 
 if(VCPKG_TARGET_IS_ANDROID)
