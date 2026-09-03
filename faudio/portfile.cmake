@@ -1,9 +1,12 @@
+# FAudio uses calender versioning (e.g., 26.01), but vcpkg drops them in versions
+string(REGEX REPLACE "^([0-9]+)\\.([1-9])$" "\\1.0\\2" FAUDIO_REF "${VERSION}")
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO FNA-XNA/faudio
-    REF "${VERSION}"
-    SHA512 2ec7ff7a08f75aa3217672115350814f5fcd0bede28d87d705c1ca8abd464b7a1293c4658a9adf97ca0fdc5126fe6067c2a34755fb29d4ec26457d6303beef77
-    HEAD_REF master
+    REF "${FAUDIO_REF}"
+    SHA512 94a123767375a460e1cd87c582ec878adafa2cb976d9fb73f445e022ac9baa00bb2333c2f9c647911f0a6a0dcbb821cbe3e9c411f2bd77585121f1205a01fcc4
+    HEAD_REF "${FAUDIO_REF}"
 )
 
 set(options "")

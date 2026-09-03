@@ -1,15 +1,15 @@
 {
   "name": "faudio",
-  "version-string": "26.03",
+  "version": "26.9",
   "description": "FAudio - accuracy-focused XAudio reimplementation for open platforms",
   "homepage": "https://fna-xna.github.io/",
-  "license": "Zlib",
+  "license": "Zlib AND MIT",
   "supports": "!uwp",
   "dependencies": [
     {
       "name": "sdl3",
       "default-features": false,
-      "platform": "(!windows) | (mingw & x86)"
+      "platform": "!windows | (mingw & x86)"
     },
     {
       "name": "vcpkg-cmake",
