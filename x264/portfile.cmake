@@ -20,10 +20,11 @@ vcpkg_from_gitlab(
     HEAD_REF master
     PATCHES
         "${CURRENT_BUILDTREES_DIR}/src/version-${VERSION}.diff"
+        configure.patch
+        riscv64-configure.patch
         uwp-cflags.patch
         parallel-install.patch
         allow-clang-cl.patch
-        configure.patch
 )
 
 function(add_cross_prefix)
@@ -35,7 +36,7 @@ endfunction()
 
 set(nasm_archs x86 x64)
 set(gaspp_archs arm arm64)
-if(NOT "asm" IN_LIST FEATURES)
+if(NOT "asm" IN_LIST FEATURES OR VCPKG_TARGET_IS_ANDROID)
     vcpkg_list(APPEND OPTIONS --disable-asm)
 elseif(NOT "$ENV{AS}" STREQUAL "")
     # Accept setting from triplet
