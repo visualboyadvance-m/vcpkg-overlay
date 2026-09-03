@@ -1,19 +1,16 @@
-diff --git a/source/CMakeLists.txt b/source/CMakeLists.txt
-index 9f93b6ec2..257e0d01e 100755
---- a/source/CMakeLists.txt
-+++ b/source/CMakeLists.txt
-@@ -7,13 +7,10 @@ if(NOT CMAKE_BUILD_TYPE)
+diff -Nur x265-4.3/source/CMakeLists.txt x265-4.3-patched/source/CMakeLists.txt
+--- x265-4.3/source/CMakeLists.txt	2026-07-31 13:04:17
++++ x265-4.3-patched/source/CMakeLists.txt	2026-09-03 16:42:12
+@@ -7,11 +7,7 @@
  endif()
  message(STATUS "cmake version ${CMAKE_VERSION}")
  
 -if(POLICY CMP0042)
 -    cmake_policy(SET CMP0042 NEW) # MACOSX_RPATH
 -endif()
- 
- 
- project (x265)
+-
 -cmake_minimum_required (VERSION 2.8.8...3.10) # OBJECT libraries require 2.8.8
 +cmake_minimum_required (VERSION 3.10)
- include(CheckIncludeFiles)
- include(CheckFunctionExists)
- include(CheckSymbolExists)
+ 
+ if (POLICY CMP0075)
+     cmake_policy(SET CMP0075 NEW) # CMAKE_REQUIRED_LIBRARIES warning
