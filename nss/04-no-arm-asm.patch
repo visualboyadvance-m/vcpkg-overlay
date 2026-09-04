@@ -1,13 +1,16 @@
-diff -Nur nss-3_119_1/nss/lib/freebl/Makefile nss-3_119_1-patched/nss/lib/freebl/Makefile
---- nss-3_119_1/nss/lib/freebl/Makefile	2025-12-10 23:45:32
-+++ nss-3_119_1-patched/nss/lib/freebl/Makefile	2026-09-04 10:41:23
-@@ -155,28 +155,6 @@
-         endif
+diff -Nur nss-3.128/nss/lib/freebl/Makefile nss-3.128-patched/nss/lib/freebl/Makefile
+--- nss-3.128/nss/lib/freebl/Makefile	2026-08-26 14:26:58
++++ nss-3.128-patched/nss/lib/freebl/Makefile	2026-09-04 11:03:30
+@@ -190,31 +190,6 @@
+     endif
      endif
  endif
 -ifeq ($(CPU_ARCH),arm)
 -ifndef NSS_DISABLE_ARM32_NEON
--    EXTRA_SRCS += gcm-arm32-neon.c
+-    ifeq ($(LITTLE_ENDIAN),1)
+-        DEFINES += -DHAVE_PLATFORM_GHASH
+-    endif
+-    EXTRA_SRCS += ghash-arm32-neon.c
 -endif
 -    ifdef CC_IS_CLANG
 -        DEFINES += -DUSE_HW_AES -DUSE_HW_SHA1 -DUSE_HW_SHA2
@@ -30,10 +33,10 @@ diff -Nur nss-3_119_1/nss/lib/freebl/Makefile nss-3_119_1-patched/nss/lib/freebl
  
  ifeq (,$(filter-out WINNT,$(OS_TARGET)))
  ifndef USE_64
-diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/freebl/freebl.gyp
---- nss-3_119_1/nss/lib/freebl/freebl.gyp	2025-12-10 23:45:32
-+++ nss-3_119_1-patched/nss/lib/freebl/freebl.gyp	2026-09-04 10:57:13
-@@ -465,12 +465,10 @@
+diff -Nur nss-3.128/nss/lib/freebl/freebl.gyp nss-3.128-patched/nss/lib/freebl/freebl.gyp
+--- nss-3.128/nss/lib/freebl/freebl.gyp	2026-08-26 14:26:58
++++ nss-3.128-patched/nss/lib/freebl/freebl.gyp	2026-09-04 11:06:55
+@@ -273,12 +273,10 @@
        ]
      },
      {
@@ -48,7 +51,7 @@ diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/free
        ],
        'dependencies': [
          '<(DEPTH)/exports.gyp:nss_exports'
-@@ -478,16 +476,27 @@
+@@ -286,16 +284,27 @@
        'conditions': [
          [ 'target_arch=="arm"', {
            'cflags': [
@@ -83,10 +86,10 @@ diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/free
            'cflags': [
              '-march=armv8-a+crypto'
            ],
-@@ -528,11 +537,16 @@
-             'intel-gcm-wrap_c_lib',
-           ],
-         }],
+@@ -460,11 +469,16 @@
+         'gcm.gyp:gcm'
+       ],
+       'conditions': [
 -        [ '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
 +        [ '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and (target_arch=="arm64" or target_arch=="aarch64")', {
            'dependencies': [
@@ -101,16 +104,16 @@ diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/free
          [ '(target_arch=="ia32" or target_arch=="x64") and disable_intel_hw_sha==0', {
            'dependencies': [
              'sha-x86_c_lib',
-@@ -603,7 +617,7 @@
-             'intel-gcm-wrap-nodepend_c_lib',
-           ]
-         }],
+@@ -519,7 +533,7 @@
+         'gcm.gyp:gcm-nodepend',
+       ],
+       'conditions': [
 -        [ 'target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64"', {
 +        [ 'target_arch=="arm64" or target_arch=="aarch64"', {
            'dependencies': [
              'armv8_c_lib',
            ],
-@@ -897,17 +911,17 @@
+@@ -794,17 +808,17 @@
                'USE_HW_SHA2',
              ],
            }],
