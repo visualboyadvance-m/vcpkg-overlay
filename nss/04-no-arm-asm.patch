@@ -32,7 +32,7 @@ diff -Nur nss-3_119_1/nss/lib/freebl/Makefile nss-3_119_1-patched/nss/lib/freebl
  ifndef USE_64
 diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/freebl/freebl.gyp
 --- nss-3_119_1/nss/lib/freebl/freebl.gyp	2025-12-10 23:45:32
-+++ nss-3_119_1-patched/nss/lib/freebl/freebl.gyp	2026-09-04 10:49:12
++++ nss-3_119_1-patched/nss/lib/freebl/freebl.gyp	2026-09-04 10:57:13
 @@ -465,12 +465,10 @@
        ]
      },
@@ -83,7 +83,13 @@ diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/free
            'cflags': [
              '-march=armv8-a+crypto'
            ],
-@@ -533,6 +542,11 @@
+@@ -528,11 +537,16 @@
+             'intel-gcm-wrap_c_lib',
+           ],
+         }],
+-        [ '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
++        [ '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and (target_arch=="arm64" or target_arch=="aarch64")', {
+           'dependencies': [
              'armv8_c_lib'
            ],
          }],
