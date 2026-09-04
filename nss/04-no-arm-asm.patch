@@ -1,6 +1,6 @@
-diff -Nur nss-3.113.1/nss/lib/freebl/Makefile nss-3.113.1-patched/nss/lib/freebl/Makefile
---- nss-3.113.1/nss/lib/freebl/Makefile	2025-07-01 19:10:10
-+++ nss-3.113.1-patched/nss/lib/freebl/Makefile	2026-07-30 14:57:51
+diff -Nur nss-3_119_1/nss/lib/freebl/Makefile nss-3_119_1-patched/nss/lib/freebl/Makefile
+--- nss-3_119_1/nss/lib/freebl/Makefile	2025-12-10 23:45:32
++++ nss-3_119_1-patched/nss/lib/freebl/Makefile	2026-09-04 10:41:23
 @@ -155,28 +155,6 @@
          endif
      endif
@@ -30,10 +30,10 @@ diff -Nur nss-3.113.1/nss/lib/freebl/Makefile nss-3.113.1-patched/nss/lib/freebl
  
  ifeq (,$(filter-out WINNT,$(OS_TARGET)))
  ifndef USE_64
-diff -Nur nss-3.113.1/nss/lib/freebl/freebl.gyp nss-3.113.1-patched/nss/lib/freebl/freebl.gyp
---- nss-3.113.1/nss/lib/freebl/freebl.gyp	2025-07-01 19:10:10
-+++ nss-3.113.1-patched/nss/lib/freebl/freebl.gyp	2026-07-30 14:57:24
-@@ -458,12 +458,10 @@
+diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/freebl/freebl.gyp
+--- nss-3_119_1/nss/lib/freebl/freebl.gyp	2025-12-10 23:45:32
++++ nss-3_119_1-patched/nss/lib/freebl/freebl.gyp	2026-09-04 10:49:12
+@@ -465,12 +465,10 @@
        ]
      },
      {
@@ -48,7 +48,7 @@ diff -Nur nss-3.113.1/nss/lib/freebl/freebl.gyp nss-3.113.1-patched/nss/lib/free
        ],
        'dependencies': [
          '<(DEPTH)/exports.gyp:nss_exports'
-@@ -471,16 +469,27 @@
+@@ -478,16 +476,27 @@
        'conditions': [
          [ 'target_arch=="arm"', {
            'cflags': [
@@ -83,13 +83,7 @@ diff -Nur nss-3.113.1/nss/lib/freebl/freebl.gyp nss-3.113.1-patched/nss/lib/free
            'cflags': [
              '-march=armv8-a+crypto'
            ],
-@@ -519,11 +528,16 @@
-           'dependencies': [
-             'gcm-aes-x86_c_lib',
-           ],
--        }, '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
-+        }, '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and ( target_arch=="arm64" or target_arch=="aarch64")', {
-           'dependencies': [
+@@ -533,6 +542,11 @@
              'armv8_c_lib'
            ],
          }],
@@ -101,21 +95,21 @@ diff -Nur nss-3.113.1/nss/lib/freebl/freebl.gyp nss-3.113.1-patched/nss/lib/free
          [ '(target_arch=="ia32" or target_arch=="x64") and disable_intel_hw_sha==0', {
            'dependencies': [
              'sha-x86_c_lib',
-@@ -606,7 +620,7 @@
-           'dependencies': [
-             'gcm-aes-x86_c_lib',
+@@ -603,7 +617,7 @@
+             'intel-gcm-wrap-nodepend_c_lib',
            ]
--        }, 'target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64"', {
-+        }, 'target_arch=="arm64" or target_arch=="aarch64"', {
+         }],
+-        [ 'target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64"', {
++        [ 'target_arch=="arm64" or target_arch=="aarch64"', {
            'dependencies': [
              'armv8_c_lib',
            ],
-@@ -919,17 +933,17 @@
+@@ -897,17 +911,17 @@
                'USE_HW_SHA2',
              ],
            }],
 -          [ 'disable_arm_hw_aes==0 and (target_arch=="arm" or target_arch=="arm64" or target_arch=="aarch64")', {
-+          [ 'disable_arm_hw_aes==0 and (target_arch=="arm64" or target_arch=="aarch64")', {
++          [ '(disable_arm_hw_aes==0 or disable_arm_hw_sha1==0 or disable_arm_hw_sha2==0) and ( target_arch=="arm64" or target_arch=="aarch64")', {
              'defines': [
                'USE_HW_AES',
              ],

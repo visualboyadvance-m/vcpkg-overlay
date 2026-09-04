@@ -8,9 +8,9 @@ vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
 string(REPLACE "." "_" V_URL ${VERSION})
 
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://ftp.mozilla.org/pub/security/nss/releases/NSS_${V_URL}_RTM/src/nss-${VERSION}.tar.gz"
-    FILENAME "nss-${VERSION}.tar.gz"
-    SHA512 5ffb1182e7d65f8895c09656d20bc7146d1616cd4f09046469b2f79f60b57083094c78da39a3f3faa5087742a19f706ce9e7928a662f9f0d3c410514cba2028f
+    URLS "https://ftp.mozilla.org/pub/security/nss/releases/NSS_${V_URL}_RTM/src/nss-${V_URL}.tar.gz"
+    FILENAME "nss-${V_URL}.tar.gz"
+    SHA512 84020cb7dc399101ac3106d6161826437c95bbcd19581883191ca85bb7245994d2d549339530b36b1277f0bb802bdd4110f5cfe98aeeaeec597647af1e7a8272
 )
 
 vcpkg_extract_source_archive(

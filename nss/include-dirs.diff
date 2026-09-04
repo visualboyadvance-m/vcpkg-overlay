@@ -1,7 +1,6 @@
-diff --git a/nss/lib/sqlite/exports.gyp b/nss/lib/sqlite/exports.gyp
-index 0a424ba..935b223 100644
---- a/nss/lib/sqlite/exports.gyp
-+++ b/nss/lib/sqlite/exports.gyp
+diff -Nur nss-3_119_1/nss/lib/sqlite/exports.gyp nss-3_119_1-patched/nss/lib/sqlite/exports.gyp
+--- nss-3_119_1/nss/lib/sqlite/exports.gyp	2025-12-10 23:45:32
++++ nss-3_119_1-patched/nss/lib/sqlite/exports.gyp	2026-09-04 10:28:18
 @@ -12,7 +12,6 @@
        'copies': [
          {
@@ -10,11 +9,10 @@ index 0a424ba..935b223 100644
            ],
            'destination': '<(nss_private_dist_dir)/<(module)'
          }
-diff --git a/nss/lib/sqlite/sqlite.gyp b/nss/lib/sqlite/sqlite.gyp
-index 6a9ab3a..b98ab00 100644
---- a/nss/lib/sqlite/sqlite.gyp
-+++ b/nss/lib/sqlite/sqlite.gyp
-@@ -10,8 +10,14 @@
+diff -Nur nss-3_119_1/nss/lib/sqlite/sqlite.gyp nss-3_119_1-patched/nss/lib/sqlite/sqlite.gyp
+--- nss-3_119_1/nss/lib/sqlite/sqlite.gyp	2025-12-10 23:45:32
++++ nss-3_119_1-patched/nss/lib/sqlite/sqlite.gyp	2026-09-04 10:29:41
+@@ -10,6 +10,12 @@
        'targets': [{
          'target_name': 'sqlite3',
          'type': 'none',
@@ -25,15 +23,93 @@ index 6a9ab3a..b98ab00 100644
 +          'include_dirs': ['<@(sqlite_include_dirs)'],
 +        },
          'link_settings': {
--          'libraries': ['<(sqlite_libs)'],
-+          'libraries': ['<@(sqlite_libs)'],
+           'libraries': ['<@(sqlite_libs)'],
          },
-       }],
-     }, {
-diff --git a/nss/lib/zlib/zlib.gyp b/nss/lib/zlib/zlib.gyp
-index 07df9a8..215732d 100644
---- a/nss/lib/zlib/zlib.gyp
-+++ b/nss/lib/zlib/zlib.gyp
+diff -Nur nss-3_119_1/nss/lib/sqlite/sqlite.gyp.orig nss-3_119_1-patched/nss/lib/sqlite/sqlite.gyp.orig
+--- nss-3_119_1/nss/lib/sqlite/sqlite.gyp.orig	1970-01-01 01:00:00
++++ nss-3_119_1-patched/nss/lib/sqlite/sqlite.gyp.orig	2026-09-04 10:27:27
+@@ -0,0 +1,58 @@
++# This Source Code Form is subject to the terms of the Mozilla Public
++# License, v. 2.0. If a copy of the MPL was not distributed with this
++# file, You can obtain one at http://mozilla.org/MPL/2.0/.
++{
++  'includes': [
++    '../../coreconf/config.gypi'
++  ],
++  'conditions': [
++    ['use_system_sqlite==1', {
++      'targets': [{
++        'target_name': 'sqlite3',
++        'type': 'none',
++        'link_settings': {
++          'libraries': ['<@(sqlite_libs)'],
++        },
++      }],
++    }, {
++      'targets': [
++        {
++          'target_name': 'sqlite',
++          'type': 'static_library',
++          'sources': [
++            'sqlite3.c'
++          ],
++          'dependencies': [
++            '<(DEPTH)/exports.gyp:nss_exports'
++          ]
++        },
++        {
++          'target_name': 'sqlite3',
++          'type': 'shared_library',
++          'dependencies': [
++            'sqlite'
++          ],
++          'variables': {
++            'mapfile': 'sqlite.def'
++          }
++        }
++      ],
++      'target_defaults': {
++        'defines': [
++          'SQLITE_THREADSAFE=1'
++        ],
++        'cflags': [
++          '-w',
++        ],
++        'xcode_settings': {
++          'OTHER_CFLAGS': [
++            '-w',
++          ],
++        },
++      },
++      'variables': {
++        'module': 'nss'
++      }
++    }]
++  ],
++}
+diff -Nur nss-3_119_1/nss/lib/sqlite/sqlite.gyp.rej nss-3_119_1-patched/nss/lib/sqlite/sqlite.gyp.rej
+--- nss-3_119_1/nss/lib/sqlite/sqlite.gyp.rej	1970-01-01 01:00:00
++++ nss-3_119_1-patched/nss/lib/sqlite/sqlite.gyp.rej	2026-09-04 10:28:18
+@@ -0,0 +1,16 @@
++@@ -10,8 +10,14 @@
++       'targets': [{
++         'target_name': 'sqlite3',
++         'type': 'none',
+++        'direct_dependent_settings': {
+++          'variables': {
+++            'sqlite_include_dirs%': [],
+++          },
+++          'include_dirs': ['<@(sqlite_include_dirs)'],
+++        },
++         'link_settings': {
++-          'libraries': ['<(sqlite_libs)'],
+++          'libraries': ['<@(sqlite_libs)'],
++         },
++       }],
++     }, {
+diff -Nur nss-3_119_1/nss/lib/zlib/zlib.gyp nss-3_119_1-patched/nss/lib/zlib/zlib.gyp
+--- nss-3_119_1/nss/lib/zlib/zlib.gyp	2025-12-10 23:45:32
++++ nss-3_119_1-patched/nss/lib/zlib/zlib.gyp	2026-09-04 10:28:18
 @@ -13,6 +13,12 @@
        'targets': [{
          'target_name': 'nss_zlib',
