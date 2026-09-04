@@ -1,0 +1,28 @@
+--- a/configure
++++ b/configure
+@@ -6432,8 +6432,10 @@
+         if ! test_${pfx}cpp_condition crtdefs.h "defined(_UCRT)"; then
+             add_${pfx}cppflags -D__USE_MINGW_ANSI_STDIO=1
+         fi
+-        test_${pfx}cpp_condition windows.h "!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600" &&
+-            add_${pfx}cppflags -D_WIN32_WINNT=0x0600
++        # vcpkg overlay: leave _WIN32_WINNT alone. The x86 mingw build targets
++        # Windows XP and sets 0x0501 explicitly; forcing Vista here only
++        # produced a redefinition that the later CFLAGS overrode anyway, while
++        # still being wrong for anything reading it during configure.
+         add_${pfx}cppflags -D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
+     elif test_${pfx}cpp_condition _mingw.h "defined __MINGW_VERSION"  ||
+          test_${pfx}cpp_condition _mingw.h "defined __MINGW32_VERSION"; then
+@@ -6447,8 +6449,10 @@
+         fi
+         test_${pfx}cpp_condition _mingw.h "__MSVCRT_VERSION__ < 0x0700" &&
+             add_${pfx}cppflags -D__MSVCRT_VERSION__=0x0700
+-        test_${pfx}cpp_condition windows.h "!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600" &&
+-            add_${pfx}cppflags -D_WIN32_WINNT=0x0600
++        # vcpkg overlay: leave _WIN32_WINNT alone. The x86 mingw build targets
++        # Windows XP and sets 0x0501 explicitly; forcing Vista here only
++        # produced a redefinition that the later CFLAGS overrode anyway, while
++        # still being wrong for anything reading it during configure.
+         add_${pfx}cppflags -D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
+     elif test_${pfx}cpp_condition crtversion.h "defined _VC_CRT_MAJOR_VERSION"; then
+         eval ${pfx}libc_type=msvcrt

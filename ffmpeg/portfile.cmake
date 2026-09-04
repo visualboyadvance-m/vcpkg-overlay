@@ -23,6 +23,7 @@ vcpkg_from_github(
         0052-fix-disable-unstable-swscale-link.patch
         0052_no_bcrypt.patch
         0053_cancelio_xp.patch
+        0054-no-vista-baseline.patch
 )
 
 if(SOURCE_PATH MATCHES " ")
@@ -736,7 +737,20 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
 endif()
 
 if(VCPKG_TARGET_IS_MINGW)
-    set(OPTIONS "${OPTIONS} --extra_cflags=-D_WIN32_WINNT=0x0501 --disable-schannel")
+    # Only the x86 mingw build targets Windows XP -- the same split
+    # wxwidgets/portfile.cmake makes in this overlay, which is where the
+    # 0x0501-for-mingw-x86-only rule comes from.
+    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+        # w32threads is unusable at the XP baseline: compat/w32pthreads.h types
+        # pthread_mutex_t as SRWLOCK and pthread_cond_t as CONDITION_VARIABLE
+        # with no version guard, and both are Vista-only. libavutil/thread.h
+        # prefers HAVE_PTHREADS, so asking for pthreads means that header is
+        # never reached and mingw-w64's own winpthreads is used instead.
+        set(OPTIONS "${OPTIONS} --extra-cflags=-D_WIN32_WINNT=0x0501 --disable-w32threads --enable-pthreads")
+    else()
+        set(OPTIONS "${OPTIONS} --extra-cflags=-D_WIN32_WINNT=0x0601")
+    endif()
+    set(OPTIONS "${OPTIONS} --disable-schannel")
 elseif(VCPKG_TARGET_IS_WINDOWS)
     set(OPTIONS "${OPTIONS} --extra-cflags=-DHAVE_UNISTD_H=0 --extra-cflags=-D_WIN32_WINNT=0x0601")
 endif()
