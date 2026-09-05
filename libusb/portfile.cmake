@@ -17,6 +17,10 @@ vcpkg_from_github(
         # version that wrote it -- so every toolset update broke the consuming
         # link with C1047 until libusb happened to be rebuilt.  It is the only
         # port here that does this; everything else is plain COFF.
+        #
+        # Reported upstream as https://github.com/microsoft/vcpkg/issues/53790.
+        # Drop this whole overlay once that is fixed, rather than rebasing the
+        # patch onto a newer libusb.
         no-ltcg.patch
 )
 
