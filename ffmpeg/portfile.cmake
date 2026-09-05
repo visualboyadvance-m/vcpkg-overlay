@@ -91,11 +91,21 @@ if(VCPKG_DETECTED_CMAKE_C_COMPILER)
     set(ENV{CC} "${CC_filename}")
     string(APPEND OPTIONS " --cc=${CC_filename}")
 
-    # FFmpeg 9.0 builds a native helper for the unstable AArch64 swscale
-    # backend. Using the target cl.exe as HOSTCC produces an ARM64 executable
-    # that cannot run on the x64 build host. Disable only that unstable backend
-    # for Windows ARM64; 0052 keeps the legacy swscale path linkable.
-    if(VCPKG_HOST_IS_WINDOWS AND VCPKG_DETECTED_MSVC)
+    # FFmpeg 9.0 builds native helpers -- one for the unstable AArch64 swscale
+    # backend, and libswscale/x86/uops_macros.gen.asm via $(HOSTCC) -- so
+    # HOSTCC has to name a compiler that exists and emits something the build
+    # host can actually run.
+    #
+    # It defaults to plain "gcc". msys64/mingw32 has one, so the x86 build was
+    # fine by accident, but clang64 ships only cc/clang/c++ and the x64 mingw
+    # build died there with "make: gcc: No such file or directory" (Error 127).
+    # Point HOSTCC at the detected compiler for mingw too, not just MSVC.
+    #
+    # ARM64 stays the exception under either toolchain: the target compiler as
+    # HOSTCC would build an ARM64 helper that cannot run on the x64 build host,
+    # so drop that unstable backend instead. 0052 keeps the legacy swscale path
+    # linkable.
+    if(VCPKG_HOST_IS_WINDOWS AND (VCPKG_DETECTED_MSVC OR VCPKG_TARGET_IS_MINGW))
         if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
             string(APPEND OPTIONS " --disable-unstable")
         else()
