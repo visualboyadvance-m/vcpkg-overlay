@@ -35,6 +35,10 @@ on XP) and guarding newer SDK symbols behind _WIN32_WINNT checks.
   TB_GETITEMDROPDOWNRECT and TBCDRF_USECDCOLORS, only used in dark mode.
 - Guard wxUSE_IFILEOPENDIALOG on _WIN32_WINNT >= 0x0600 and only require a
   v6 comctl32 manifest on Vista and later.
+- Add wxMSWCancelIoEx() in wx/msw/private/fswatcher.h, resolving CancelIoEx()
+  dynamically and falling back to CancelIo() under XP. The file system
+  watcher cancels a pending ReadDirectoryChangesW() before freeing the
+  OVERLAPPED object and its buffer, so the call cannot simply be dropped.
 - Fix the XP build: include gethwnd.h unconditionally in dirdlg.cpp
   (wxGetHWND is used outside the IFileOpenDialog path, disabled under XP),
   store the Direct2D IUnknown refcount as LONG so Interlocked{Increment,
@@ -46,6 +50,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 ---
  include/wx/msw/chkconf.h            |  21 +++
  include/wx/msw/private/filedialog.h |   4 +-
+ include/wx/msw/private/fswatcher.h  |  40 +++++
  include/wx/msw/private/msgdlg.h     |  13 +-
  include/wx/msw/private/taskdlg.h    |   8 +
  include/wx/msw/uxtheme.h            |  60 ++++++-
@@ -119,6 +124,64 @@ index 5823230ca9..c3b2fdab50 100644
      #define wxUSE_IFILEOPENDIALOG 1
  #else
      #define wxUSE_IFILEOPENDIALOG 0
+diff --git a/include/wx/msw/private/fswatcher.h b/include/wx/msw/private/fswatcher.h
+--- a/include/wx/msw/private/fswatcher.h
++++ b/include/wx/msw/private/fswatcher.h
+@@ -10,6 +10,7 @@
+ #ifndef WX_MSW_PRIVATE_FSWATCHER_H_
+ #define WX_MSW_PRIVATE_FSWATCHER_H_
+ 
++#include "wx/dynlib.h"
+ #include "wx/filename.h"
+ #include "wx/thread.h"
+ #include "wx/vector.h"
+@@ -19,6 +20,37 @@
+ // wxFSWatcherEntry implementation & helper declarations
+ // ============================================================================
+ 
++// CancelIoEx() is Vista or later and cannot be imported statically without
++// preventing the application from loading under XP, so resolve it on first
++// use, as wxDrawThemeTextEx() does for DrawThemeTextEx().
++//
++// Unlike that one this is reached from more than one thread -- an entry can be
++// destroyed by the watcher or after the IOCP worker drops its last reference
++// -- so the initialisation is left to the C++11 rules for a function-local
++// static rather than an s_initDone flag.
++//
++// The XP fallback is CancelIo(), which cancels only the calling thread's I/O
++// on the handle: there is no way to cancel another thread's there. The caller
++// waits for the read to finish either way, so the worst case under XP is that
++// the wait is longer, not that the buffer is freed early.
++inline BOOL wxMSWCancelIoEx(HANDLE handle, OVERLAPPED* overlapped)
++{
++    typedef BOOL (WINAPI *CancelIoEx_t)(HANDLE, LPOVERLAPPED);
++
++    static const CancelIoEx_t s_cancelIoEx = []() -> CancelIoEx_t
++    {
++        CancelIoEx_t s_pfnCancelIoEx = nullptr;
++        wxLoadedDLL dllKernel32(wxS("kernel32.dll"));
++        wxDL_INIT_FUNC(s_pfn, CancelIoEx, dllKernel32);
++        return s_pfnCancelIoEx;
++    }();
++
++    if ( s_cancelIoEx )
++        return s_cancelIoEx(handle, overlapped);
++
++    return ::CancelIo(handle);
++}
++
+ class wxFSWatcherImplMSW;
+ 
+ class wxFSWatchEntryMSW : public wxFSWatchInfo
+@@ -57,7 +89,7 @@
+             {
+                 // The event buffer and OVERLAPPED object must remain alive
+                 // until the asynchronous read has really completed.
+-                if ( !::CancelIoEx(m_handle, m_overlapped) )
++                if ( !wxMSWCancelIoEx(m_handle, m_overlapped) )
+                 {
+                     const DWORD err = ::GetLastError();
+                     // ERROR_NOT_FOUND means the asynchronous read isn't
 diff --git a/include/wx/msw/private/msgdlg.h b/include/wx/msw/private/msgdlg.h
 index 88dc6aa029..db2b95cc54 100644
 --- a/include/wx/msw/private/msgdlg.h
