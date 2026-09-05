@@ -1,11 +1,23 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Andy Vandijck <andyvand@gmail.com>
-Date: Sun, 12 Jul 2026 23:42:25 +0000
+From 8581c099b5d151dc2829f2ae3efbf55e9fcef0de Mon Sep 17 00:00:00 2001
+From: Rafael Kitover <rkitover@gmail.com>
+Date: Sat, 5 Sep 2026 21:49:11 +0000
 Subject: [PATCH] Restore Windows XP support in wxMSW
 
 Allow wxMSW to build and run under Windows XP again by loading Vista+
 functions dynamically (a static import prevents the binary from loading
 on XP) and guarding newer SDK symbols behind _WIN32_WINNT checks.
+
+The dynamic loading is collected into wxMSWBackCompat, in the new
+wx/msw/private/backcompat.h, which caches the library handles and the
+resolved addresses in one place instead of every call site repeating a
+typedef, a static pointer and an s_initDone flag. Its members come in two
+kinds: methods, for a function with a usable older equivalent, which fall
+back by themselves so callers need no version check at all; and plain
+function pointers, for functions with no equivalent, which stay null and
+have to be checked, since wrapping them would mean inventing behaviour the
+older API cannot provide. wxMSWBackCompatGUI in backcompatgui.h does the
+same for the GUI-only libraries, kept separate because wxBase must not pull
+in uxtheme.h and the types these are declared in terms of.
 
 - Add wxKernel32Dll in uilocale.cpp to resolve the kernel32 NLS functions
   (GetLocaleInfoEx, CompareStringEx, Get/SetThreadPreferredUILanguages,
@@ -48,33 +60,37 @@ on XP) and guarding newer SDK symbols behind _WIN32_WINNT checks.
 Co-Authored-By: Rafael Kitover <rkitover@gmail.com>
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 ---
- include/wx/msw/chkconf.h            |  21 +++
- include/wx/msw/private/filedialog.h |   4 +-
- include/wx/msw/private/fswatcher.h  |  40 +++++
- include/wx/msw/private/msgdlg.h     |  13 +-
- include/wx/msw/private/taskdlg.h    |   8 +
- include/wx/msw/uxtheme.h            |  60 ++++++-
- src/generic/printps.cpp             |  21 ++-
- src/msw/app.cpp                     |  15 +-
- src/msw/artmsw.cpp                  |   6 +-
- src/msw/darkmode.cpp                |   2 +-
- src/msw/dirdlg.cpp                  |   6 +-
- src/msw/filedlg.cpp                 |   7 +-
- src/msw/graphicsd2d.cpp             |   5 +-
- src/msw/hyperlink.cpp               |  13 ++
- src/msw/msgdlg.cpp                  |  12 ++
- src/msw/registry.cpp                |  27 ++-
- src/msw/renderer.cpp                |   2 +-
- src/msw/richmsgdlg.cpp              |   2 +
- src/msw/taskbar.cpp                 |   8 +
- src/msw/taskdlg.cpp                 |   8 +
- src/msw/toolbar.cpp                 |  11 ++
- src/msw/uilocale.cpp                | 249 +++++++++++++++++++++++-----
- src/msw/utils.cpp                   |  10 +-
- src/msw/utilsgui.cpp                |   7 +
- src/msw/uxtheme.cpp                 |  32 ++++
- src/msw/window.cpp                  |  89 ++++++++++
- 25 files changed, 576 insertions(+), 62 deletions(-)
+ include/wx/msw/chkconf.h               |  21 +++
+ include/wx/msw/private/backcompat.h    | 196 +++++++++++++++++++++++++
+ include/wx/msw/private/backcompatgui.h |  76 ++++++++++
+ include/wx/msw/private/filedialog.h    |   4 +-
+ include/wx/msw/private/fswatcher.h     |   3 +-
+ include/wx/msw/private/msgdlg.h        |  13 +-
+ include/wx/msw/private/taskdlg.h       |   8 +
+ include/wx/msw/uxtheme.h               |  59 +++++++-
+ src/generic/printps.cpp                |  21 ++-
+ src/msw/app.cpp                        |   8 +-
+ src/msw/artmsw.cpp                     |   6 +-
+ src/msw/darkmode.cpp                   |   2 +-
+ src/msw/dirdlg.cpp                     |   6 +-
+ src/msw/filedlg.cpp                    |   7 +-
+ src/msw/graphicsd2d.cpp                |   5 +-
+ src/msw/hyperlink.cpp                  |  13 ++
+ src/msw/msgdlg.cpp                     |  12 ++
+ src/msw/registry.cpp                   |  11 +-
+ src/msw/renderer.cpp                   |   2 +-
+ src/msw/richmsgdlg.cpp                 |   2 +
+ src/msw/taskbar.cpp                    |   8 +
+ src/msw/taskdlg.cpp                    |   8 +
+ src/msw/toolbar.cpp                    |  11 ++
+ src/msw/uilocale.cpp                   | 191 ++++++++++++++++++------
+ src/msw/utils.cpp                      |   3 +-
+ src/msw/utilsgui.cpp                   |   7 +
+ src/msw/uxtheme.cpp                    |  12 ++
+ src/msw/window.cpp                     |  89 +++++++++++
+ 28 files changed, 740 insertions(+), 64 deletions(-)
+ create mode 100644 include/wx/msw/private/backcompat.h
+ create mode 100644 include/wx/msw/private/backcompatgui.h
 
 diff --git a/include/wx/msw/chkconf.h b/include/wx/msw/chkconf.h
 index 143a9c7870..d7adf76e82 100644
@@ -108,6 +124,290 @@ index 143a9c7870..d7adf76e82 100644
  /* wxMSW-specific checks: notice that this file is also used with wxUniv
     and can even be used with wxGTK, when building it under Windows.
   */
+diff --git a/include/wx/msw/private/backcompat.h b/include/wx/msw/private/backcompat.h
+new file mode 100644
+index 0000000000..afa83c93b7
+--- /dev/null
++++ b/include/wx/msw/private/backcompat.h
+@@ -0,0 +1,196 @@
++/////////////////////////////////////////////////////////////////////////////
++// Name:        wx/msw/private/backcompat.h
++// Purpose:     Cached run-time lookup of functions missing under older systems
++// Author:      Rafael Kitover
++// Copyright:   (c) 2026 Rafael Kitover
++// Licence:     wxWindows licence
++/////////////////////////////////////////////////////////////////////////////
++
++#ifndef WX_MSW_PRIVATE_BACKCOMPAT_H_
++#define WX_MSW_PRIVATE_BACKCOMPAT_H_
++
++#include "wx/dynlib.h"
++#include "wx/msw/private.h"
++
++// ----------------------------------------------------------------------------
++// wxMSWBackCompat
++// ----------------------------------------------------------------------------
++
++// Functions which don't exist on every system wx can still be built for.
++// Importing one of them statically stops the binary from loading at all on a
++// system without it -- not just when the function is called -- so they have to
++// be resolved at run time. This does it once, on first use, and caches both
++// the library handles and the addresses.
++//
++// There are two kinds of member here:
++//
++//  - Methods, for a function with a usable older equivalent. They call the
++//    newer function where it exists and fall back where it doesn't, so the
++//    caller needs no version check of its own and no knowledge that anything
++//    is being resolved dynamically.
++//
++//  - Function pointers, for a function with no equivalent. These are null when
++//    the function is missing and must be checked before being called. They are
++//    deliberately not wrapped: there is no older call to forward to, and the
++//    caller generally has to take a different path rather than a different
++//    call.
++//
++// Use Get() to reach the single instance, which is created on first use and
++// then lives until the process exits.
++
++class wxMSWBackCompat
++{
++public:
++    static const wxMSWBackCompat& Get()
++    {
++        static const wxMSWBackCompat s_instance;
++        return s_instance;
++    }
++
++    // ------------------------------------------------------------------------
++    // Wrapped: the caller needs no version check
++    // ------------------------------------------------------------------------
++
++    // Cancel pending I/O on the given handle.
++    //
++    // CancelIoEx() is Vista or later. Before it, only the calling thread's I/O
++    // on the handle can be cancelled, so a read issued by another thread stays
++    // pending and a caller waiting for completion waits longer.
++    BOOL CancelIoEx(HANDLE handle, OVERLAPPED* overlapped) const
++    {
++        if ( m_pfnCancelIoEx )
++            return m_pfnCancelIoEx(handle, overlapped);
++
++        return ::CancelIo(handle);
++    }
++
++    // Delete a registry key in the given registry view.
++    //
++    // RegDeleteKeyEx() is Vista or later. Before it the view can't be chosen
++    // and the default one is always used.
++    LONG DeleteRegKey(HKEY key, const wxChar* subkey, REGSAM view) const
++    {
++        if ( m_pfnRegDeleteKeyEx )
++            return m_pfnRegDeleteKeyEx(key, subkey, view, 0);
++
++        return ::RegDeleteKey(key, subkey);
++    }
++
++    // Retrieve the product type of the running system.
++    //
++    // GetProductInfo() is Vista or later. Before it there is nothing to ask,
++    // so this returns FALSE and leaves productType alone, exactly as the real
++    // function does when it fails.
++    BOOL GetProductInfo(DWORD verMajor, DWORD verMinor,
++                        DWORD spMajor, DWORD spMinor,
++                        PDWORD productType) const
++    {
++        if ( !m_pfnGetProductInfo )
++            return FALSE;
++
++        return m_pfnGetProductInfo(verMajor, verMinor,
++                                   spMajor, spMinor, productType);
++    }
++
++    // Set the AppUserModelID used to group this process's windows in the
++    // taskbar.
++    //
++    // SetCurrentProcessExplicitAppUserModelID() is exported by shell32 since
++    // Windows 7. Before it there is no taskbar grouping to configure, so this
++    // does nothing.
++    void SetAppUserModelID(const wxString& id) const
++    {
++        if ( m_pfnSetAppUserModelID )
++            m_pfnSetAppUserModelID(id.wc_str());
++    }
++
++    // ------------------------------------------------------------------------
++    // Unwrapped: null when missing, check before calling
++    // ------------------------------------------------------------------------
++
++    // These NLS functions take a locale *name*; their predecessors take an
++    // LCID and can't express everything a name can, so a caller that wants to
++    // keep working without them has to do more than call something else --
++    // notably, an explicitly specified locale can't be honoured at all.
++    typedef int  (WINAPI *GetLocaleInfoEx_t)(LPCWSTR, LCTYPE, LPWSTR, int);
++    typedef int  (WINAPI *GetUserDefaultLocaleName_t)(LPWSTR, int);
++    typedef BOOL (WINAPI *GetUserPreferredUILanguages_t)(DWORD, PULONG,
++                                                         PZZWSTR, PULONG);
++    typedef BOOL (WINAPI *SetThreadPreferredUILanguages_t)(DWORD, PCZZWSTR,
++                                                           PULONG);
++    typedef int  (WINAPI *CompareStringEx_t)(LPCWSTR, DWORD, LPCWCH, int,
++                                             LPCWCH, int, LPNLSVERSIONINFO,
++                                             LPVOID, LPARAM);
++
++    GetLocaleInfoEx_t               GetLocaleInfoEx;
++    GetUserDefaultLocaleName_t      GetUserDefaultLocaleName;
++    GetUserPreferredUILanguages_t   GetUserPreferredUILanguages;
++    SetThreadPreferredUILanguages_t SetThreadPreferredUILanguages;
++    CompareStringEx_t               CompareStringEx;
++
++private:
++    typedef BOOL    (WINAPI *CancelIoEx_t)(HANDLE, LPOVERLAPPED);
++    typedef LONG    (WINAPI *RegDeleteKeyEx_t)(HKEY, const wxChar*,
++                                               REGSAM, DWORD);
++    typedef BOOL    (WINAPI *GetProductInfo_t)(DWORD, DWORD, DWORD, DWORD,
++                                               PDWORD);
++    typedef HRESULT (WINAPI *SetAppUserModelID_t)(PCWSTR);
++
++    wxMSWBackCompat()
++    {
++        // kernel32 and advapi32 are always already loaded and are never
++        // unloaded, so the addresses stay good after these go out of scope:
++        // wxLoadedDLL detaches rather than freeing.
++        {
++            wxLoadedDLL dllKernel32(wxS("kernel32.dll"));
++
++            m_pfnCancelIoEx = (CancelIoEx_t)
++                dllKernel32.RawGetSymbol("CancelIoEx");
++            m_pfnGetProductInfo = (GetProductInfo_t)
++                dllKernel32.RawGetSymbol("GetProductInfo");
++
++            GetLocaleInfoEx = (GetLocaleInfoEx_t)
++                dllKernel32.RawGetSymbol("GetLocaleInfoEx");
++            GetUserDefaultLocaleName = (GetUserDefaultLocaleName_t)
++                dllKernel32.RawGetSymbol("GetUserDefaultLocaleName");
++            GetUserPreferredUILanguages = (GetUserPreferredUILanguages_t)
++                dllKernel32.RawGetSymbol("GetUserPreferredUILanguages");
++            SetThreadPreferredUILanguages = (SetThreadPreferredUILanguages_t)
++                dllKernel32.RawGetSymbol("SetThreadPreferredUILanguages");
++            CompareStringEx = (CompareStringEx_t)
++                dllKernel32.RawGetSymbol("CompareStringEx");
++        }
++
++        {
++            wxLoadedDLL dllAdvapi32(wxS("advapi32.dll"));
++
++            // wx is Unicode-only, so this is always the W entry point, but
++            // spell it out: RegDeleteKeyEx is a macro and would otherwise be
++            // expanded inside the string by some SDKs.
++            m_pfnRegDeleteKeyEx = (RegDeleteKeyEx_t)
++                dllAdvapi32.RawGetSymbol("RegDeleteKeyExW");
++        }
++
++        // shell32, unlike the above, need not be loaded already -- a console
++        // application may never have touched it -- so load it for real and
++        // keep it, since the address has to outlive this constructor.
++        if ( m_dllShell32.Load(wxS("shell32.dll"),
++                               wxDL_VERBATIM | wxDL_QUIET) )
++        {
++            m_pfnSetAppUserModelID = (SetAppUserModelID_t)
++                m_dllShell32.RawGetSymbol(
++                    "SetCurrentProcessExplicitAppUserModelID");
++        }
++    }
++
++    CancelIoEx_t        m_pfnCancelIoEx = nullptr;
++    RegDeleteKeyEx_t    m_pfnRegDeleteKeyEx = nullptr;
++    GetProductInfo_t    m_pfnGetProductInfo = nullptr;
++    SetAppUserModelID_t m_pfnSetAppUserModelID = nullptr;
++
++    wxDynamicLibrary m_dllShell32;
++
++    wxDECLARE_NO_COPY_CLASS(wxMSWBackCompat);
++};
++
++#endif // WX_MSW_PRIVATE_BACKCOMPAT_H_
+diff --git a/include/wx/msw/private/backcompatgui.h b/include/wx/msw/private/backcompatgui.h
+new file mode 100644
+index 0000000000..831658369c
+--- /dev/null
++++ b/include/wx/msw/private/backcompatgui.h
+@@ -0,0 +1,76 @@
++/////////////////////////////////////////////////////////////////////////////
++// Name:        wx/msw/private/backcompatgui.h
++// Purpose:     wxMSWBackCompat's counterpart for GUI-only libraries
++// Author:      Rafael Kitover
++// Copyright:   (c) 2026 Rafael Kitover
++// Licence:     wxWindows licence
++/////////////////////////////////////////////////////////////////////////////
++
++#ifndef WX_MSW_PRIVATE_BACKCOMPATGUI_H_
++#define WX_MSW_PRIVATE_BACKCOMPATGUI_H_
++
++#include "wx/dynlib.h"
++#include "wx/msw/uxtheme.h"
++
++// ----------------------------------------------------------------------------
++// wxMSWBackCompatGUI
++// ----------------------------------------------------------------------------
++
++// The same thing as wxMSWBackCompat, and used the same way, for the libraries
++// only the GUI links against. It is separate because wxBase must not pull in
++// uxtheme.h and the types these functions are declared in terms of.
++//
++// See wx/msw/private/backcompat.h for what the two kinds of member mean.
++
++class wxMSWBackCompatGUI
++{
++public:
++    static const wxMSWBackCompatGUI& Get()
++    {
++        static const wxMSWBackCompatGUI s_instance;
++        return s_instance;
++    }
++
++    // Draw themed text, honouring the extended options in pOptions.
++    //
++    // DrawThemeTextEx() is Vista or later. Before it the extended options are
++    // lost -- notably the text colour possibly given in DTTOPTS is not
++    // honoured -- but the text is still drawn.
++    HRESULT DrawThemeTextEx(HTHEME hTheme, HDC hdc, int iPartId, int iStateId,
++                            const wchar_t* pszText, int cchText,
++                            DWORD dwTextFlags, RECT* pRect,
++                            const DTTOPTS* pOptions) const
++    {
++        if ( m_pfnDrawThemeTextEx )
++        {
++            return m_pfnDrawThemeTextEx(hTheme, hdc, iPartId, iStateId,
++                                        pszText, cchText, dwTextFlags,
++                                        pRect, pOptions);
++        }
++
++        return ::DrawThemeText(hTheme, hdc, iPartId, iStateId, pszText,
++                               cchText, dwTextFlags, 0, pRect);
++    }
++
++private:
++    typedef HRESULT (WINAPI *DrawThemeTextEx_t)(HTHEME, HDC, int, int, LPCWSTR,
++                                                int, DWORD, LPRECT,
++                                                const DTTOPTS*);
++
++    wxMSWBackCompatGUI()
++    {
++        // Nothing here is reached before the theme API is in use, so uxtheme
++        // is loaded by now and wxLoadedDLL finds it. It is not unloaded while
++        // we run, so the address outlives this scope.
++        wxLoadedDLL dllUxTheme(wxS("uxtheme.dll"));
++
++        m_pfnDrawThemeTextEx = (DrawThemeTextEx_t)
++            dllUxTheme.RawGetSymbol("DrawThemeTextEx");
++    }
++
++    DrawThemeTextEx_t m_pfnDrawThemeTextEx = nullptr;
++
++    wxDECLARE_NO_COPY_CLASS(wxMSWBackCompatGUI);
++};
++
++#endif // WX_MSW_PRIVATE_BACKCOMPATGUI_H_
 diff --git a/include/wx/msw/private/filedialog.h b/include/wx/msw/private/filedialog.h
 index 5823230ca9..c3b2fdab50 100644
 --- a/include/wx/msw/private/filedialog.h
@@ -125,60 +425,23 @@ index 5823230ca9..c3b2fdab50 100644
  #else
      #define wxUSE_IFILEOPENDIALOG 0
 diff --git a/include/wx/msw/private/fswatcher.h b/include/wx/msw/private/fswatcher.h
+index 17458b47cf..82aa9e5388 100644
 --- a/include/wx/msw/private/fswatcher.h
 +++ b/include/wx/msw/private/fswatcher.h
 @@ -10,6 +10,7 @@
  #ifndef WX_MSW_PRIVATE_FSWATCHER_H_
  #define WX_MSW_PRIVATE_FSWATCHER_H_
  
-+#include "wx/dynlib.h"
++#include "wx/msw/private/backcompat.h"
  #include "wx/filename.h"
  #include "wx/thread.h"
  #include "wx/vector.h"
-@@ -19,6 +20,37 @@
- // wxFSWatcherEntry implementation & helper declarations
- // ============================================================================
- 
-+// CancelIoEx() is Vista or later and cannot be imported statically without
-+// preventing the application from loading under XP, so resolve it on first
-+// use, as wxDrawThemeTextEx() does for DrawThemeTextEx().
-+//
-+// Unlike that one this is reached from more than one thread -- an entry can be
-+// destroyed by the watcher or after the IOCP worker drops its last reference
-+// -- so the initialisation is left to the C++11 rules for a function-local
-+// static rather than an s_initDone flag.
-+//
-+// The XP fallback is CancelIo(), which cancels only the calling thread's I/O
-+// on the handle: there is no way to cancel another thread's there. The caller
-+// waits for the read to finish either way, so the worst case under XP is that
-+// the wait is longer, not that the buffer is freed early.
-+inline BOOL wxMSWCancelIoEx(HANDLE handle, OVERLAPPED* overlapped)
-+{
-+    typedef BOOL (WINAPI *CancelIoEx_t)(HANDLE, LPOVERLAPPED);
-+
-+    static const CancelIoEx_t s_cancelIoEx = []() -> CancelIoEx_t
-+    {
-+        CancelIoEx_t s_pfnCancelIoEx = nullptr;
-+        wxLoadedDLL dllKernel32(wxS("kernel32.dll"));
-+        wxDL_INIT_FUNC(s_pfn, CancelIoEx, dllKernel32);
-+        return s_pfnCancelIoEx;
-+    }();
-+
-+    if ( s_cancelIoEx )
-+        return s_cancelIoEx(handle, overlapped);
-+
-+    return ::CancelIo(handle);
-+}
-+
- class wxFSWatcherImplMSW;
- 
- class wxFSWatchEntryMSW : public wxFSWatchInfo
-@@ -57,7 +89,7 @@
+@@ -57,7 +58,7 @@ public:
              {
                  // The event buffer and OVERLAPPED object must remain alive
                  // until the asynchronous read has really completed.
 -                if ( !::CancelIoEx(m_handle, m_overlapped) )
-+                if ( !wxMSWCancelIoEx(m_handle, m_overlapped) )
++                if ( !wxMSWBackCompat::Get().CancelIoEx(m_handle, m_overlapped) )
                  {
                      const DWORD err = ::GetLastError();
                      // ERROR_NOT_FOUND means the asynchronous read isn't
@@ -245,7 +508,7 @@ index 4f91b0d832..a669fda860 100644
 +
  #endif // _WX_MSW_PRIVATE_TASKDLG_H_
 diff --git a/include/wx/msw/uxtheme.h b/include/wx/msw/uxtheme.h
-index 98d7cd4970..d4e8ffefc8 100644
+index 98d7cd4970..19824a12cd 100644
 --- a/include/wx/msw/uxtheme.h
 +++ b/include/wx/msw/uxtheme.h
 @@ -15,7 +15,15 @@
@@ -323,7 +586,7 @@ index 98d7cd4970..d4e8ffefc8 100644
  enum POPUPITEMSTATES
  {
      MPI_NORMAL = 1,
-@@ -159,6 +204,19 @@ enum POPUPCHECKSTATES
+@@ -159,6 +204,18 @@ enum POPUPCHECKSTATES
  
  WXDLLIMPEXP_CORE bool wxUxThemeIsActive();
  
@@ -331,10 +594,9 @@ index 98d7cd4970..d4e8ffefc8 100644
 +//
 +// This function only appeared in Vista and, more importantly, can't be even
 +// statically imported without breaking loading of the application under XP, so
-+// it is always loaded dynamically. If it's not available, i.e. when running
-+// under XP, this wrapper falls back to the simpler DrawThemeText() which
-+// doesn't support the extended options: notably the text colour possibly
-+// specified in DTTOPTS is not honoured there, but this is the best we can do.
++// it is resolved dynamically by wxMSWBackCompatGUI, which falls back to the
++// simpler DrawThemeText() when it isn't there: notably the text colour possibly
++// specified in DTTOPTS is not honoured then, but this is the best we can do.
 +WXDLLIMPEXP_CORE HRESULT
 +wxDrawThemeTextEx(HTHEME hTheme, HDC hdc, int iPartId, int iStateId,
 +                  const wchar_t* pszText, int cchText, DWORD dwTextFlags,
@@ -398,23 +660,23 @@ index 9fe33ee4c0..d40ae9d782 100644
      wxEndBusyCursor();
  
 diff --git a/src/msw/app.cpp b/src/msw/app.cpp
-index 941f7d7efe..0236d72214 100644
+index 941f7d7efe..f1ef968935 100644
 --- a/src/msw/app.cpp
 +++ b/src/msw/app.cpp
-@@ -501,9 +501,21 @@ bool wxApp::Initialize(int& argc_, wxChar **argv_)
+@@ -71,6 +71,7 @@
+ #include <ctype.h>
+ 
+ #include "wx/msw/missing.h"
++#include "wx/msw/private/backcompat.h"
+ 
+ // instead of including <shlwapi.h> which is not part of the core SDK and not
+ // shipped at all with other compilers, we always define the parts of it we
+@@ -501,9 +502,13 @@ bool wxApp::Initialize(int& argc_, wxChar **argv_)
      const wxString className(wxTheApp->GetClassName());
      if ( !className.empty() )
      {
 -        SetCurrentProcessExplicitAppUserModelID(className.wc_str());
-+        // SetCurrentProcessExplicitAppUserModelID() is exported by shell32.dll
-+        // since Windows 7 only, so load it dynamically to still run under XP.
-+        typedef HRESULT (WINAPI *SetCurrentProcessExplicitAppUserModelID_t)(PCWSTR);
-+
-+        wxDynamicLibrary dllShell32(wxS("shell32.dll"), wxDL_VERBATIM | wxDL_QUIET);
-+        SetCurrentProcessExplicitAppUserModelID_t
-+            wxDL_INIT_FUNC(pfn, SetCurrentProcessExplicitAppUserModelID, dllShell32);
-+        if ( pfnSetCurrentProcessExplicitAppUserModelID )
-+            pfnSetCurrentProcessExplicitAppUserModelID(className.wc_str());
++        wxMSWBackCompat::Get().SetAppUserModelID(className);
      }
  
 +    // Using comctl32.dll v6 is not required when building for Windows XP: it
@@ -424,7 +686,7 @@ index 941f7d7efe..0236d72214 100644
      if ( !wxSystemOptions::GetOptionInt("msw.no-manifest-check") )
      {
          if ( GetComCtl32Version() < 610 )
-@@ -542,6 +554,7 @@ if you believe not using the manifest should remain supported.
+@@ -542,6 +547,7 @@ if you believe not using the manifest should remain supported.
              );
          }
      }
@@ -433,7 +695,7 @@ index 941f7d7efe..0236d72214 100644
      return true;
  }
 diff --git a/src/msw/artmsw.cpp b/src/msw/artmsw.cpp
-index c6cfda08bb..e065c3f630 100644
+index 7c65e5a1bb..b2e34687f3 100644
 --- a/src/msw/artmsw.cpp
 +++ b/src/msw/artmsw.cpp
 @@ -252,7 +252,11 @@ wxWindowsArtProvider::GetStockIconInfo(const wxArtID& id,
@@ -450,10 +712,10 @@ index c6cfda08bb..e065c3f630 100644
      return false;
  }
 diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
-index 917cbe4a63..ae9a6c055f 100644
+index dcff14cd3a..3c56e1b736 100644
 --- a/src/msw/darkmode.cpp
 +++ b/src/msw/darkmode.cpp
-@@ -833,7 +833,7 @@ HandleMenuMessage(WXLRESULT* result,
+@@ -831,7 +831,7 @@ HandleMenuMessage(WXLRESULT* result,
                      drawTextFlags |= DT_HIDEPREFIX;
  
                  wxUxThemeHandle menuTheme(w, L"Menu");
@@ -503,10 +765,10 @@ index d5806d7496..e3382afb5a 100644
      return false;
  }
 diff --git a/src/msw/graphicsd2d.cpp b/src/msw/graphicsd2d.cpp
-index 38100da267..62718e8737 100644
+index 639340f473..52a46fca26 100644
 --- a/src/msw/graphicsd2d.cpp
 +++ b/src/msw/graphicsd2d.cpp
-@@ -2453,8 +2453,9 @@ private:
+@@ -2455,8 +2455,9 @@ private:
      // The colour of the hatch
      const wxPBGRAColor m_color;
  
@@ -610,10 +872,18 @@ index 8775f0b191..dd0e6c0dbd 100644
  
  int wxMSWMessageDialog::MSWTranslateReturnCode(int msAns)
 diff --git a/src/msw/registry.cpp b/src/msw/registry.cpp
-index 130b91dc27..a69362d5a8 100644
+index 130b91dc27..b582a282ca 100644
 --- a/src/msw/registry.cpp
 +++ b/src/msw/registry.cpp
-@@ -745,9 +745,30 @@ bool wxRegKey::DeleteSelf()
+@@ -40,6 +40,7 @@
+ // our header
+ #define   HKEY_DEFINED    // already defined in windows.h
+ #include  "wx/msw/registry.h"
++#include "wx/msw/private/backcompat.h"
+ 
+ // some registry functions don't like signed chars
+ typedef unsigned char *RegString;
+@@ -745,9 +746,13 @@ bool wxRegKey::DeleteSelf()
    Close();
  
    // deleting a key which doesn't exist is not considered an error
@@ -621,37 +891,20 @@ index 130b91dc27..a69362d5a8 100644
 -                                   GetMSWViewFlags(m_viewMode),
 -                                   wxRESERVED_PARAM);
 +  //
-+  // RegDeleteKeyEx() allows specifying the registry view (32- or 64-bit) but is
-+  // not available under XP, so resolve it dynamically and fall back to the
-+  // plain RegDeleteKey() (which just uses the default view) if it's missing.
-+  typedef LONG (WINAPI *RegDeleteKeyEx_t)(HKEY, const wxChar*, REGSAM, DWORD);
-+  static RegDeleteKeyEx_t s_pfnRegDeleteKeyEx = nullptr;
-+  static bool s_initDone = false;
-+  if ( !s_initDone )
-+  {
-+      wxLoadedDLL dllAdvapi32(wxS("advapi32.dll"));
-+      wxDL_INIT_FUNC_AW(s_pfn, RegDeleteKeyEx, dllAdvapi32);
-+      s_initDone = true;
-+  }
-+
-+  if ( s_pfnRegDeleteKeyEx )
-+  {
-+      m_dwLastError = s_pfnRegDeleteKeyEx((HKEY) m_hRootKey, m_strKey.t_str(),
-+                                          GetMSWViewFlags(m_viewMode),
-+                                          wxRESERVED_PARAM);
-+  }
-+  else // Windows XP
-+  {
-+      m_dwLastError = ::RegDeleteKey((HKEY) m_hRootKey, m_strKey.t_str());
-+  }
++  m_dwLastError = wxMSWBackCompat::Get().DeleteRegKey
++                  (
++                      (HKEY) m_hRootKey,
++                      m_strKey.t_str(),
++                      GetMSWViewFlags(m_viewMode)
++                  );
  
    if ( m_dwLastError != ERROR_SUCCESS &&
            m_dwLastError != ERROR_FILE_NOT_FOUND ) {
 diff --git a/src/msw/renderer.cpp b/src/msw/renderer.cpp
-index 92213af8f7..1816e56409 100644
+index 8750f43866..641ff1cae4 100644
 --- a/src/msw/renderer.cpp
 +++ b/src/msw/renderer.cpp
-@@ -1128,7 +1128,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -1132,7 +1132,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
                  break;
          }
  
@@ -702,7 +955,7 @@ index d9e599b290..590c0c202e 100644
      else if ( flags & wxICON_INFORMATION )
          notifyData.dwInfoFlags |= NIIF_INFO;
 diff --git a/src/msw/taskdlg.cpp b/src/msw/taskdlg.cpp
-index 7844220405..d8c180ae44 100644
+index cbeb7986db..8f509a4c07 100644
 --- a/src/msw/taskdlg.cpp
 +++ b/src/msw/taskdlg.cpp
 @@ -32,6 +32,12 @@
@@ -718,7 +971,7 @@ index 7844220405..d8c180ae44 100644
  #if wxUSE_DARK_MODE
  
  #include "wx/dynlib.h"
-@@ -1342,3 +1348,5 @@ void wxMSWDarkMode::RemoveFromTaskDialog(HWND hwnd)
+@@ -1316,3 +1322,5 @@ void wxMSWDarkMode::RemoveFromTaskDialog(HWND hwnd)
      wxUnusedVar(hwnd);
  #endif // wxUSE_DARK_MODE
  }
@@ -747,10 +1000,18 @@ index e3ccad9e03..092a70852e 100644
  static const int MARGIN_CONTROL_LABEL = 3;
  
 diff --git a/src/msw/uilocale.cpp b/src/msw/uilocale.cpp
-index 1b07cc0ddb..66f581753f 100644
+index 1b07cc0ddb..212462228e 100644
 --- a/src/msw/uilocale.cpp
 +++ b/src/msw/uilocale.cpp
-@@ -86,6 +86,24 @@
+@@ -30,6 +30,7 @@
+ #include "wx/dynlib.h"
+ #include "wx/tokenzr.h"
+ #include "wx/wxcrt.h"
++#include "wx/msw/private/backcompat.h"
+ 
+ #include <array>
+ #include <vector>
+@@ -86,6 +87,24 @@
  #define LOCALE_RETURN_GENITIVE_NAMES  0x10000000
  #endif
  
@@ -775,75 +1036,7 @@ index 1b07cc0ddb..66f581753f 100644
  // ============================================================================
  // implementation
  // ============================================================================
-@@ -139,6 +157,67 @@ void GetUserPreferredLanguagesFromRegistry(wxVector<wxString>& userLanguages)
- #endif // wxUSE_REGKEY
- }
- 
-+// ----------------------------------------------------------------------------
-+// wxKernel32Dll: access to kernel32 NLS functions not available under XP
-+// ----------------------------------------------------------------------------
-+
-+// Several NLS functions taking locale names (rather than the legacy LCIDs)
-+// only appeared in Vista, and a couple of others only in Windows 7. Rather
-+// than reloading kernel32.dll and re-resolving the symbols at every call, we
-+// resolve them once here and let the code below check each pointer for null
-+// and fall back to the legacy LCID-based functions when running under XP.
-+class wxKernel32Dll
-+{
-+public:
-+    // Return the unique instance, resolving the functions on first use.
-+    static const wxKernel32Dll& Get()
-+    {
-+        static const wxKernel32Dll s_instance;
-+        return s_instance;
-+    }
-+
-+    typedef int  (WINAPI *GetLocaleInfoEx_t)(LPCWSTR, LCTYPE, LPWSTR, int);
-+    typedef int  (WINAPI *GetUserDefaultLocaleName_t)(LPWSTR, int);
-+    typedef BOOL (WINAPI *GetUserPreferredUILanguages_t)(DWORD, PULONG,
-+                                                         PZZWSTR, PULONG);
-+    typedef BOOL (WINAPI *SetThreadPreferredUILanguages_t)(DWORD, PCZZWSTR,
-+                                                           PULONG);
-+    typedef int  (WINAPI *CompareStringEx_t)(LPCWSTR, DWORD, LPCWCH, int,
-+                                             LPCWCH, int, LPNLSVERSIONINFO,
-+                                             LPVOID, LPARAM);
-+
-+    // Any of these is null if the corresponding function is not available in
-+    // the current system and so must be checked before being called.
-+    GetLocaleInfoEx_t               GetLocaleInfoEx;
-+    GetUserDefaultLocaleName_t      GetUserDefaultLocaleName;
-+    GetUserPreferredUILanguages_t   GetUserPreferredUILanguages;
-+    SetThreadPreferredUILanguages_t SetThreadPreferredUILanguages;
-+    CompareStringEx_t               CompareStringEx;
-+
-+private:
-+    wxKernel32Dll()
-+    {
-+        // kernel32.dll is always already loaded, so this can't realistically
-+        // fail, but use wxDL_QUIET just in case to avoid spurious errors.
-+        m_dll.Load(wxS("kernel32.dll"), wxDL_VERBATIM | wxDL_QUIET);
-+
-+        GetLocaleInfoEx = (GetLocaleInfoEx_t)
-+            m_dll.RawGetSymbol("GetLocaleInfoEx");
-+        GetUserDefaultLocaleName = (GetUserDefaultLocaleName_t)
-+            m_dll.RawGetSymbol("GetUserDefaultLocaleName");
-+        GetUserPreferredUILanguages = (GetUserPreferredUILanguages_t)
-+            m_dll.RawGetSymbol("GetUserPreferredUILanguages");
-+        SetThreadPreferredUILanguages = (SetThreadPreferredUILanguages_t)
-+            m_dll.RawGetSymbol("SetThreadPreferredUILanguages");
-+        CompareStringEx = (CompareStringEx_t)
-+            m_dll.RawGetSymbol("CompareStringEx");
-+    }
-+
-+    wxDynamicLibrary m_dll;
-+
-+    wxDECLARE_NO_COPY_CLASS(wxKernel32Dll);
-+};
-+
- } // anonymous namespace
- 
- LCTYPE wxGetLCTYPEFormatFromLocalInfo(wxLocaleInfo index)
-@@ -173,36 +252,47 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+@@ -173,36 +192,47 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
          return wxString{};
      }
  
@@ -859,16 +1052,17 @@ index 1b07cc0ddb..66f581753f 100644
      wxString format;
 -    wxString localeName;
 -    if ( !wxUILocale::GetCurrent().IsDefault() )
+-    {
+-        localeName = wxUILocale::GetCurrent().GetName();
+-        if ( localeName.IsSameAs("C") )
 +    wchar_t buf[256];
 +
 +    // GetLocaleInfoEx() takes a locale name and is only available since Vista,
 +    // so under XP we fall back to the LCID-based GetLocaleInfo() using the
 +    // default user locale (which can't take an explicitly specified locale).
-+    const wxKernel32Dll& k32 = wxKernel32Dll::Get();
-+    if ( k32.GetLocaleInfoEx )
-     {
--        localeName = wxUILocale::GetCurrent().GetName();
--        if ( localeName.IsSameAs("C") )
++    const wxMSWBackCompat& bc = wxMSWBackCompat::Get();
++    if ( bc.GetLocaleInfoEx )
++    {
 +        // Determine the name of the locale to be used for querying the
 +        // date/time format: if a locale is explicitly specified, use it, but
 +        // otherwise use LOCALE_NAME_USER_DEFAULT to get the format configured
@@ -896,7 +1090,7 @@ index 1b07cc0ddb..66f581753f 100644
 -        wchar_t buf[256];
 -        if (::GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)))
 -        {
-+        if ( k32.GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)) )
++        if ( bc.GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)) )
              format = buf;
 -        }
          else
@@ -913,46 +1107,46 @@ index 1b07cc0ddb..66f581753f 100644
      }
  
      return format;
-@@ -391,20 +481,21 @@ public:
+@@ -391,20 +421,21 @@ public:
      static wxVector<wxString> GetPreferredUILanguages()
      {
          wxVector<wxString> preferred;
-+        const wxKernel32Dll& k32 = wxKernel32Dll::Get();
++        const wxMSWBackCompat& bc = wxMSWBackCompat::Get();
  
          // Check if Windows supports preferred UI languages.
          // Note: Windows 8.x might support them as well, but Windows 7
          // and below definitely do not.
 -        if (wxGetWinVersion() >= wxWinVersion_10)
-+        if ( wxGetWinVersion() >= wxWinVersion_10 && k32.GetUserPreferredUILanguages )
++        if ( wxGetWinVersion() >= wxWinVersion_10 && bc.GetUserPreferredUILanguages )
          {
              GetUserPreferredLanguagesFromRegistry(preferred);
  
              ULONG numberOfLanguages = 0;
              ULONG bufferSize = 0;
 -            if (::GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize))
-+            if ( k32.GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize) )
++            if ( bc.GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, nullptr, &bufferSize) )
              {
                  wxScopedArray<WCHAR> languages(bufferSize);
 -                if (::GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, languages.get(), &bufferSize))
-+                if ( k32.GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, languages.get(), &bufferSize) )
++                if ( bc.GetUserPreferredUILanguages(MUI_LANGUAGE_NAME, &numberOfLanguages, languages.get(), &bufferSize) )
                  {
                      WCHAR* buf = languages.get();
                      for (unsigned k = 0; k < numberOfLanguages; ++k)
-@@ -424,11 +515,11 @@ public:
+@@ -424,11 +455,11 @@ public:
                  wxLogLastError(wxT("GetUserPreferredUILanguages"));
              }
          }
 -        else
-+        else if ( wxGetWinVersion() >= wxWinVersion_7 && k32.GetUserDefaultLocaleName )
++        else if ( wxGetWinVersion() >= wxWinVersion_7 && bc.GetUserDefaultLocaleName )
          {
              // Use the default user locale for Windows 7 resp Windows 8.x and below
              wchar_t buf[LOCALE_NAME_MAX_LENGTH];
 -            if (::GetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH))
-+            if ( k32.GetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH) )
++            if ( bc.GetUserDefaultLocaleName(buf, LOCALE_NAME_MAX_LENGTH) )
              {
                  preferred.push_back(buf);
              }
-@@ -437,6 +528,18 @@ public:
+@@ -437,6 +468,18 @@ public:
                  wxLogLastError(wxT("GetUserDefaultLocaleName"));
              }
          }
@@ -971,7 +1165,7 @@ index 1b07cc0ddb..66f581753f 100644
  
          return preferred;
      }
-@@ -453,8 +556,15 @@ public:
+@@ -453,8 +496,15 @@ public:
      {
          // Getting the locale name seems to be the simplest way to see if it's
          // really supported: unknown locale result in an error here.
@@ -980,16 +1174,16 @@ index 1b07cc0ddb..66f581753f 100644
 +        //
 +        // GetLocaleInfoEx() is not available under XP, but there we simply
 +        // skip this check and accept the locale name as is.
-+        const wxKernel32Dll& k32 = wxKernel32Dll::Get();
-+        if ( k32.GetLocaleInfoEx )
++        const wxMSWBackCompat& bc = wxMSWBackCompat::Get();
++        if ( bc.GetLocaleInfoEx )
 +        {
-+            if ( !k32.GetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0) )
++            if ( !bc.GetLocaleInfoEx(name, LOCALE_SNAME, nullptr, 0) )
 +                return nullptr;
 +        }
  
          // Unfortunately under Windows 10 the call above only fails if the given
          // locale name is not a valid BCP 47 identifier. For example,
-@@ -476,8 +586,11 @@ public:
+@@ -476,8 +526,11 @@ public:
              // discouraged by Microsoft (the constant is not even defined in a
              // Windows header file). However, for now constructed locales will
              // be rejected here.
@@ -998,26 +1192,26 @@ index 1b07cc0ddb..66f581753f 100644
 +            // get to this branch under Windows 10.
              int isConstructed = 0;
 -            if (!::GetLocaleInfoEx
-+            if ( !k32.GetLocaleInfoEx
++            if ( !bc.GetLocaleInfoEx
                   (
                      name,
                      LOCALE_ICONSTRUCTEDLOCALE | LOCALE_RETURN_NUMBER,
-@@ -502,6 +615,14 @@ public:
+@@ -502,6 +555,14 @@ public:
  
      void Use() override
      {
 +        // SetThreadPreferredUILanguages() is only available since Vista, there
 +        // is simply nothing to do under XP where it doesn't exist.
-+        const wxKernel32Dll::SetThreadPreferredUILanguages_t
++        const wxMSWBackCompat::SetThreadPreferredUILanguages_t
 +            pfnSetThreadPreferredUILanguages =
-+                wxKernel32Dll::Get().SetThreadPreferredUILanguages;
++                wxMSWBackCompat::Get().SetThreadPreferredUILanguages;
 +        if ( !pfnSetThreadPreferredUILanguages )
 +            return;
 +
          // Construct a double NUL-terminated buffer.
          wchar_t buf[256];
          if ( m_nameDisplay )
-@@ -511,8 +632,7 @@ public:
+@@ -511,8 +572,7 @@ public:
          buf[wxWcslen(buf) + 1] = L'\0';
  
          ULONG num = 1;
@@ -1027,7 +1221,7 @@ index 1b07cc0ddb..66f581753f 100644
              wxLogLastError(wxT("SetThreadPreferredUILanguages"));
      }
  
-@@ -669,10 +789,15 @@ public:
+@@ -669,10 +729,15 @@ public:
                LOCALE_SSHORTESTDAYNAME4, LOCALE_SSHORTESTDAYNAME5, LOCALE_SSHORTESTDAYNAME6 }
          };
  
@@ -1038,13 +1232,13 @@ index 1b07cc0ddb..66f581753f 100644
  
 +        // LOCALE_SSHORTESTDAYNAME is only supported since Vista, so under XP
 +        // fall back to the abbreviated day names, which are the closest match.
-+        if ( idx == 2 && !wxKernel32Dll::Get().GetLocaleInfoEx )
++        if ( idx == 2 && !wxMSWBackCompat::Get().GetLocaleInfoEx )
 +            idx = 1;
 +
          auto lctype = weekdayNameIndex[idx][weekday];
          switch ( form.GetContext() )
          {
-@@ -759,16 +884,33 @@ public:
+@@ -759,16 +824,33 @@ public:
          if ( flags & wxCompare_CaseInsensitive )
              dwFlags |= NORM_IGNORECASE;
  
@@ -1061,10 +1255,10 @@ index 1b07cc0ddb..66f581753f 100644
 +        // CompareStringEx() takes a locale name and is only available since
 +        // Vista, so under XP we fall back to the LCID-based CompareString().
 +        int ret = 0;
-+        const wxKernel32Dll& k32 = wxKernel32Dll::Get();
-+        if ( k32.CompareStringEx )
++        const wxMSWBackCompat& bc = wxMSWBackCompat::Get();
++        if ( bc.CompareStringEx )
 +        {
-+            ret = k32.CompareStringEx
++            ret = bc.CompareStringEx
 +                (
 +                    m_nameDisplay,
 +                    dwFlags,
@@ -1088,7 +1282,7 @@ index 1b07cc0ddb..66f581753f 100644
  
          switch ( ret )
          {
-@@ -805,10 +947,25 @@ private:
+@@ -805,10 +887,25 @@ private:
      wxString DoGetInfo(const wchar_t* const name, LCTYPE lctype) const
      {
          wchar_t buf[256];
@@ -1096,12 +1290,12 @@ index 1b07cc0ddb..66f581753f 100644
 +
 +        // GetLocaleInfoEx() takes a locale name and is only available since
 +        // Vista, so under XP we fall back to the LCID-based GetLocaleInfo().
-+        const wxKernel32Dll& k32 = wxKernel32Dll::Get();
-+        if ( k32.GetLocaleInfoEx )
++        const wxMSWBackCompat& bc = wxMSWBackCompat::Get();
++        if ( bc.GetLocaleInfoEx )
          {
 -            wxLogLastError(wxT("GetLocaleInfoEx"));
 -            return wxString();
-+            if ( !k32.GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)) )
++            if ( !bc.GetLocaleInfoEx(name, lctype, buf, WXSIZEOF(buf)) )
 +            {
 +                wxLogLastError(wxT("GetLocaleInfoEx"));
 +                return wxString();
@@ -1118,25 +1312,23 @@ index 1b07cc0ddb..66f581753f 100644
  
          return buf;
 diff --git a/src/msw/utils.cpp b/src/msw/utils.cpp
-index d905964ed9..bcc8ab1cbd 100644
+index d905964ed9..a234caca3d 100644
 --- a/src/msw/utils.cpp
 +++ b/src/msw/utils.cpp
-@@ -1205,9 +1205,17 @@ wxString wxGetOsDescription()
-                            info.dwMinorVersion);
-             }
+@@ -27,6 +27,7 @@
+ #endif  //WX_PRECOMP
  
-+            // GetProductInfo() is only available since Vista, so load it
-+            // dynamically to still be able to build for, and run under, XP
-+            // where we simply don't show the product type.
-+            typedef BOOL (WINAPI *GetProductInfo_t)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-+            wxLoadedDLL dllKernel32(wxS("kernel32.dll"));
-+            GetProductInfo_t wxDL_INIT_FUNC(pfn, GetProductInfo, dllKernel32);
-+
+ #include "wx/msw/registry.h"
++#include "wx/msw/private/backcompat.h"
+ #include "wx/apptrait.h"
+ #include "wx/dynlib.h"
+ #include "wx/dynload.h"
+@@ -1207,7 +1208,7 @@ wxString wxGetOsDescription()
+ 
              DWORD productType = 0;
              if ( !wxIsWindowsServer()
 -                && GetProductInfo(
-+                && pfnGetProductInfo
-+                && pfnGetProductInfo(
++                && wxMSWBackCompat::Get().GetProductInfo(
                      info.dwMajorVersion, info.dwMinorVersion,
                      0, 0, // service pack major/minor
                      &productType) )
@@ -1161,10 +1353,18 @@ index 7af6b6e7bb..96bb29cb69 100644
      }
  
 diff --git a/src/msw/uxtheme.cpp b/src/msw/uxtheme.cpp
-index f861261dc1..c276026cfa 100644
+index f861261dc1..33b30072a6 100644
 --- a/src/msw/uxtheme.cpp
 +++ b/src/msw/uxtheme.cpp
-@@ -43,6 +43,38 @@ bool wxUxThemeIsActive()
+@@ -31,6 +31,7 @@
+ 
+ #include "wx/msw/uxtheme.h"
+ #include "wx/msw/private/darkmode.h"
++#include "wx/msw/private/backcompatgui.h"
+ 
+ bool wxUxThemeIsActive()
+ {
+@@ -43,6 +44,17 @@ bool wxUxThemeIsActive()
      return s_isActive != 0;
  }
  
@@ -1173,41 +1373,20 @@ index f861261dc1..c276026cfa 100644
 +                  const wchar_t* pszText, int cchText, DWORD dwTextFlags,
 +                  RECT* pRect, const DTTOPTS* pOptions)
 +{
-+    // DrawThemeTextEx() is not available under XP and can't even be imported
-+    // statically there without preventing the application from loading, so
-+    // resolve it dynamically on first use.
-+    typedef HRESULT (WINAPI *DrawThemeTextEx_t)(HTHEME, HDC, int, int, LPCWSTR,
-+                                                int, DWORD, LPRECT,
-+                                                const DTTOPTS*);
-+    static DrawThemeTextEx_t s_pfnDrawThemeTextEx = nullptr;
-+    static bool s_initDone = false;
-+
-+    if ( !s_initDone )
-+    {
-+        wxLoadedDLL dllUxTheme(wxS("uxtheme.dll"));
-+        wxDL_INIT_FUNC(s_pfn, DrawThemeTextEx, dllUxTheme);
-+        s_initDone = true;
-+    }
-+
-+    if ( s_pfnDrawThemeTextEx )
-+    {
-+        return s_pfnDrawThemeTextEx(hTheme, hdc, iPartId, iStateId, pszText,
-+                                    cchText, dwTextFlags, pRect, pOptions);
-+    }
-+
-+    // Fall back to DrawThemeText() under XP, losing the extended options.
-+    return ::DrawThemeText(hTheme, hdc, iPartId, iStateId, pszText, cchText,
-+                           dwTextFlags, 0, pRect);
++    return wxMSWBackCompatGUI::Get().DrawThemeTextEx(hTheme, hdc, iPartId,
++                                                     iStateId, pszText,
++                                                     cchText, dwTextFlags,
++                                                     pRect, pOptions);
 +}
 +
  wxUxThemeHandle::wxUxThemeHandle(const wxWindowMSW* win,
                                   const wchar_t* classes,
                                   const wchar_t* classesDark)
 diff --git a/src/msw/window.cpp b/src/msw/window.cpp
-index 900a632f1b..8658e93f02 100644
+index 2955ff0411..7735533b1f 100644
 --- a/src/msw/window.cpp
 +++ b/src/msw/window.cpp
-@@ -845,6 +845,8 @@ void wxWindowMSW::WarpPointer(int x, int y)
+@@ -846,6 +846,8 @@ void wxWindowMSW::WarpPointer(int x, int y)
      }
  }
  
@@ -1216,7 +1395,7 @@ index 900a632f1b..8658e93f02 100644
  bool wxWindowMSW::EnableTouchEvents(int eventsMask)
  {
      // Static struct used when we need to use just a single configuration.
-@@ -966,6 +968,15 @@ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
+@@ -967,6 +969,15 @@ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
      return true;
  }
  
@@ -1232,7 +1411,7 @@ index 900a632f1b..8658e93f02 100644
  void wxWindowMSW::MSWUpdateUIState(int action, int state)
  {
      // we send WM_CHANGEUISTATE so if nothing needs changing then the system
-@@ -3424,6 +3435,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3425,6 +3436,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              }
              break;
  
@@ -1240,7 +1419,7 @@ index 900a632f1b..8658e93f02 100644
          case WM_GESTURE:
          {
              HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
-@@ -3502,12 +3514,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3503,12 +3515,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              // handled, otherwise we still pass them to DefWindowProc().
              processed = HandleTouch(wParam, lParam);
              break;
@@ -1256,7 +1435,7 @@ index 900a632f1b..8658e93f02 100644
  
          // CTLCOLOR messages are sent by children to query the parent for their
          // colors
-@@ -6225,6 +6240,11 @@ void wxWindowMSW::GenerateMouseLeave()
+@@ -6279,6 +6294,11 @@ void wxWindowMSW::GenerateMouseLeave()
  // Gesture events
  // ---------------------------------------------------------------------------
  
@@ -1268,7 +1447,7 @@ index 900a632f1b..8658e93f02 100644
  bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
                                     const wxPoint& pt,
                                     WXDWORD flags)
-@@ -6402,9 +6422,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+@@ -6456,9 +6476,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
      return allHandled;
  }
  
@@ -1336,7 +1515,7 @@ index 900a632f1b..8658e93f02 100644
      wxEventType type;
      switch( message )
      {
-@@ -6496,6 +6574,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
+@@ -6550,6 +6628,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
      return HandleWindowEvent(event);;
  }
  
@@ -1355,5 +1534,5 @@ index 900a632f1b..8658e93f02 100644
  // keyboard handling
  // ---------------------------------------------------------------------------
 -- 
-2.54.0.windows.1
+2.55.0.windows.3
 
