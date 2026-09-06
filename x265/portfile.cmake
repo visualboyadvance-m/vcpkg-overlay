@@ -12,6 +12,7 @@ vcpkg_from_github(
         pthread.diff
         compiler-target.diff
         neon.diff
+        advapi32.patch # Required since v4.2 as it is now using RegOpenKeyExA, RegQueryValueExA & RegCloseKey
         fix-cmake-4.patch
         nasm.diff
         winxp.diff
