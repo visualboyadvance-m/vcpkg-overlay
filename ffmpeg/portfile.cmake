@@ -470,15 +470,33 @@ endif()
 
 set(WITH_OPENSSL OFF)
 set(WITH_SCHANNEL OFF)
-if("openssl" IN_LIST FEATURES)
-    set(OPTIONS "${OPTIONS} --enable-openssl")
-    set(WITH_OPENSSL ON)
-else()
-    set(OPTIONS "${OPTIONS} --disable-openssl")
-    if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_UWP)
-        string(APPEND OPTIONS " --enable-schannel")
-        set(WITH_SCHANNEL ON)
+set(WITH_SECURETRANSPORT OFF)
+# Selecting "openssl" implies networking even if the "network" feature was not
+# explicitly requested (e.g. forcing OpenSSL over the platform TLS backend).
+if("network" IN_LIST FEATURES OR "openssl" IN_LIST FEATURES)
+    if("openssl" IN_LIST FEATURES)
+        set(OPTIONS "${OPTIONS} --enable-openssl")
+        set(WITH_OPENSSL ON)
+    else()
+        set(OPTIONS "${OPTIONS} --disable-openssl")
+        if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_UWP AND NOT VCPKG_TARGET_IS_MINGW)
+            string(APPEND OPTIONS " --enable-schannel")
+            set(WITH_SCHANNEL ON)
+        elseif(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
+            # SecureTransport is Apple's platform TLS backend (the macOS/iOS
+            # equivalent of schannel). autodetect is off, so enable it explicitly
+            # to secure network protocols without pulling in OpenSSL.
+            string(APPEND OPTIONS " --enable-securetransport")
+            set(WITH_SECURETRANSPORT ON)
+        endif()
     endif()
+else()
+    # No "network" feature: build without networking. Disable network support and
+    # every protocol except the local file protocol, plus the TLS backends that
+    # exist only to secure network protocols (schannel on Windows, SecureTransport
+    # on macOS/iOS, OpenSSL everywhere).
+    string(APPEND OPTIONS " --disable-network --disable-protocols --enable-protocol=file")
+    string(APPEND OPTIONS " --disable-openssl --disable-schannel --disable-securetransport")
 endif()
 
 if("opus" IN_LIST FEATURES)
@@ -489,7 +507,11 @@ else()
     set(WITH_OPUS OFF)
 endif()
 
+if("sdl2" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-sdl2")
+else()
     set(OPTIONS "${OPTIONS} --disable-sdl2")
+endif()
 
 if("snappy" IN_LIST FEATURES)
     set(OPTIONS "${OPTIONS} --enable-libsnappy")
@@ -759,7 +781,6 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
 endif()
 
 if(VCPKG_TARGET_IS_MINGW)
-    set(OPTIONS "${OPTIONS} --extra_cflags=-D_WIN32_WINNT=0x0501 --disable-schannel")
     # Only the x86 mingw build targets Windows XP -- the same split
     # wxwidgets/portfile.cmake makes in this overlay, which is where the
     # 0x0501-for-mingw-x86-only rule comes from.

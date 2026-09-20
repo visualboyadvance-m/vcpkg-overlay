@@ -47,11 +47,9 @@ if(APPLE)
     endif()
   endif()
 elseif(WIN32)
-<<<<<<< HEAD
-  foreach(z_libavcodec_link_lib IN ITEMS bcrypt crypt32 mfuuid psapi secur32 shlwapi strmiids vfw32 ws2_32 usp10 cfgmgr32 rpcrt4)
-=======
+  # bcrypt is absent on purpose: 0052_no_bcrypt.patch drops ffmpeg's CNG/bcrypt
+  # probe so libavcodec never emits -lbcrypt.
   foreach(z_libavcodec_link_lib IN ITEMS crypt32 mfuuid psapi secur32 shlwapi strmiids vfw32 ws2_32 usp10 cfgmgr32 rpcrt4)
->>>>>>> 61bf77778b (Fix merge)
     if("-l${z_libavcodec_link_lib}" IN_LIST PKG_libavcodec_LDFLAGS)
       list(APPEND FFMPEG_LIBRARIES "${z_libavcodec_link_lib}")
       if(vcpkg_no_avcodec_target AND TARGET FFmpeg::avcodec)
@@ -343,6 +341,13 @@ elseif(@WITH_SCHANNEL@)
   list(APPEND FFMPEG_LIBRARIES secur32 ncrypt crypt32)
   if(vcpkg_no_avformat_target AND TARGET FFmpeg::avformat)
     target_link_libraries(FFmpeg::avformat INTERFACE secur32 ncrypt crypt32)
+  endif()
+elseif(@WITH_SECURETRANSPORT@)
+  # The APPLE branch above only forwards frameworks out of libavcodec's
+  # pkg-config, and SecureTransport is linked into libavformat.
+  list(APPEND FFMPEG_LIBRARIES "-framework Security" "-framework CoreFoundation")
+  if(vcpkg_no_avformat_target AND TARGET FFmpeg::avformat)
+    target_link_libraries(FFmpeg::avformat INTERFACE "-framework Security" "-framework CoreFoundation")
   endif()
 endif()
 
