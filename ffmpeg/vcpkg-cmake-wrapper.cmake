@@ -47,7 +47,11 @@ if(APPLE)
     endif()
   endif()
 elseif(WIN32)
+<<<<<<< HEAD
+  foreach(z_libavcodec_link_lib IN ITEMS bcrypt crypt32 mfuuid psapi secur32 shlwapi strmiids vfw32 ws2_32 usp10 cfgmgr32 rpcrt4)
+=======
   foreach(z_libavcodec_link_lib IN ITEMS crypt32 mfuuid psapi secur32 shlwapi strmiids vfw32 ws2_32 usp10 cfgmgr32 rpcrt4)
+>>>>>>> 61bf77778b (Fix merge)
     if("-l${z_libavcodec_link_lib}" IN_LIST PKG_libavcodec_LDFLAGS)
       list(APPEND FFMPEG_LIBRARIES "${z_libavcodec_link_lib}")
       if(vcpkg_no_avcodec_target AND TARGET FFmpeg::avcodec)

@@ -1,6 +1,6 @@
 {
   "name": "ffmpeg",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "port-version": 1,
   "description": [
     "A library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.",
@@ -181,14 +181,6 @@
           "name": "ffmpeg",
           "default-features": false,
           "features": [
-            "tensorflow"
-          ],
-          "platform": "x64 & !static & !uwp & !windows"
-        },
-        {
-          "name": "ffmpeg",
-          "default-features": false,
-          "features": [
             "dav1d"
           ],
           "platform": "!(uwp | (windows & x86 & !static))"
@@ -292,7 +284,11 @@
     "ass": {
       "description": "Libass subtitles rendering, needed for subtitles and ass filter support in ffmpeg",
       "dependencies": [
-        "libass"
+        "libass",
+        {
+          "name": "libiconv",
+          "platform": "windows & static"
+        }
       ]
     },
     "avcodec": {
@@ -647,13 +643,6 @@
     },
     "swscale": {
       "description": "Build the swscale library"
-    },
-    "tensorflow": {
-      "description": "TensorFlow as a DNN module backend for DNN based filters like sr",
-      "supports": "!static",
-      "dependencies": [
-        "tensorflow"
-      ]
     },
     "tesseract": {
       "description": "Tesseract, needed for ocr filter",
