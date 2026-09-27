@@ -24,7 +24,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO wxWidgets/wxWidgets
     REF master
-    SHA512 66609cdea6135ec340fddd3eeb6d7973c61051a36c18ac85a1400e5d20be18bb714da2e9c5ec9724e56abb18a8db9eb0862bc35375d363fe65295cc7fa9a1138
+    SHA512 d24d44486fc77304b5306591a8b718a323dfcd076fc259ff035bc9f4bf892878a56ddd315797f8e43a574d83f7071ba78c8e5cf823e6faf98e8592d59a1ee770
     PATCHES
         ${wx_patches}
 )
