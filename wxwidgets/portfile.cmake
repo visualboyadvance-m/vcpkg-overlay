@@ -20,36 +20,72 @@ if(VCPKG_TARGET_IS_ANDROID)
     list(APPEND wx_patches wxWidgets-Qt-Android.diff)
 endif()
 
+# Pinned to commits, wxWidgets and both of the sources it carries as
+# submodules, rather than to the tips of their branches.
+#
+# github.com/<repo>/archive/refs/heads/<branch> is whatever that branch points
+# at when it is asked for. For wxWidgets that meant the SHA512 recorded here
+# was true only until the next commit landed upstream, and the port is not
+# built until hours after vcpkg-daily.ps1 records it: on 2026-09-28 master
+# moved in between and every triplet failed on "download had an unexpected
+# hash" before a file was compiled.
+#
+# lexilla and scintilla had the same problem and a worse symptom, since they
+# were fetched with no hash at all. A pin that is a few days behind master
+# would have been built against whatever those two branches had reached today,
+# which is not the combination the pinned wxWidgets expects and not a
+# combination anyone has built. The commits below are the ones wxWidgets
+# itself records for those submodules at WX_REF, so an out of date pin is a
+# consistent one and still builds.
+#
+# vcpkg-daily.ps1 rewrites these six by name and updates them together. Their
+# being set() rather than written into the calls below is what lets it do that
+# without counting lines.
+set(WX_REF        dcce1059952670864d8cc782522c21721350294e)
+set(WX_SHA512     56a46305030503397794b7978931b22048c6f57f9def1b49944b459e191e21207481899c3efb64f7f46cee8556e21d0adddcd5cc533b873dff86b52718d56437)
+set(LEXILLA_REF   bf6ad20062b98808ffa21419263942a427c150a9)
+set(LEXILLA_SHA512 08360fcd29e6c021857928375509ea48b9c8a02407bcb3c01865f57734c449fc6ff24afbe011f218b7145116e1805f8c9b4a2e3ec26f4a6298dca9453f610887)
+set(SCINTILLA_REF 0b90f31ced23241054e8088abb50babe9a44ae67)
+set(SCINTILLA_SHA512 db1f3007f4bd8860fad0817b6cf87980a4b713777025128cf5caea8d6d17b6fafe23fd22ff6886d7d5a420f241d85b7502b85d7e52b4ddb0774edc4b0a0203e7)
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO wxWidgets/wxWidgets
-    REF master
-    SHA512 a54778d637a99b377bb6d2c885af4a3021a7ff9967113d4681ab0ec5a375a577a8a9ad0d89d4451703c0c6526795019e187ae8863f02c8f4dd48dfd1677426dd
+    REF ${WX_REF}
+    SHA512 ${WX_SHA512}
+    HEAD_REF master
     PATCHES
         ${wx_patches}
 )
 
-# Submodule dependencies
-file(DOWNLOAD
-    https://github.com/wxWidgets/lexilla/archive/refs/heads/wx.zip
-    "${SOURCE_PATH}/lexilla.zip"
+# Submodule dependencies.
+#
+# vcpkg_download_distfile rather than file(DOWNLOAD): it checks the hash, says
+# something useful when the check fails, and puts the archive in the download
+# cache where a rebuild finds it instead of fetching it again.
+vcpkg_download_distfile(LEXILLA_ARCHIVE
+    URLS     "https://github.com/wxWidgets/lexilla/archive/${LEXILLA_REF}.tar.gz"
+    FILENAME "wxwidgets-lexilla-${LEXILLA_REF}.tar.gz"
+    SHA512   ${LEXILLA_SHA512}
 )
 file(ARCHIVE_EXTRACT
-    INPUT       "${SOURCE_PATH}/lexilla.zip"
+    INPUT       "${LEXILLA_ARCHIVE}"
     DESTINATION "${SOURCE_PATH}"
 )
 file(REMOVE_RECURSE "${SOURCE_PATH}/src/stc/lexilla")
-file(RENAME "${SOURCE_PATH}/lexilla-wx" "${SOURCE_PATH}/src/stc/lexilla")
-file(DOWNLOAD
-    https://github.com/wxWidgets/scintilla/archive/refs/heads/wx.zip
-    "${SOURCE_PATH}/scintilla.zip"
+file(RENAME "${SOURCE_PATH}/lexilla-${LEXILLA_REF}" "${SOURCE_PATH}/src/stc/lexilla")
+
+vcpkg_download_distfile(SCINTILLA_ARCHIVE
+    URLS     "https://github.com/wxWidgets/scintilla/archive/${SCINTILLA_REF}.tar.gz"
+    FILENAME "wxwidgets-scintilla-${SCINTILLA_REF}.tar.gz"
+    SHA512   ${SCINTILLA_SHA512}
 )
 file(ARCHIVE_EXTRACT
-    INPUT       "${SOURCE_PATH}/scintilla.zip"
+    INPUT       "${SCINTILLA_ARCHIVE}"
     DESTINATION "${SOURCE_PATH}"
 )
 file(REMOVE_RECURSE "${SOURCE_PATH}/src/stc/scintilla")
-file(RENAME "${SOURCE_PATH}/scintilla-wx" "${SOURCE_PATH}/src/stc/scintilla")
+file(RENAME "${SOURCE_PATH}/scintilla-${SCINTILLA_REF}" "${SOURCE_PATH}/src/stc/scintilla")
 
 vcpkg_check_features(
     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
