@@ -56,44 +56,52 @@ in uxtheme.h and the types these are declared in terms of.
   store the Direct2D IUnknown refcount as LONG so Interlocked{Increment,
   Decrement}() accept it, and silence the unused parameter warnings in
   artmsw.cpp, filedlg.cpp and printps.cpp appearing in this build.
+- Add wxMSWThreadLocalSlot in wx/msw/private/backcompat.h, a per-thread value
+  whose cleanup runs as a thread exits, and use it for the untranslated string
+  cache in translation.cpp. That cache is MinGW-only, working around a
+  thread_local bug in mingw-w64 before version 15, and it reached for the FLS
+  API to get its thread-exit callback -- which mingw-w64 declares only under
+  _WIN32_WINNT >= 0x0600, so the XP build did not compile at all. The slot
+  resolves FLS at run time and, where there is none, falls back to TLS with a
+  .CRT$XLB callback driving the cleanup, so nothing is leaked under XP either.
+  The table that callback walks is fixed size and interlocked, allocating
+  nothing and taking no lock, since it runs under the loader lock.
 
 Co-Authored-By: Rafael Kitover <rkitover@gmail.com>
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 ---
- include/wx/msw/chkconf.h               |  21 +++
- include/wx/msw/private/backcompat.h    | 196 +++++++++++++++++++++++++
- include/wx/msw/private/backcompatgui.h |  76 ++++++++++
+ include/wx/msw/chkconf.h               |  21 +++++
+ include/wx/msw/private/backcompat.h    | 244 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/wx/msw/private/backcompatgui.h |  76 +++++++++++++++++
  include/wx/msw/private/filedialog.h    |   4 +-
  include/wx/msw/private/fswatcher.h     |   3 +-
- include/wx/msw/private/msgdlg.h        |  13 +-
- include/wx/msw/private/taskdlg.h       |   8 +
- include/wx/msw/uxtheme.h               |  59 +++++++-
- src/generic/printps.cpp                |  21 ++-
+ include/wx/msw/private/msgdlg.h        |  13 ++-
+ include/wx/msw/private/taskdlg.h       |   8 ++
+ include/wx/msw/uxtheme.h               |  59 ++++++++++++-
+ src/common/translation.cpp             |  26 +++---
+ src/generic/printps.cpp                |  21 ++++-
  src/msw/app.cpp                        |   8 +-
  src/msw/artmsw.cpp                     |   6 +-
  src/msw/darkmode.cpp                   |   2 +-
  src/msw/dirdlg.cpp                     |   6 +-
  src/msw/filedlg.cpp                    |   7 +-
  src/msw/graphicsd2d.cpp                |   5 +-
- src/msw/hyperlink.cpp                  |  13 ++
- src/msw/msgdlg.cpp                     |  12 ++
- src/msw/registry.cpp                   |  11 +-
+ src/msw/hyperlink.cpp                  |  13 +++
+ src/msw/msgdlg.cpp                     |  12 +++
+ src/msw/registry.cpp                   |  11 ++-
  src/msw/renderer.cpp                   |   2 +-
  src/msw/richmsgdlg.cpp                 |   2 +
- src/msw/taskbar.cpp                    |   8 +
- src/msw/taskdlg.cpp                    |   8 +
- src/msw/toolbar.cpp                    |  11 ++
- src/msw/uilocale.cpp                   | 191 ++++++++++++++++++------
- src/msw/utils.cpp                      |   3 +-
- src/msw/utilsgui.cpp                   |   7 +
- src/msw/uxtheme.cpp                    |  12 ++
- src/msw/window.cpp                     |  89 +++++++++++
- 28 files changed, 740 insertions(+), 64 deletions(-)
- create mode 100644 include/wx/msw/private/backcompat.h
- create mode 100644 include/wx/msw/private/backcompatgui.h
-
+ src/msw/taskbar.cpp                    |   8 ++
+ src/msw/taskdlg.cpp                    |   8 ++
+ src/msw/toolbar.cpp                    |  11 +++
+ src/msw/uilocale.cpp                   | 191 ++++++++++++++++++++++++++++++-----------
+ src/msw/utils.cpp                      | 232 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ src/msw/utilsgui.cpp                   |   7 ++
+ src/msw/uxtheme.cpp                    |  12 +++
+ src/msw/window.cpp                     |  89 +++++++++++++++++++
+ 29 files changed, 1029 insertions(+), 78 deletions(-)
 diff --git a/include/wx/msw/chkconf.h b/include/wx/msw/chkconf.h
-index 143a9c7870..d7adf76e82 100644
+index 143a9c7..d7adf76 100644
 --- a/include/wx/msw/chkconf.h
 +++ b/include/wx/msw/chkconf.h
 @@ -174,6 +174,27 @@
@@ -126,10 +134,10 @@ index 143a9c7870..d7adf76e82 100644
   */
 diff --git a/include/wx/msw/private/backcompat.h b/include/wx/msw/private/backcompat.h
 new file mode 100644
-index 0000000000..afa83c93b7
+index 0000000..4b31d0d
 --- /dev/null
 +++ b/include/wx/msw/private/backcompat.h
-@@ -0,0 +1,196 @@
+@@ -0,0 +1,244 @@
 +/////////////////////////////////////////////////////////////////////////////
 +// Name:        wx/msw/private/backcompat.h
 +// Purpose:     Cached run-time lookup of functions missing under older systems
@@ -325,10 +333,58 @@ index 0000000000..afa83c93b7
 +    wxDECLARE_NO_COPY_CLASS(wxMSWBackCompat);
 +};
 +
++// ----------------------------------------------------------------------------
++// wxMSWThreadLocalSlot
++// ----------------------------------------------------------------------------
++
++// A pointer-sized value that is per thread and whose cleanup runs as a thread
++// exits -- any thread, including ones wx did not create.
++//
++// Fiber local storage does this natively: FlsAlloc() takes a callback and
++// Windows runs it for each thread on the way out. It is Vista or later though,
++// and mingw-w64 declares it only under _WIN32_WINNT >= 0x0600, so a build
++// targeting XP sees neither the declaration nor, on XP itself, the function.
++//
++// Where FLS is missing this falls back to thread local storage, which has no
++// callback of its own, and drives the cleanup from a TLS callback in .CRT$XLB
++// that the loader calls on thread detach. Callers see no difference either
++// way, and the fallback is only ever reached on a system without FLS at all.
++//
++// Unlike the rest of this header the implementation is out of line, in
++// src/msw/utils.cpp. The .CRT$XLB entry and the table it walks have to exist
++// exactly once in the library, and an inline function may not refer to an
++// object with internal linkage.
++class wxMSWThreadLocalSlot
++{
++public:
++    // Called with the thread's value as that thread exits, and never with
++    // null. It runs under the loader lock on the fallback path, so it must not
++    // wait on anything another thread could be holding.
++    typedef void (WINAPI *Cleanup)(void *data);
++
++    explicit wxMSWThreadLocalSlot(Cleanup cleanup);
++    ~wxMSWThreadLocalSlot();
++
++    // False when no slot could be had, in which case Get() is always null and
++    // Set() does nothing. Windows caps slots per process, and the fallback
++    // caps the ones wanting cleanup per library.
++    bool IsOk() const { return m_ok; }
++
++    void *Get() const;
++    void Set(void *data) const;
++
++private:
++    DWORD m_index;
++    bool m_usingFls;
++    bool m_ok;
++
++    wxDECLARE_NO_COPY_CLASS(wxMSWThreadLocalSlot);
++};
++
 +#endif // WX_MSW_PRIVATE_BACKCOMPAT_H_
 diff --git a/include/wx/msw/private/backcompatgui.h b/include/wx/msw/private/backcompatgui.h
 new file mode 100644
-index 0000000000..831658369c
+index 0000000..8316583
 --- /dev/null
 +++ b/include/wx/msw/private/backcompatgui.h
 @@ -0,0 +1,76 @@
@@ -409,7 +465,7 @@ index 0000000000..831658369c
 +
 +#endif // WX_MSW_PRIVATE_BACKCOMPATGUI_H_
 diff --git a/include/wx/msw/private/filedialog.h b/include/wx/msw/private/filedialog.h
-index 5823230ca9..c3b2fdab50 100644
+index 5823230..c3b2fda 100644
 --- a/include/wx/msw/private/filedialog.h
 +++ b/include/wx/msw/private/filedialog.h
 @@ -18,8 +18,10 @@
@@ -425,7 +481,7 @@ index 5823230ca9..c3b2fdab50 100644
  #else
      #define wxUSE_IFILEOPENDIALOG 0
 diff --git a/include/wx/msw/private/fswatcher.h b/include/wx/msw/private/fswatcher.h
-index 17458b47cf..82aa9e5388 100644
+index cc90c5c..60608f6 100644
 --- a/include/wx/msw/private/fswatcher.h
 +++ b/include/wx/msw/private/fswatcher.h
 @@ -10,6 +10,7 @@
@@ -446,7 +502,7 @@ index 17458b47cf..82aa9e5388 100644
                      const DWORD err = ::GetLastError();
                      // ERROR_NOT_FOUND means the asynchronous read isn't
 diff --git a/include/wx/msw/private/msgdlg.h b/include/wx/msw/private/msgdlg.h
-index 88dc6aa029..db2b95cc54 100644
+index 88dc6aa..db2b95c 100644
 --- a/include/wx/msw/private/msgdlg.h
 +++ b/include/wx/msw/private/msgdlg.h
 @@ -13,10 +13,19 @@
@@ -484,7 +540,7 @@ index 88dc6aa029..db2b95cc54 100644
  
      // Translates standard MSW button IDs like IDCANCEL into an equivalent
 diff --git a/include/wx/msw/private/taskdlg.h b/include/wx/msw/private/taskdlg.h
-index 4f91b0d832..a669fda860 100644
+index 4f91b0d..a669fda 100644
 --- a/include/wx/msw/private/taskdlg.h
 +++ b/include/wx/msw/private/taskdlg.h
 @@ -12,6 +12,12 @@
@@ -508,7 +564,7 @@ index 4f91b0d832..a669fda860 100644
 +
  #endif // _WX_MSW_PRIVATE_TASKDLG_H_
 diff --git a/include/wx/msw/uxtheme.h b/include/wx/msw/uxtheme.h
-index 98d7cd4970..19824a12cd 100644
+index d70c39f..7ed59e3 100644
 --- a/include/wx/msw/uxtheme.h
 +++ b/include/wx/msw/uxtheme.h
 @@ -15,7 +15,15 @@
@@ -605,8 +661,74 @@ index 98d7cd4970..19824a12cd 100644
  // ----------------------------------------------------------------------------
  // wxUxThemeHandle: encapsulates ::Open/CloseThemeData()
  // ----------------------------------------------------------------------------
+diff --git a/src/common/translation.cpp b/src/common/translation.cpp
+index 0d56a2d..6553e68 100644
+--- a/src/common/translation.cpp
++++ b/src/common/translation.cpp
+@@ -51,6 +51,7 @@
+     #include "wx/scopedarray.h"
+     #include "wx/msw/wrapwin.h"
+     #include "wx/msw/missing.h"
++    #include "wx/msw/private/backcompat.h"
+ #endif
+ 
+ #ifdef __MINGW32__
+@@ -1489,11 +1490,16 @@ namespace
+ class UntranslatedStringHolder
+ {
+ private:
+-    DWORD m_flsIndex = ::FlsAlloc(&UntranslatedStringHolder::FlsCleanup);
++    // wxMSWThreadLocalSlot rather than FlsAlloc() directly: the FLS API is
++    // Vista or later and mingw-w64 does not even declare it below
++    // _WIN32_WINNT 0x0600, so calling it here stops an XP-targeted build from
++    // compiling. The slot uses FLS where there is FLS and falls back where
++    // there is not, and either way runs Cleanup() as a thread exits.
++    wxMSWThreadLocalSlot m_slot{&UntranslatedStringHolder::Cleanup};
+ 
+-    static void WINAPI FlsCleanup(PVOID lpFlsData)
++    static void WINAPI Cleanup(void* data)
+     {
+-        delete static_cast<UntranslatedStrings*>(lpFlsData);
++        delete static_cast<UntranslatedStrings*>(data);
+     }
+ 
+ public:
+@@ -1503,30 +1509,22 @@ public:
+     {
+         static const wxString emptyString;
+ 
+-        if ( m_flsIndex == FLS_OUT_OF_INDEXES )
++        if ( !m_slot.IsOk() )
+             return emptyString;
+ 
+         UntranslatedStrings*
+-            data = static_cast<UntranslatedStrings*>(::FlsGetValue(m_flsIndex));
++            data = static_cast<UntranslatedStrings*>(m_slot.Get());
+ 
+         if ( data == nullptr )
+         {
+             data = new UntranslatedStrings();
+ 
+-            ::FlsSetValue(m_flsIndex, data);
++            m_slot.Set(data);
+         }
+ 
+         return *data->insert(str).first;
+     }
+ 
+-    ~UntranslatedStringHolder()
+-    {
+-        if ( m_flsIndex != FLS_OUT_OF_INDEXES )
+-        {
+-            ::FlsFree(m_flsIndex);
+-        }
+-    }
+-
+     wxDECLARE_NO_COPY_CLASS(UntranslatedStringHolder);
+ };
+ 
 diff --git a/src/generic/printps.cpp b/src/generic/printps.cpp
-index 9fe33ee4c0..d40ae9d782 100644
+index 9fe33ee..d40ae9d 100644
 --- a/src/generic/printps.cpp
 +++ b/src/generic/printps.cpp
 @@ -137,6 +137,8 @@ bool wxPostScriptPrinter::Print(wxWindow *parent, wxPrintout *printout, bool pro
@@ -660,7 +782,7 @@ index 9fe33ee4c0..d40ae9d782 100644
      wxEndBusyCursor();
  
 diff --git a/src/msw/app.cpp b/src/msw/app.cpp
-index 941f7d7efe..f1ef968935 100644
+index 941f7d7..f1ef968 100644
 --- a/src/msw/app.cpp
 +++ b/src/msw/app.cpp
 @@ -71,6 +71,7 @@
@@ -695,7 +817,7 @@ index 941f7d7efe..f1ef968935 100644
      return true;
  }
 diff --git a/src/msw/artmsw.cpp b/src/msw/artmsw.cpp
-index 7c65e5a1bb..b2e34687f3 100644
+index 7c65e5a..b2e3468 100644
 --- a/src/msw/artmsw.cpp
 +++ b/src/msw/artmsw.cpp
 @@ -252,7 +252,11 @@ wxWindowsArtProvider::GetStockIconInfo(const wxArtID& id,
@@ -712,7 +834,7 @@ index 7c65e5a1bb..b2e34687f3 100644
      return false;
  }
 diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
-index dcff14cd3a..3c56e1b736 100644
+index 2a51847..e295c36 100644
 --- a/src/msw/darkmode.cpp
 +++ b/src/msw/darkmode.cpp
 @@ -831,7 +831,7 @@ HandleMenuMessage(WXLRESULT* result,
@@ -725,7 +847,7 @@ index dcff14cd3a..3c56e1b736 100644
                                    &textOpts);
              }
 diff --git a/src/msw/dirdlg.cpp b/src/msw/dirdlg.cpp
-index 043bd72897..55d2eab03d 100644
+index 043bd72..55d2eab 100644
 --- a/src/msw/dirdlg.cpp
 +++ b/src/msw/dirdlg.cpp
 @@ -30,12 +30,16 @@
@@ -747,7 +869,7 @@ index 043bd72897..55d2eab03d 100644
  #include "wx/dynlib.h"
  
 diff --git a/src/msw/filedlg.cpp b/src/msw/filedlg.cpp
-index d5806d7496..e3382afb5a 100644
+index d5806d7..e3382af 100644
 --- a/src/msw/filedlg.cpp
 +++ b/src/msw/filedlg.cpp
 @@ -1225,7 +1225,12 @@ bool wxFileDialog::AddShortcut(const wxString& directory, int flags)
@@ -765,7 +887,7 @@ index d5806d7496..e3382afb5a 100644
      return false;
  }
 diff --git a/src/msw/graphicsd2d.cpp b/src/msw/graphicsd2d.cpp
-index 639340f473..52a46fca26 100644
+index 639340f..52a46fc 100644
 --- a/src/msw/graphicsd2d.cpp
 +++ b/src/msw/graphicsd2d.cpp
 @@ -2455,8 +2455,9 @@ private:
@@ -781,7 +903,7 @@ index 639340f473..52a46fca26 100644
  
  // RAII class hosting a WIC bitmap lock used for writing
 diff --git a/src/msw/hyperlink.cpp b/src/msw/hyperlink.cpp
-index a31deff2a1..6811e757b8 100644
+index a31deff..6811e75 100644
 --- a/src/msw/hyperlink.cpp
 +++ b/src/msw/hyperlink.cpp
 @@ -167,8 +167,16 @@ bool wxHyperlinkCtrl::Enable(bool enable)
@@ -825,7 +947,7 @@ index a31deff2a1..6811e757b8 100644
  
  wxColour wxHyperlinkCtrl::GetHoverColour() const
 diff --git a/src/msw/msgdlg.cpp b/src/msw/msgdlg.cpp
-index 8775f0b191..dd0e6c0dbd 100644
+index 8775f0b..dd0e6c0 100644
 --- a/src/msw/msgdlg.cpp
 +++ b/src/msw/msgdlg.cpp
 @@ -528,6 +528,7 @@ int wxMessageDialog::ShowModal()
@@ -872,7 +994,7 @@ index 8775f0b191..dd0e6c0dbd 100644
  
  int wxMSWMessageDialog::MSWTranslateReturnCode(int msAns)
 diff --git a/src/msw/registry.cpp b/src/msw/registry.cpp
-index 130b91dc27..b582a282ca 100644
+index 130b91d..b582a28 100644
 --- a/src/msw/registry.cpp
 +++ b/src/msw/registry.cpp
 @@ -40,6 +40,7 @@
@@ -901,10 +1023,10 @@ index 130b91dc27..b582a282ca 100644
    if ( m_dwLastError != ERROR_SUCCESS &&
            m_dwLastError != ERROR_FILE_NOT_FOUND ) {
 diff --git a/src/msw/renderer.cpp b/src/msw/renderer.cpp
-index 8750f43866..641ff1cae4 100644
+index b742103..0092ac4 100644
 --- a/src/msw/renderer.cpp
 +++ b/src/msw/renderer.cpp
-@@ -1132,7 +1132,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -1200,7 +1200,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
                  break;
          }
  
@@ -914,7 +1036,7 @@ index 8750f43866..641ff1cae4 100644
      }
      else
 diff --git a/src/msw/richmsgdlg.cpp b/src/msw/richmsgdlg.cpp
-index c8f7c6a870..5e9b696a98 100644
+index c8f7c6a..5e9b696 100644
 --- a/src/msw/richmsgdlg.cpp
 +++ b/src/msw/richmsgdlg.cpp
 @@ -30,6 +30,7 @@ int wxRichMessageDialog::ShowModal()
@@ -934,7 +1056,7 @@ index c8f7c6a870..5e9b696a98 100644
      // use the generic version when task dialog is't available at either
      // compile or run-time.
 diff --git a/src/msw/taskbar.cpp b/src/msw/taskbar.cpp
-index d9e599b290..590c0c202e 100644
+index d9e599b..590c0c2 100644
 --- a/src/msw/taskbar.cpp
 +++ b/src/msw/taskbar.cpp
 @@ -251,8 +251,16 @@ wxTaskBarIcon::ShowBalloon(const wxString& title,
@@ -955,7 +1077,7 @@ index d9e599b290..590c0c202e 100644
      else if ( flags & wxICON_INFORMATION )
          notifyData.dwInfoFlags |= NIIF_INFO;
 diff --git a/src/msw/taskdlg.cpp b/src/msw/taskdlg.cpp
-index cbeb7986db..8f509a4c07 100644
+index 43a8bfd..0d56997 100644
 --- a/src/msw/taskdlg.cpp
 +++ b/src/msw/taskdlg.cpp
 @@ -32,6 +32,12 @@
@@ -971,14 +1093,14 @@ index cbeb7986db..8f509a4c07 100644
  #if wxUSE_DARK_MODE
  
  #include "wx/dynlib.h"
-@@ -1316,3 +1322,5 @@ void wxMSWDarkMode::RemoveFromTaskDialog(HWND hwnd)
+@@ -1276,3 +1282,5 @@ void wxMSWDarkMode::RemoveFromTaskDialog(HWND hwnd)
      wxUnusedVar(hwnd);
  #endif // wxUSE_DARK_MODE
  }
 +
 +#endif // task dialogs available
 diff --git a/src/msw/toolbar.cpp b/src/msw/toolbar.cpp
-index e3ccad9e03..092a70852e 100644
+index bbb0cfa..9c62603 100644
 --- a/src/msw/toolbar.cpp
 +++ b/src/msw/toolbar.cpp
 @@ -93,6 +93,17 @@
@@ -1000,7 +1122,7 @@ index e3ccad9e03..092a70852e 100644
  static const int MARGIN_CONTROL_LABEL = 3;
  
 diff --git a/src/msw/uilocale.cpp b/src/msw/uilocale.cpp
-index 1b07cc0ddb..212462228e 100644
+index 53a17bd..614691c 100644
 --- a/src/msw/uilocale.cpp
 +++ b/src/msw/uilocale.cpp
 @@ -30,6 +30,7 @@
@@ -1036,7 +1158,7 @@ index 1b07cc0ddb..212462228e 100644
  // ============================================================================
  // implementation
  // ============================================================================
-@@ -173,36 +192,47 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
+@@ -177,36 +196,47 @@ WXDLLIMPEXP_BASE wxString wxGetMSWDateTimeFormat(wxLocaleInfo index)
          return wxString{};
      }
  
@@ -1107,7 +1229,7 @@ index 1b07cc0ddb..212462228e 100644
      }
  
      return format;
-@@ -391,20 +421,21 @@ public:
+@@ -395,20 +425,21 @@ public:
      static wxVector<wxString> GetPreferredUILanguages()
      {
          wxVector<wxString> preferred;
@@ -1132,7 +1254,7 @@ index 1b07cc0ddb..212462228e 100644
                  {
                      WCHAR* buf = languages.get();
                      for (unsigned k = 0; k < numberOfLanguages; ++k)
-@@ -424,11 +455,11 @@ public:
+@@ -428,11 +459,11 @@ public:
                  wxLogLastError(wxT("GetUserPreferredUILanguages"));
              }
          }
@@ -1146,7 +1268,7 @@ index 1b07cc0ddb..212462228e 100644
              {
                  preferred.push_back(buf);
              }
-@@ -437,6 +468,18 @@ public:
+@@ -441,6 +472,18 @@ public:
                  wxLogLastError(wxT("GetUserDefaultLocaleName"));
              }
          }
@@ -1165,7 +1287,7 @@ index 1b07cc0ddb..212462228e 100644
  
          return preferred;
      }
-@@ -453,8 +496,15 @@ public:
+@@ -457,8 +500,15 @@ public:
      {
          // Getting the locale name seems to be the simplest way to see if it's
          // really supported: unknown locale result in an error here.
@@ -1183,7 +1305,7 @@ index 1b07cc0ddb..212462228e 100644
  
          // Unfortunately under Windows 10 the call above only fails if the given
          // locale name is not a valid BCP 47 identifier. For example,
-@@ -476,8 +526,11 @@ public:
+@@ -480,8 +530,11 @@ public:
              // discouraged by Microsoft (the constant is not even defined in a
              // Windows header file). However, for now constructed locales will
              // be rejected here.
@@ -1196,7 +1318,7 @@ index 1b07cc0ddb..212462228e 100644
                   (
                      name,
                      LOCALE_ICONSTRUCTEDLOCALE | LOCALE_RETURN_NUMBER,
-@@ -502,6 +555,14 @@ public:
+@@ -506,6 +559,14 @@ public:
  
      void Use() override
      {
@@ -1211,7 +1333,7 @@ index 1b07cc0ddb..212462228e 100644
          // Construct a double NUL-terminated buffer.
          wchar_t buf[256];
          if ( m_nameDisplay )
-@@ -511,8 +572,7 @@ public:
+@@ -515,8 +576,7 @@ public:
          buf[wxWcslen(buf) + 1] = L'\0';
  
          ULONG num = 1;
@@ -1221,7 +1343,7 @@ index 1b07cc0ddb..212462228e 100644
              wxLogLastError(wxT("SetThreadPreferredUILanguages"));
      }
  
-@@ -669,10 +729,15 @@ public:
+@@ -673,10 +733,15 @@ public:
                LOCALE_SSHORTESTDAYNAME4, LOCALE_SSHORTESTDAYNAME5, LOCALE_SSHORTESTDAYNAME6 }
          };
  
@@ -1238,7 +1360,7 @@ index 1b07cc0ddb..212462228e 100644
          auto lctype = weekdayNameIndex[idx][weekday];
          switch ( form.GetContext() )
          {
-@@ -759,16 +824,33 @@ public:
+@@ -763,16 +828,33 @@ public:
          if ( flags & wxCompare_CaseInsensitive )
              dwFlags |= NORM_IGNORECASE;
  
@@ -1282,7 +1404,7 @@ index 1b07cc0ddb..212462228e 100644
  
          switch ( ret )
          {
-@@ -805,10 +887,25 @@ private:
+@@ -809,10 +891,25 @@ private:
      wxString DoGetInfo(const wchar_t* const name, LCTYPE lctype) const
      {
          wchar_t buf[256];
@@ -1312,7 +1434,7 @@ index 1b07cc0ddb..212462228e 100644
  
          return buf;
 diff --git a/src/msw/utils.cpp b/src/msw/utils.cpp
-index d905964ed9..a234caca3d 100644
+index d905964..51b9ffa 100644
 --- a/src/msw/utils.cpp
 +++ b/src/msw/utils.cpp
 @@ -27,6 +27,7 @@
@@ -1332,8 +1454,241 @@ index d905964ed9..a234caca3d 100644
                      info.dwMajorVersion, info.dwMinorVersion,
                      0, 0, // service pack major/minor
                      &productType) )
+@@ -1763,3 +1764,232 @@ int wxCMPFUNC_CONV wxCmpNatural(const wxString& s1, const wxString& s2)
+ {
+     return StrCmpLogicalW(s1.wc_str(), s2.wc_str());
+ }
++
++// ----------------------------------------------------------------------------
++// wxMSWThreadLocalSlot
++// ----------------------------------------------------------------------------
++
++namespace
++{
++
++// FLS is Vista or later, and mingw-w64 hides the declarations below
++// _WIN32_WINNT 0x0600, so the entry points are resolved rather than imported:
++// importing one statically would stop the binary loading at all under XP.
++typedef DWORD (WINAPI *wxFlsAlloc_t)(PFLS_CALLBACK_FUNCTION);
++typedef PVOID (WINAPI *wxFlsGetValue_t)(DWORD);
++typedef BOOL (WINAPI *wxFlsSetValue_t)(DWORD, PVOID);
++typedef BOOL (WINAPI *wxFlsFree_t)(DWORD);
++
++struct wxFlsAPI
++{
++    wxFlsAlloc_t Alloc = nullptr;
++    wxFlsGetValue_t GetValue = nullptr;
++    wxFlsSetValue_t SetValue = nullptr;
++    wxFlsFree_t Free = nullptr;
++
++    wxFlsAPI()
++    {
++        // kernel32 is always loaded, so this wants no reference of its own.
++        const HMODULE dll = ::GetModuleHandleW(L"kernel32.dll");
++        if ( !dll )
++            return;
++
++        Alloc = (wxFlsAlloc_t)(void*)::GetProcAddress(dll, "FlsAlloc");
++        GetValue = (wxFlsGetValue_t)(void*)::GetProcAddress(dll, "FlsGetValue");
++        SetValue = (wxFlsSetValue_t)(void*)::GetProcAddress(dll, "FlsSetValue");
++        Free = (wxFlsFree_t)(void*)::GetProcAddress(dll, "FlsFree");
++
++        // All of them or none: a half resolved API would take an index from
++        // one mechanism and read it back through the other.
++        if ( !Alloc || !GetValue || !SetValue || !Free )
++        {
++            Alloc = nullptr;
++            GetValue = nullptr;
++            SetValue = nullptr;
++            Free = nullptr;
++        }
++    }
++
++    bool IsOk() const { return Alloc != nullptr; }
++};
++
++const wxFlsAPI& wxGetFlsAPI()
++{
++    static const wxFlsAPI s_api;
++    return s_api;
++}
++
++// Whether a TLS callback can be planted, which decides whether the fallback
++// can clean up after a thread at all.
++//
++// GCC and clang place a variable in a named section with an attribute. MSVC
++// would want #pragma section and __declspec(allocate) plus a linker /INCLUDE
++// to keep it, and has no reason to: the only system with no FLS is XP, whose
++// toolset was dropped after VS 2017, so an MSVC build always has the real
++// thing and never reaches this path.
++#if defined(__GNUC__) || defined(__clang__)
++    #define wxHAS_TLS_THREAD_EXIT_CALLBACK 1
++#endif
++
++#ifdef wxHAS_TLS_THREAD_EXIT_CALLBACK
++
++// The TLS slots wanting cleanup, walked by the callback below.
++//
++// A fixed table, interlocked, with nothing allocated and no lock taken: the
++// callback runs under the loader lock, where allocating or waiting on a lock
++// another thread holds can deadlock the process.
++const int wxTLS_CLEANUP_MAX = 8;
++
++struct wxTlsCleanupEntry
++{
++    volatile LONG index;        // TLS index, or -1 once the slot is gone
++    wxMSWThreadLocalSlot::Cleanup cleanup;
++};
++
++wxTlsCleanupEntry gs_tlsCleanups[wxTLS_CLEANUP_MAX];
++volatile LONG gs_tlsCleanupCount = 0;
++
++void NTAPI
++wxTlsThreadExitCallback(PVOID WXUNUSED(module),
++                        DWORD reason,
++                        PVOID WXUNUSED(reserved))
++{
++    if ( reason != DLL_THREAD_DETACH )
++        return;
++
++    const LONG count = ::InterlockedCompareExchange(&gs_tlsCleanupCount, 0, 0);
++
++    for ( LONG n = 0; n < count; ++n )
++    {
++        const LONG index =
++            ::InterlockedCompareExchange(&gs_tlsCleanups[n].index, -1, -1);
++
++        if ( index < 0 )
++            continue;
++
++        void* const data = ::TlsGetValue((DWORD)index);
++
++        if ( !data )
++            continue;
++
++        // Cleared before the cleanup runs, so nothing it does can find the
++        // value it is in the middle of destroying.
++        ::TlsSetValue((DWORD)index, nullptr);
++
++        gs_tlsCleanups[n].cleanup(data);
++    }
++}
++
++// Returns false when the table is full, which leaves the slot working and
++// uncleaned rather than failing outright.
++bool wxRegisterTlsCleanup(DWORD index, wxMSWThreadLocalSlot::Cleanup cleanup)
++{
++    const LONG n = ::InterlockedIncrement(&gs_tlsCleanupCount) - 1;
++
++    if ( n >= wxTLS_CLEANUP_MAX )
++    {
++        ::InterlockedDecrement(&gs_tlsCleanupCount);
++        return false;
++    }
++
++    gs_tlsCleanups[n].cleanup = cleanup;
++    ::InterlockedExchange(&gs_tlsCleanups[n].index, (LONG)index);
++
++    return true;
++}
++
++void wxUnregisterTlsCleanup(DWORD index)
++{
++    const LONG count = ::InterlockedCompareExchange(&gs_tlsCleanupCount, 0, 0);
++
++    for ( LONG n = 0; n < count; ++n )
++    {
++        if ( ::InterlockedCompareExchange(&gs_tlsCleanups[n].index,
++                                          -1, (LONG)index) == (LONG)index )
++            break;
++    }
++}
++
++#endif // wxHAS_TLS_THREAD_EXIT_CALLBACK
++
++} // anonymous namespace
++
++#ifdef wxHAS_TLS_THREAD_EXIT_CALLBACK
++
++extern "C"
++{
++
++// The loader calls everything the image holds between the CRT's .CRT$XLA and
++// .CRT$XLZ markers on thread attach and detach. "used" is what stops the
++// linker dropping a variable nothing refers to, and this object file reaches
++// the image because the rest of it is linked anyway.
++__attribute__((section(".CRT$XLB"), used))
++PIMAGE_TLS_CALLBACK wx_msw_tls_thread_exit_callback = wxTlsThreadExitCallback;
++
++} // extern "C"
++
++#endif // wxHAS_TLS_THREAD_EXIT_CALLBACK
++
++wxMSWThreadLocalSlot::wxMSWThreadLocalSlot(Cleanup cleanup)
++    : m_index(0), m_usingFls(false), m_ok(false)
++{
++    const wxFlsAPI& fls = wxGetFlsAPI();
++
++    if ( fls.IsOk() )
++    {
++        m_index = fls.Alloc((PFLS_CALLBACK_FUNCTION)cleanup);
++        m_usingFls = true;
++        m_ok = m_index != FLS_OUT_OF_INDEXES;
++        return;
++    }
++
++    m_index = ::TlsAlloc();
++    m_ok = m_index != TLS_OUT_OF_INDEXES;
++
++#ifdef wxHAS_TLS_THREAD_EXIT_CALLBACK
++    if ( m_ok )
++        wxRegisterTlsCleanup(m_index, cleanup);
++#else
++    // No way to be told a thread is going, so the value it left behind stays.
++    // Unreachable in practice: every system without FLS is one no compiler
++    // lacking the callback can target.
++    wxUnusedVar(cleanup);
++#endif
++}
++
++wxMSWThreadLocalSlot::~wxMSWThreadLocalSlot()
++{
++    if ( !m_ok )
++        return;
++
++    if ( m_usingFls )
++    {
++        wxGetFlsAPI().Free(m_index);
++        return;
++    }
++
++#ifdef wxHAS_TLS_THREAD_EXIT_CALLBACK
++    wxUnregisterTlsCleanup(m_index);
++#endif
++
++    ::TlsFree(m_index);
++}
++
++void *wxMSWThreadLocalSlot::Get() const
++{
++    if ( !m_ok )
++        return nullptr;
++
++    return m_usingFls ? wxGetFlsAPI().GetValue(m_index) : ::TlsGetValue(m_index);
++}
++
++void wxMSWThreadLocalSlot::Set(void *data) const
++{
++    if ( !m_ok )
++        return;
++
++    if ( m_usingFls )
++        wxGetFlsAPI().SetValue(m_index, data);
++    else
++        ::TlsSetValue(m_index, data);
++}
 diff --git a/src/msw/utilsgui.cpp b/src/msw/utilsgui.cpp
-index 7af6b6e7bb..96bb29cb69 100644
+index 7af6b6e..96bb29c 100644
 --- a/src/msw/utilsgui.cpp
 +++ b/src/msw/utilsgui.cpp
 @@ -279,8 +279,15 @@ wxGUIObjectUsage wxGetUsedResources(UseType useType)
@@ -1353,7 +1708,7 @@ index 7af6b6e7bb..96bb29cb69 100644
      }
  
 diff --git a/src/msw/uxtheme.cpp b/src/msw/uxtheme.cpp
-index f861261dc1..33b30072a6 100644
+index f861261..33b3007 100644
 --- a/src/msw/uxtheme.cpp
 +++ b/src/msw/uxtheme.cpp
 @@ -31,6 +31,7 @@
@@ -1383,10 +1738,10 @@ index f861261dc1..33b30072a6 100644
                                   const wchar_t* classes,
                                   const wchar_t* classesDark)
 diff --git a/src/msw/window.cpp b/src/msw/window.cpp
-index 2955ff0411..7735533b1f 100644
+index 5c273d4..c1344cf 100644
 --- a/src/msw/window.cpp
 +++ b/src/msw/window.cpp
-@@ -846,6 +846,8 @@ void wxWindowMSW::WarpPointer(int x, int y)
+@@ -871,6 +871,8 @@ void wxWindowMSW::WarpPointer(int x, int y)
      }
  }
  
@@ -1395,7 +1750,7 @@ index 2955ff0411..7735533b1f 100644
  bool wxWindowMSW::EnableTouchEvents(int eventsMask)
  {
      // Static struct used when we need to use just a single configuration.
-@@ -967,6 +969,15 @@ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
+@@ -992,6 +994,15 @@ bool wxWindowMSW::EnableTouchEvents(int eventsMask)
      return true;
  }
  
@@ -1411,7 +1766,7 @@ index 2955ff0411..7735533b1f 100644
  void wxWindowMSW::MSWUpdateUIState(int action, int state)
  {
      // we send WM_CHANGEUISTATE so if nothing needs changing then the system
-@@ -3425,6 +3436,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3601,6 +3612,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              }
              break;
  
@@ -1419,7 +1774,7 @@ index 2955ff0411..7735533b1f 100644
          case WM_GESTURE:
          {
              HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
-@@ -3503,12 +3515,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3679,12 +3691,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              // handled, otherwise we still pass them to DefWindowProc().
              processed = HandleTouch(wParam, lParam);
              break;
@@ -1435,7 +1790,7 @@ index 2955ff0411..7735533b1f 100644
  
          // CTLCOLOR messages are sent by children to query the parent for their
          // colors
-@@ -6279,6 +6294,11 @@ void wxWindowMSW::GenerateMouseLeave()
+@@ -6465,6 +6480,11 @@ void wxWindowMSW::GenerateMouseLeave()
  // Gesture events
  // ---------------------------------------------------------------------------
  
@@ -1447,7 +1802,7 @@ index 2955ff0411..7735533b1f 100644
  bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
                                     const wxPoint& pt,
                                     WXDWORD flags)
-@@ -6456,9 +6476,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+@@ -6642,9 +6662,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
      return allHandled;
  }
  
@@ -1515,7 +1870,7 @@ index 2955ff0411..7735533b1f 100644
      wxEventType type;
      switch( message )
      {
-@@ -6550,6 +6628,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
+@@ -6736,6 +6814,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
      return HandleWindowEvent(event);;
  }
  
@@ -1533,6 +1888,3 @@ index 2955ff0411..7735533b1f 100644
  // ---------------------------------------------------------------------------
  // keyboard handling
  // ---------------------------------------------------------------------------
--- 
-2.55.0.windows.3
-
