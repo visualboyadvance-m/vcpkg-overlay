@@ -149,7 +149,7 @@ new file mode 100644
 index 0000000..835baf1
 --- /dev/null
 +++ b/include/wx/msw/private/backcompat.h
-@@ -0,0 +1,267 @@
+@@ -0,0 +1,268 @@
 +/////////////////////////////////////////////////////////////////////////////
 +// Name:        wx/msw/private/backcompat.h
 +// Purpose:     Cached run-time lookup of functions missing under older systems
@@ -285,6 +285,9 @@ index 0000000..835baf1
 +    // Both are Vista or later and neither has an older equivalent: XP cannot
 +    // block a shutdown at all, let alone show a reason for one. Null there, so
 +    // the caller skips the whole thing rather than doing it differently.
++    typedef BOOL (WINAPI *ShutdownBlockReasonCreate_t)(HWND, LPCWSTR);
++    typedef BOOL (WINAPI *ShutdownBlockReasonDestroy_t)(HWND);
++
 +    ShutdownBlockReasonCreate_t     ShutdownBlockReasonCreate;
 +    ShutdownBlockReasonDestroy_t    ShutdownBlockReasonDestroy;
 +
@@ -295,8 +298,6 @@ index 0000000..835baf1
 +    typedef BOOL    (WINAPI *GetProductInfo_t)(DWORD, DWORD, DWORD, DWORD,
 +                                               PDWORD);
 +    typedef HRESULT (WINAPI *SetAppUserModelID_t)(PCWSTR);
-+    typedef BOOL    (WINAPI *ShutdownBlockReasonCreate_t)(HWND, LPCWSTR);
-+    typedef BOOL    (WINAPI *ShutdownBlockReasonDestroy_t)(HWND);
 +
 +    wxMSWBackCompat()
 +    {
