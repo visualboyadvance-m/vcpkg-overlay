@@ -66,18 +66,29 @@ in uxtheme.h and the types these are declared in terms of.
   .CRT$XLB callback driving the cleanup, so nothing is leaked under XP either.
   The table that callback walks is fixed size and interlocked, allocating
   nothing and taking no lock, since it runs under the loader lock.
+- Resolve ShutdownBlockReasonCreate() and ShutdownBlockReasonDestroy()
+  dynamically and use them from src/msw/power.cpp. Both are Vista or later,
+  and a static import of either stops the binary loading at all under XP: the
+  emulator died on startup with "the procedure entry point
+  ShutdownBlockReasonCreate could not be located in USER32.dll". Neither has an
+  older equivalent -- XP cannot block a shutdown or show a reason for one -- so
+  they are plain pointers and wxMSWUpdateShutdownBlockReason() returns false
+  instead. Worth knowing for anyone auditing the rest: neither mingw-w64 nor
+  the Windows SDK guards these on _WIN32_WINNT, both using
+  WINAPI_PARTITION_DESKTOP alone, so compiling at 0x0501 does not hide them and
+  nothing warned.
 
 Co-Authored-By: Rafael Kitover <rkitover@gmail.com>
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 ---
  include/wx/msw/chkconf.h               |  21 +++++
- include/wx/msw/private/backcompat.h    | 244 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- include/wx/msw/private/backcompatgui.h |  76 +++++++++++++++++
+ include/wx/msw/private/backcompat.h    | 267 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/wx/msw/private/backcompatgui.h |  76 +++++++++++++++
  include/wx/msw/private/filedialog.h    |   4 +-
  include/wx/msw/private/fswatcher.h     |   3 +-
  include/wx/msw/private/msgdlg.h        |  13 ++-
  include/wx/msw/private/taskdlg.h       |   8 ++
- include/wx/msw/uxtheme.h               |  59 ++++++++++++-
+ include/wx/msw/uxtheme.h               |  59 +++++++++++-
  src/common/translation.cpp             |  26 +++---
  src/generic/printps.cpp                |  21 ++++-
  src/msw/app.cpp                        |   8 +-
@@ -88,18 +99,19 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
  src/msw/graphicsd2d.cpp                |   5 +-
  src/msw/hyperlink.cpp                  |  13 +++
  src/msw/msgdlg.cpp                     |  12 +++
+ src/msw/power.cpp                      |  15 ++-
  src/msw/registry.cpp                   |  11 ++-
  src/msw/renderer.cpp                   |   2 +-
  src/msw/richmsgdlg.cpp                 |   2 +
  src/msw/taskbar.cpp                    |   8 ++
  src/msw/taskdlg.cpp                    |   8 ++
  src/msw/toolbar.cpp                    |  11 +++
- src/msw/uilocale.cpp                   | 191 ++++++++++++++++++++++++++++++-----------
- src/msw/utils.cpp                      | 232 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ src/msw/uilocale.cpp                   | 191 ++++++++++++++++++++++++++++----------
+ src/msw/utils.cpp                      | 232 +++++++++++++++++++++++++++++++++++++++++++++-
  src/msw/utilsgui.cpp                   |   7 ++
  src/msw/uxtheme.cpp                    |  12 +++
- src/msw/window.cpp                     |  89 +++++++++++++++++++
- 29 files changed, 1029 insertions(+), 78 deletions(-)
+ src/msw/window.cpp                     |  89 ++++++++++++++++++
+ 30 files changed, 1065 insertions(+), 80 deletions(-)
 diff --git a/include/wx/msw/chkconf.h b/include/wx/msw/chkconf.h
 index 143a9c7..d7adf76 100644
 --- a/include/wx/msw/chkconf.h
@@ -134,10 +146,10 @@ index 143a9c7..d7adf76 100644
   */
 diff --git a/include/wx/msw/private/backcompat.h b/include/wx/msw/private/backcompat.h
 new file mode 100644
-index 0000000..4b31d0d
+index 0000000..835baf1
 --- /dev/null
 +++ b/include/wx/msw/private/backcompat.h
-@@ -0,0 +1,244 @@
+@@ -0,0 +1,267 @@
 +/////////////////////////////////////////////////////////////////////////////
 +// Name:        wx/msw/private/backcompat.h
 +// Purpose:     Cached run-time lookup of functions missing under older systems
@@ -268,6 +280,14 @@ index 0000000..4b31d0d
 +    SetThreadPreferredUILanguages_t SetThreadPreferredUILanguages;
 +    CompareStringEx_t               CompareStringEx;
 +
++    // Block system shutdown while a power resource is held, and say why.
++    //
++    // Both are Vista or later and neither has an older equivalent: XP cannot
++    // block a shutdown at all, let alone show a reason for one. Null there, so
++    // the caller skips the whole thing rather than doing it differently.
++    ShutdownBlockReasonCreate_t     ShutdownBlockReasonCreate;
++    ShutdownBlockReasonDestroy_t    ShutdownBlockReasonDestroy;
++
 +private:
 +    typedef BOOL    (WINAPI *CancelIoEx_t)(HANDLE, LPOVERLAPPED);
 +    typedef LONG    (WINAPI *RegDeleteKeyEx_t)(HKEY, const wxChar*,
@@ -275,6 +295,8 @@ index 0000000..4b31d0d
 +    typedef BOOL    (WINAPI *GetProductInfo_t)(DWORD, DWORD, DWORD, DWORD,
 +                                               PDWORD);
 +    typedef HRESULT (WINAPI *SetAppUserModelID_t)(PCWSTR);
++    typedef BOOL    (WINAPI *ShutdownBlockReasonCreate_t)(HWND, LPCWSTR);
++    typedef BOOL    (WINAPI *ShutdownBlockReasonDestroy_t)(HWND);
 +
 +    wxMSWBackCompat()
 +    {
@@ -299,6 +321,19 @@ index 0000000..4b31d0d
 +                dllKernel32.RawGetSymbol("SetThreadPreferredUILanguages");
 +            CompareStringEx = (CompareStringEx_t)
 +                dllKernel32.RawGetSymbol("CompareStringEx");
++        }
++
++        {
++            // user32 is loaded by anything with a window and never unloaded.
++            // A wxBase-only program may not have it at all, which leaves these
++            // null and the callers skipping them -- the same as on a system
++            // too old to have them.
++            wxLoadedDLL dllUser32(wxS("user32.dll"));
++
++            ShutdownBlockReasonCreate = (ShutdownBlockReasonCreate_t)
++                dllUser32.RawGetSymbol("ShutdownBlockReasonCreate");
++            ShutdownBlockReasonDestroy = (ShutdownBlockReasonDestroy_t)
++                dllUser32.RawGetSymbol("ShutdownBlockReasonDestroy");
 +        }
 +
 +        {
@@ -993,6 +1028,50 @@ index 8775f0b..dd0e6c0 100644
  }
  
  int wxMSWMessageDialog::MSWTranslateReturnCode(int msAns)
+diff --git a/src/msw/power.cpp b/src/msw/power.cpp
+index 649bb24..0fc9af6 100644
+--- a/src/msw/power.cpp
++++ b/src/msw/power.cpp
+@@ -26,6 +26,7 @@
+ #include "wx/atomic.h"
+ #include "wx/msw/private.h"
+ #include "wx/msw/private/power.h"
++#include "wx/msw/private/backcompat.h"
+ 
+ #ifdef __WXQT__
+     #include <QWidget>
+@@ -145,6 +146,16 @@ static inline bool wxGetPowerStatus(SYSTEM_POWER_STATUS *sps)
+ 
+ bool wxMSWUpdateShutdownBlockReason()
+ {
++    const wxMSWBackCompat& compat = wxMSWBackCompat::Get();
++
++    // ShutdownBlockReasonCreate() and Destroy() are Vista or later, and a
++    // static import of either stops the binary loading at all under XP rather
++    // than failing when it is called. There is nothing older to fall back to
++    // -- XP cannot block a shutdown or show a reason for one -- so there is
++    // simply no block to update there.
++    if ( !compat.ShutdownBlockReasonCreate || !compat.ShutdownBlockReasonDestroy )
++        return false;
++
+     for ( wxWindow* win : wxTopLevelWindows )
+     {
+ #ifdef __WXQT__
+@@ -155,12 +166,12 @@ bool wxMSWUpdateShutdownBlockReason()
+ 
+         if ( g_powerResourceSystemRefCount > 0 )
+         {
+-            ::ShutdownBlockReasonCreate(hwnd,
++            compat.ShutdownBlockReasonCreate(hwnd,
+                 g_powerResourceSystemReason.wc_str());
+         }
+         else
+         {
+-            ::ShutdownBlockReasonDestroy(hwnd);
++            compat.ShutdownBlockReasonDestroy(hwnd);
+         }
+     }
+     return true;
 diff --git a/src/msw/registry.cpp b/src/msw/registry.cpp
 index 130b91d..b582a28 100644
 --- a/src/msw/registry.cpp
@@ -1077,7 +1156,7 @@ index d9e599b..590c0c2 100644
      else if ( flags & wxICON_INFORMATION )
          notifyData.dwInfoFlags |= NIIF_INFO;
 diff --git a/src/msw/taskdlg.cpp b/src/msw/taskdlg.cpp
-index 43a8bfd..0d56997 100644
+index f22828d..22dd893 100644
 --- a/src/msw/taskdlg.cpp
 +++ b/src/msw/taskdlg.cpp
 @@ -32,6 +32,12 @@
@@ -1093,7 +1172,7 @@ index 43a8bfd..0d56997 100644
  #if wxUSE_DARK_MODE
  
  #include "wx/dynlib.h"
-@@ -1276,3 +1282,5 @@ void wxMSWDarkMode::RemoveFromTaskDialog(HWND hwnd)
+@@ -1309,3 +1315,5 @@ void wxMSWDarkMode::RemoveFromTaskDialog(HWND hwnd)
      wxUnusedVar(hwnd);
  #endif // wxUSE_DARK_MODE
  }
@@ -1738,7 +1817,7 @@ index f861261..33b3007 100644
                                   const wchar_t* classes,
                                   const wchar_t* classesDark)
 diff --git a/src/msw/window.cpp b/src/msw/window.cpp
-index 5c273d4..c1344cf 100644
+index cf157f3..766cd72 100644
 --- a/src/msw/window.cpp
 +++ b/src/msw/window.cpp
 @@ -871,6 +871,8 @@ void wxWindowMSW::WarpPointer(int x, int y)
@@ -1766,7 +1845,7 @@ index 5c273d4..c1344cf 100644
  void wxWindowMSW::MSWUpdateUIState(int action, int state)
  {
      // we send WM_CHANGEUISTATE so if nothing needs changing then the system
-@@ -3601,6 +3612,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3635,6 +3646,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              }
              break;
  
@@ -1774,7 +1853,7 @@ index 5c273d4..c1344cf 100644
          case WM_GESTURE:
          {
              HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
-@@ -3679,12 +3691,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3713,12 +3725,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              // handled, otherwise we still pass them to DefWindowProc().
              processed = HandleTouch(wParam, lParam);
              break;
@@ -1790,7 +1869,7 @@ index 5c273d4..c1344cf 100644
  
          // CTLCOLOR messages are sent by children to query the parent for their
          // colors
-@@ -6465,6 +6480,11 @@ void wxWindowMSW::GenerateMouseLeave()
+@@ -6499,6 +6514,11 @@ void wxWindowMSW::GenerateMouseLeave()
  // Gesture events
  // ---------------------------------------------------------------------------
  
@@ -1802,7 +1881,7 @@ index 5c273d4..c1344cf 100644
  bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
                                     const wxPoint& pt,
                                     WXDWORD flags)
-@@ -6642,9 +6662,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+@@ -6676,9 +6696,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
      return allHandled;
  }
  
@@ -1870,7 +1949,7 @@ index 5c273d4..c1344cf 100644
      wxEventType type;
      switch( message )
      {
-@@ -6736,6 +6814,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
+@@ -6770,6 +6848,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
      return HandleWindowEvent(event);;
  }
  
