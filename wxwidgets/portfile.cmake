@@ -41,8 +41,8 @@ endif()
 # vcpkg-daily.ps1 rewrites these six by name and updates them together. Their
 # being set() rather than written into the calls below is what lets it do that
 # without counting lines.
-set(WX_REF        2f304009dbb20cab7e12a9f1d785c4fe33b9b1fe)
-set(WX_SHA512     b89c2bf928d57dde5c809fdba5855ec3e757fc8bed5de0214032765ece8790a360f5ceab1fbd32809cad7ce3f8a69b1c0dd8a8046fc5a9c7479162e7ea41f49d)
+set(WX_REF        469921b90f0df63a135887e9a244e479ffa884e8)
+set(WX_SHA512     8de2c3910b3ad828d145c29c24600c39a3fee95c2be9676c57186e80849d3edd0d47e1c5a25d4244f8f636a7baf18e3dfa365cf170e4d819e7ec36e122eb6a66)
 set(LEXILLA_REF   696ee989b52f718a54869c89576604354f30e153)
 set(LEXILLA_SHA512 b741e784c51c21c4db6becda38fb7f11fe57c3d22e4d058f2587ab85b477c6f0a90a08f5d92c81bff10da7702949be99f2eddb6289305e0b08df2081294d92ee)
 set(SCINTILLA_REF 0b90f31ced23241054e8088abb50babe9a44ae67)
