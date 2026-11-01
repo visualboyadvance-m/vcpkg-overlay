@@ -1,6 +1,6 @@
-diff -Nur nss-3.128/nss/lib/freebl/Makefile nss-3.128-patched/nss/lib/freebl/Makefile
---- nss-3.128/nss/lib/freebl/Makefile	2026-08-26 14:26:58
-+++ nss-3.128-patched/nss/lib/freebl/Makefile	2026-09-04 11:03:30
+diff -Nur nss-3_119_1/nss/lib/freebl/Makefile nss-3_119_1-patched/nss/lib/freebl/Makefile
+--- nss-3_119_1/nss/lib/freebl/Makefile	2026-08-26 14:26:58
++++ nss-3_119_1-patched/nss/lib/freebl/Makefile	2026-09-04 11:03:30
 @@ -190,31 +190,6 @@
      endif
      endif
@@ -33,9 +33,9 @@ diff -Nur nss-3.128/nss/lib/freebl/Makefile nss-3.128-patched/nss/lib/freebl/Mak
  
  ifeq (,$(filter-out WINNT,$(OS_TARGET)))
  ifndef USE_64
-diff -Nur nss-3.128/nss/lib/freebl/freebl.gyp nss-3.128-patched/nss/lib/freebl/freebl.gyp
---- nss-3.128/nss/lib/freebl/freebl.gyp	2026-08-26 14:26:58
-+++ nss-3.128-patched/nss/lib/freebl/freebl.gyp	2026-09-04 11:06:55
+diff -Nur nss-3_119_1/nss/lib/freebl/freebl.gyp nss-3_119_1-patched/nss/lib/freebl/freebl.gyp
+--- nss-3_119_1/nss/lib/freebl/freebl.gyp	2026-08-26 14:26:58
++++ nss-3_119_1-patched/nss/lib/freebl/freebl.gyp	2026-09-04 11:06:55
 @@ -273,12 +273,10 @@
        ]
      },
