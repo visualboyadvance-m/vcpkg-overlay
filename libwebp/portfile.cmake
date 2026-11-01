@@ -8,6 +8,7 @@ vcpkg_from_github(
         0002-cmake-config.patch
         0003-simd.patch
         0008-sdl.patch
+        0009-cpufeatures-android.patch
         0009-winxp.patch
 )
 
