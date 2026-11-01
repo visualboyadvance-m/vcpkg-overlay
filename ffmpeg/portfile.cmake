@@ -13,7 +13,6 @@ vcpkg_from_github(
         0024-fix-osx-host-c11.patch
         0040-ffmpeg-add-av_stream_get_first_dts-for-chromium.patch # Do not remove this patch. It is required by chromium
         0044-ffmpeg-xp.patch
-        0044-fix-vulkan-debug-callback-abi.patch
         0045-use-prebuilt-bin2c.patch
         0046-fix-msvc-detection.patch
         0047-fix-msvc-utf8.patch
@@ -471,9 +470,7 @@ endif()
 set(WITH_OPENSSL OFF)
 set(WITH_SCHANNEL OFF)
 set(WITH_SECURETRANSPORT OFF)
-# Selecting "openssl" implies networking even if the "network" feature was not
-# explicitly requested (e.g. forcing OpenSSL over the platform TLS backend).
-if("network" IN_LIST FEATURES OR "openssl" IN_LIST FEATURES)
+if("network" IN_LIST FEATURES)
     if("openssl" IN_LIST FEATURES)
         set(OPTIONS "${OPTIONS} --enable-openssl")
         set(WITH_OPENSSL ON)
@@ -491,11 +488,10 @@ if("network" IN_LIST FEATURES OR "openssl" IN_LIST FEATURES)
         endif()
     endif()
 else()
-    # No "network" feature: build without networking. Disable network support and
-    # every protocol except the local file protocol, plus the TLS backends that
-    # exist only to secure network protocols (schannel on Windows, SecureTransport
-    # on macOS/iOS, OpenSSL everywhere).
-    string(APPEND OPTIONS " --disable-network --disable-protocols --enable-protocol=file")
+    # Without networking, configure drops every protocol that needs it and keeps the
+    # local ones (file, pipe, fd, ...). Also build none of the TLS backends, which
+    # exist only to secure network protocols.
+    string(APPEND OPTIONS " --disable-network")
     string(APPEND OPTIONS " --disable-openssl --disable-schannel --disable-securetransport")
 endif()
 
