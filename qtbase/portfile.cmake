@@ -30,7 +30,6 @@ set(${PORT}_PATCHES
         fix-libresolv-test.patch
         use_inotify_on_freebsd.patch
         silence-winrtbase-coroutine-warnings.diff
-        md4c.diff
         riscv64-deploy.patch
 )
 
