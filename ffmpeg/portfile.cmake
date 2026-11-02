@@ -45,6 +45,15 @@ if(VCPKG_TARGET_IS_MINGW)
     elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64" OR VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
         string(APPEND OPTIONS " --target-os=mingw64")
     endif()
+    # The x86 mingw build targets Windows XP (see the _WIN32_WINNT handling
+    # further down). D3D11, D3D12, DXVA2 and Media Foundation are all Vista or
+    # later, and their headers and configure checks expect a Vista or later
+    # _WIN32_WINNT, so --enable-* would either fail configure or build code
+    # never tested on XP. Keep that build without hardware acceleration, as
+    # it was before upstream enabled these for mingw.
+    if(NOT VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
+        string(APPEND OPTIONS " --enable-d3d11va --enable-d3d12va --enable-dxva2 --enable-mediafoundation")
+    endif()
 elseif(VCPKG_TARGET_IS_LINUX)
     string(APPEND OPTIONS " --target-os=linux --enable-pthreads")
 elseif(VCPKG_TARGET_IS_UWP)
