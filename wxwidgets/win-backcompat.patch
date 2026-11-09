@@ -77,12 +77,19 @@ in uxtheme.h and the types these are declared in terms of.
   the Windows SDK guards these on _WIN32_WINNT, both using
   WINAPI_PARTITION_DESKTOP alone, so compiling at 0x0501 does not hide them and
   nothing warned.
+- Define SPI_GETMESSAGEDURATION in src/generic/infobar.cpp when the headers
+  have not. It is Vista and they declare it only from _WIN32_WINNT 0x0600, so
+  an XP build did not compile at all: "'SPI_GETMESSAGEDURATION' was not
+  declared in this scope". Nothing more is needed than the constant.
+  SystemParametersInfo() fails for an action the running system does not know,
+  which is the case GetDefaultTimeout() already tests for, so XP falls through
+  to the default timeout the way it would for any other unsupported query.
 
 Co-Authored-By: Rafael Kitover <rkitover@gmail.com>
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
 ---
  include/wx/msw/chkconf.h               |  21 +++++
- include/wx/msw/private/backcompat.h    | 267 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/wx/msw/private/backcompat.h    | 268 +++++++++++++++++++++++++++++++++++++++++++++++++++++
  include/wx/msw/private/backcompatgui.h |  76 +++++++++++++++
  include/wx/msw/private/filedialog.h    |   4 +-
  include/wx/msw/private/fswatcher.h     |   3 +-
@@ -90,6 +97,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
  include/wx/msw/private/taskdlg.h       |   8 ++
  include/wx/msw/uxtheme.h               |  59 +++++++++++-
  src/common/translation.cpp             |  26 +++---
+ src/generic/infobar.cpp                |  10 ++
  src/generic/printps.cpp                |  21 ++++-
  src/msw/app.cpp                        |   8 +-
  src/msw/artmsw.cpp                     |   6 +-
@@ -111,7 +119,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
  src/msw/utilsgui.cpp                   |   7 ++
  src/msw/uxtheme.cpp                    |  12 +++
  src/msw/window.cpp                     |  89 ++++++++++++++++++
- 30 files changed, 1065 insertions(+), 80 deletions(-)
+ 31 files changed, 1076 insertions(+), 80 deletions(-)
 diff --git a/include/wx/msw/chkconf.h b/include/wx/msw/chkconf.h
 index 143a9c7..d7adf76 100644
 --- a/include/wx/msw/chkconf.h
@@ -146,7 +154,7 @@ index 143a9c7..d7adf76 100644
   */
 diff --git a/include/wx/msw/private/backcompat.h b/include/wx/msw/private/backcompat.h
 new file mode 100644
-index 0000000..835baf1
+index 0000000..3d7642e
 --- /dev/null
 +++ b/include/wx/msw/private/backcompat.h
 @@ -0,0 +1,268 @@
@@ -698,7 +706,7 @@ index d70c39f..7ed59e3 100644
  // wxUxThemeHandle: encapsulates ::Open/CloseThemeData()
  // ----------------------------------------------------------------------------
 diff --git a/src/common/translation.cpp b/src/common/translation.cpp
-index 0d56a2d..6553e68 100644
+index 4cde674..7b3a4d2 100644
 --- a/src/common/translation.cpp
 +++ b/src/common/translation.cpp
 @@ -51,6 +51,7 @@
@@ -709,7 +717,7 @@ index 0d56a2d..6553e68 100644
  #endif
  
  #ifdef __MINGW32__
-@@ -1489,11 +1490,16 @@ namespace
+@@ -1512,11 +1513,16 @@ namespace
  class UntranslatedStringHolder
  {
  private:
@@ -729,7 +737,7 @@ index 0d56a2d..6553e68 100644
      }
  
  public:
-@@ -1503,30 +1509,22 @@ public:
+@@ -1526,30 +1532,22 @@ public:
      {
          static const wxString emptyString;
  
@@ -763,6 +771,27 @@ index 0d56a2d..6553e68 100644
      wxDECLARE_NO_COPY_CLASS(UntranslatedStringHolder);
  };
  
+diff --git a/src/generic/infobar.cpp b/src/generic/infobar.cpp
+index 95a5247..3ee2303 100644
+--- a/src/generic/infobar.cpp
++++ b/src/generic/infobar.cpp
+@@ -600,6 +600,16 @@ int GetDefaultTimeout()
+ #ifdef __WXMSW__
+     // Use the value of "Dismiss notifications after this amount of time"
+     // accessibility option if it's available.
++    //
++    // The constant is Vista and the headers only declare it from _WIN32_WINNT
++    // 0x0600, so a build targeting XP does not see it at all and does not
++    // compile. Nothing else is needed: SystemParametersInfo() just fails for an
++    // action the running system does not know, which is the case the test below
++    // already covers, and XP then falls through to the default timeout.
++#ifndef SPI_GETMESSAGEDURATION
++    #define SPI_GETMESSAGEDURATION 0x2016
++#endif
++
+     ULONG duration = 0;
+     if ( ::SystemParametersInfo(SPI_GETMESSAGEDURATION, 0, &duration, 0) )
+     {
 diff --git a/src/generic/printps.cpp b/src/generic/printps.cpp
 index 9fe33ee..d40ae9d 100644
 --- a/src/generic/printps.cpp
@@ -870,10 +899,10 @@ index 7c65e5a..b2e3468 100644
      return false;
  }
 diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
-index 2a51847..e295c36 100644
+index dee1cb6..9537e9a 100644
 --- a/src/msw/darkmode.cpp
 +++ b/src/msw/darkmode.cpp
-@@ -831,7 +831,7 @@ HandleMenuMessage(WXLRESULT* result,
+@@ -858,7 +858,7 @@ HandleMenuMessage(WXLRESULT* result,
                      drawTextFlags |= DT_HIDEPREFIX;
  
                  wxUxThemeHandle menuTheme(w, L"Menu");
@@ -905,10 +934,10 @@ index 043bd72..55d2eab 100644
  #include "wx/dynlib.h"
  
 diff --git a/src/msw/filedlg.cpp b/src/msw/filedlg.cpp
-index d5806d7..e3382af 100644
+index 944def7..4220ae4 100644
 --- a/src/msw/filedlg.cpp
 +++ b/src/msw/filedlg.cpp
-@@ -1225,7 +1225,12 @@ bool wxFileDialog::AddShortcut(const wxString& directory, int flags)
+@@ -1232,7 +1232,12 @@ bool wxFileDialog::AddShortcut(const wxString& directory, int flags)
          // warn the developer about this incompatibility.
          wxFAIL_MSG("Can't use both AddShortcut() and SetExtraControlCreator()");
      }
@@ -923,10 +952,10 @@ index d5806d7..e3382af 100644
      return false;
  }
 diff --git a/src/msw/graphicsd2d.cpp b/src/msw/graphicsd2d.cpp
-index 639340f..52a46fc 100644
+index 1f49634..7f961ca 100644
 --- a/src/msw/graphicsd2d.cpp
 +++ b/src/msw/graphicsd2d.cpp
-@@ -2455,8 +2455,9 @@ private:
+@@ -2450,8 +2450,9 @@ private:
      // The colour of the hatch
      const wxPBGRAColor m_color;
  
@@ -1103,18 +1132,18 @@ index 130b91d..b582a28 100644
    if ( m_dwLastError != ERROR_SUCCESS &&
            m_dwLastError != ERROR_FILE_NOT_FOUND ) {
 diff --git a/src/msw/renderer.cpp b/src/msw/renderer.cpp
-index b742103..0092ac4 100644
+index af8d46b..7ac26d8 100644
 --- a/src/msw/renderer.cpp
 +++ b/src/msw/renderer.cpp
-@@ -1200,7 +1200,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -1237,7 +1237,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
                  break;
          }
  
--        ::DrawThemeTextEx(hTheme, dc.GetHDC(), LVP_LISTITEM, itemState,
-+        wxDrawThemeTextEx(hTheme, dc.GetHDC(), LVP_LISTITEM, itemState,
-                             drawText->wchar_str(), -1, textFlags, &rc, &textOpts);
+-        ::DrawThemeTextEx(hTheme, GetHdcOf(TempHDCWithFont(dc)),
++        wxDrawThemeTextEx(hTheme, GetHdcOf(TempHDCWithFont(dc)),
+                           LVP_LISTITEM, itemState,
+                           drawText->wchar_str(), -1, textFlags, &rc, &textOpts);
      }
-     else
 diff --git a/src/msw/richmsgdlg.cpp b/src/msw/richmsgdlg.cpp
 index c8f7c6a..5e9b696 100644
 --- a/src/msw/richmsgdlg.cpp
@@ -1514,7 +1543,7 @@ index 53a17bd..614691c 100644
  
          return buf;
 diff --git a/src/msw/utils.cpp b/src/msw/utils.cpp
-index d905964..51b9ffa 100644
+index 8e53e21..8ac167c 100644
 --- a/src/msw/utils.cpp
 +++ b/src/msw/utils.cpp
 @@ -27,6 +27,7 @@
@@ -1525,7 +1554,7 @@ index d905964..51b9ffa 100644
  #include "wx/apptrait.h"
  #include "wx/dynlib.h"
  #include "wx/dynload.h"
-@@ -1207,7 +1208,7 @@ wxString wxGetOsDescription()
+@@ -1203,7 +1204,7 @@ wxString wxGetOsDescription()
  
              DWORD productType = 0;
              if ( !wxIsWindowsServer()
@@ -1534,7 +1563,7 @@ index d905964..51b9ffa 100644
                      info.dwMajorVersion, info.dwMinorVersion,
                      0, 0, // service pack major/minor
                      &productType) )
-@@ -1763,3 +1764,232 @@ int wxCMPFUNC_CONV wxCmpNatural(const wxString& s1, const wxString& s2)
+@@ -1759,3 +1760,232 @@ int wxCMPFUNC_CONV wxCmpNatural(const wxString& s1, const wxString& s2)
  {
      return StrCmpLogicalW(s1.wc_str(), s2.wc_str());
  }
@@ -1818,7 +1847,7 @@ index f861261..33b3007 100644
                                   const wchar_t* classes,
                                   const wchar_t* classesDark)
 diff --git a/src/msw/window.cpp b/src/msw/window.cpp
-index cf157f3..766cd72 100644
+index f8e0c6c..2fedb14 100644
 --- a/src/msw/window.cpp
 +++ b/src/msw/window.cpp
 @@ -871,6 +871,8 @@ void wxWindowMSW::WarpPointer(int x, int y)
@@ -1846,7 +1875,7 @@ index cf157f3..766cd72 100644
  void wxWindowMSW::MSWUpdateUIState(int action, int state)
  {
      // we send WM_CHANGEUISTATE so if nothing needs changing then the system
-@@ -3635,6 +3646,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3583,6 +3594,7 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              }
              break;
  
@@ -1854,7 +1883,7 @@ index cf157f3..766cd72 100644
          case WM_GESTURE:
          {
              HGESTUREINFO hGestureInfo = reinterpret_cast<HGESTUREINFO>(lParam);
-@@ -3713,12 +3725,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
+@@ -3661,12 +3673,15 @@ wxWindowMSW::MSWHandleMessage(WXLRESULT *result,
              // handled, otherwise we still pass them to DefWindowProc().
              processed = HandleTouch(wParam, lParam);
              break;
@@ -1870,7 +1899,7 @@ index cf157f3..766cd72 100644
  
          // CTLCOLOR messages are sent by children to query the parent for their
          // colors
-@@ -6499,6 +6514,11 @@ void wxWindowMSW::GenerateMouseLeave()
+@@ -6463,6 +6478,11 @@ void wxWindowMSW::GenerateMouseLeave()
  // Gesture events
  // ---------------------------------------------------------------------------
  
@@ -1882,7 +1911,7 @@ index cf157f3..766cd72 100644
  bool wxWindowMSW::InitGestureEvent(wxGestureEvent& event,
                                     const wxPoint& pt,
                                     WXDWORD flags)
-@@ -6676,9 +6696,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
+@@ -6640,9 +6660,67 @@ bool wxWindowMSW::HandleTouch(WXWPARAM wParam, WXLPARAM lParam)
      return allHandled;
  }
  
@@ -1950,7 +1979,7 @@ index cf157f3..766cd72 100644
      wxEventType type;
      switch( message )
      {
-@@ -6770,6 +6848,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
+@@ -6734,6 +6812,17 @@ bool wxWindowMSW::HandlePointer(WXUINT message, WXWPARAM wParam, WXLPARAM lParam
      return HandleWindowEvent(event);;
  }
  
