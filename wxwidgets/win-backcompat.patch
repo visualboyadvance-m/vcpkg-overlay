@@ -1,4 +1,4 @@
-From 8581c099b5d151dc2829f2ae3efbf55e9fcef0de Mon Sep 17 00:00:00 2001
+From 8346be33125281bfc22e365dbc5ba5f787f55a73 Mon Sep 17 00:00:00 2001
 From: Rafael Kitover <rkitover@gmail.com>
 Date: Sat, 5 Sep 2026 21:49:11 +0000
 Subject: [PATCH] Restore Windows XP support in wxMSW
@@ -84,6 +84,17 @@ in uxtheme.h and the types these are declared in terms of.
   SystemParametersInfo() fails for an action the running system does not know,
   which is the case GetDefaultTimeout() already tests for, so XP falls through
   to the default timeout the way it would for any other unsupported query.
+- Declare DATETIMEPICKERINFO and DTM_GETDATETIMEPICKERINFO in
+  src/msw/datectrl.cpp, and MCGRIDINFO with its MCGIP_*/MCGIF_* constants and
+  MCM_GETCALENDARGRIDINFO in src/msw/calctrl.cpp, when the headers have not.
+  All of them are Vista, and mingw-w64 and the Windows SDK alike declare them
+  only from NTDDI 0x06000000, so an XP build did not compile at all: 18 errors
+  in calctrl.cpp and 4 in datectrl.cpp, starting with "'MCGRIDINFO' was not
+  declared in this scope". Nothing beyond the declarations is needed. The sole
+  use of either is the dark mode custom paint, which XP never reaches for want
+  of dark mode, and the message would in any case fail on a comctl32 that does
+  not know it, leaving the zeroed WinStruct that both drawing paths already
+  test for.
 
 Co-Authored-By: Rafael Kitover <rkitover@gmail.com>
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
@@ -101,7 +112,9 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
  src/generic/printps.cpp                |  21 ++++-
  src/msw/app.cpp                        |   8 +-
  src/msw/artmsw.cpp                     |   6 +-
+ src/msw/calctrl.cpp                    |  44 +++++++++
  src/msw/darkmode.cpp                   |   2 +-
+ src/msw/datectrl.cpp                   |  25 +++++
  src/msw/dirdlg.cpp                     |   6 +-
  src/msw/filedlg.cpp                    |   7 +-
  src/msw/graphicsd2d.cpp                |   5 +-
@@ -119,7 +132,8 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
  src/msw/utilsgui.cpp                   |   7 ++
  src/msw/uxtheme.cpp                    |  12 +++
  src/msw/window.cpp                     |  89 ++++++++++++++++++
- 31 files changed, 1076 insertions(+), 80 deletions(-)
+ 33 files changed, 1145 insertions(+), 80 deletions(-)
+
 diff --git a/include/wx/msw/chkconf.h b/include/wx/msw/chkconf.h
 index 143a9c7..d7adf76 100644
 --- a/include/wx/msw/chkconf.h
@@ -772,7 +786,7 @@ index 4cde674..7b3a4d2 100644
  };
  
 diff --git a/src/generic/infobar.cpp b/src/generic/infobar.cpp
-index 95a5247..3ee2303 100644
+index c9b1001..c1a8047 100644
 --- a/src/generic/infobar.cpp
 +++ b/src/generic/infobar.cpp
 @@ -600,6 +600,16 @@ int GetDefaultTimeout()
@@ -898,8 +912,63 @@ index 7c65e5a..b2e3468 100644
  
      return false;
  }
+diff --git a/src/msw/calctrl.cpp b/src/msw/calctrl.cpp
+index db47dad..36ddb02 100644
+--- a/src/msw/calctrl.cpp
++++ b/src/msw/calctrl.cpp
+@@ -33,6 +33,50 @@
+ #include "wx/msw/private/darkmode.h"
+ #include <uxtheme.h>
+ 
++// MCGRIDINFO and the part, flag and message constants that go with it are
++// Vista and the headers only declare them from NTDDI 0x06000000, so a build
++// targeting XP does not see them at all and does not compile. Re-declare them
++// here with the values <commctrl.h> gives them. Nothing else is needed: the
++// only use is the dark mode custom paint below, which XP never reaches
++// because it has no dark mode, and MCM_GETCALENDARGRIDINFO would in any case
++// simply fail on a comctl32 that does not know it, leaving the zeroed
++// WinStruct the drawing code already copes with.
++#ifndef MCM_GETCALENDARGRIDINFO
++
++#define MCGIP_CALENDARCONTROL 0
++#define MCGIP_NEXT            1
++#define MCGIP_PREV            2
++#define MCGIP_FOOTER          3
++#define MCGIP_CALENDAR        4
++#define MCGIP_CALENDARHEADER  5
++#define MCGIP_CALENDARBODY    6
++#define MCGIP_CALENDARROW     7
++#define MCGIP_CALENDARCELL    8
++
++#define MCGIF_DATE 0x1
++#define MCGIF_RECT 0x2
++#define MCGIF_NAME 0x4
++
++typedef struct tagMCGRIDINFO
++{
++    UINT       cbSize;
++    DWORD      dwPart;
++    DWORD      dwFlags;
++    int        iCalendar;
++    int        iRow;
++    int        iCol;
++    BOOL       bSelected;
++    SYSTEMTIME stStart;
++    SYSTEMTIME stEnd;
++    RECT       rc;
++    PWSTR      pszName;
++    size_t     cchName;
++} MCGRIDINFO, *PMCGRIDINFO;
++
++#define MCM_GETCALENDARGRIDINFO (MCM_FIRST+24)
++
++#endif // !MCM_GETCALENDARGRIDINFO
++
+ // ----------------------------------------------------------------------------
+ // constants
+ // ----------------------------------------------------------------------------
 diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
-index dee1cb6..9537e9a 100644
+index 652ea68..d40269f 100644
 --- a/src/msw/darkmode.cpp
 +++ b/src/msw/darkmode.cpp
 @@ -858,7 +858,7 @@ HandleMenuMessage(WXLRESULT* result,
@@ -911,6 +980,42 @@ index dee1cb6..9537e9a 100644
                                    buf, mii.cch, drawTextFlags, rcItem,
                                    &textOpts);
              }
+diff --git a/src/msw/datectrl.cpp b/src/msw/datectrl.cpp
+index 4abb620..5c30724 100644
+--- a/src/msw/datectrl.cpp
++++ b/src/msw/datectrl.cpp
+@@ -37,6 +37,31 @@
+ #include "wx/msw/private/custompaint.h"
+ #include "wx/renderer.h"
+ 
++// DATETIMEPICKERINFO and DTM_GETDATETIMEPICKERINFO are Vista and the headers
++// only declare them from NTDDI 0x06000000, so a build targeting XP does not
++// see them at all and does not compile. Re-declare them here as <commctrl.h>
++// does. Nothing else is needed: the only use is the dark mode custom paint
++// below, which XP never reaches because it has no dark mode, and the message
++// would in any case simply fail on a comctl32 that does not know it, leaving
++// the zeroed rcCheck that the drawing code already tests for.
++#ifndef DTM_GETDATETIMEPICKERINFO
++
++typedef struct tagDATETIMEPICKERINFO
++{
++    DWORD cbSize;
++    RECT  rcCheck;
++    DWORD stateCheck;
++    RECT  rcButton;
++    DWORD stateButton;
++    HWND  hwndEdit;
++    HWND  hwndUD;
++    HWND  hwndDropDown;
++} DATETIMEPICKERINFO, *LPDATETIMEPICKERINFO;
++
++#define DTM_GETDATETIMEPICKERINFO (DTM_FIRST+14)
++
++#endif // !DTM_GETDATETIMEPICKERINFO
++
+ wxIMPLEMENT_DYNAMIC_CLASS(wxDatePickerCtrl, wxControl);
+ 
+ // ============================================================================
 diff --git a/src/msw/dirdlg.cpp b/src/msw/dirdlg.cpp
 index 043bd72..55d2eab 100644
 --- a/src/msw/dirdlg.cpp
@@ -1132,10 +1237,10 @@ index 130b91d..b582a28 100644
    if ( m_dwLastError != ERROR_SUCCESS &&
            m_dwLastError != ERROR_FILE_NOT_FOUND ) {
 diff --git a/src/msw/renderer.cpp b/src/msw/renderer.cpp
-index af8d46b..7ac26d8 100644
+index 3f5cfaf..2cadca9 100644
 --- a/src/msw/renderer.cpp
 +++ b/src/msw/renderer.cpp
-@@ -1237,7 +1237,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
+@@ -1256,7 +1256,7 @@ void wxRendererXP::DrawItemText(wxWindow* win,
                  break;
          }
  
