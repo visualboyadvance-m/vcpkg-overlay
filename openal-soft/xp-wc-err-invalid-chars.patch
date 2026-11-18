@@ -1,0 +1,19 @@
+--- a/common/strutils.cpp
++++ b/common/strutils.cpp
+@@ -8,6 +8,16 @@
+ #ifdef _WIN32
+ #include <windows.h>
+ 
++/* WC_ERR_INVALID_CHARS is Vista and later: the SDK only declares it for
++ * _WIN32_WINNT >= 0x0600, and WideCharToMultiByte() rejects it with
++ * ERROR_INVALID_FLAGS on Windows XP, so it cannot simply be passed anyway.
++ * Falling back to 0 keeps the XP behaviour, where an unconvertible sequence
++ * is substituted rather than failing the whole conversion.
++ */
++#ifndef WC_ERR_INVALID_CHARS
++#define WC_ERR_INVALID_CHARS 0
++#endif
++
+ #include "gsl/gsl"
+ 
+ /* NOLINTBEGIN(bugprone-suspicious-stringview-data-usage) */
