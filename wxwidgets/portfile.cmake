@@ -203,7 +203,11 @@ endif()
 #
 # Restricted to x86-mingw-static because that is the only triplet whose
 # consumer turns LTO on, and the only one this has been tested against.
-if(VCPKG_TARGET_TRIPLET STREQUAL "x86-mingw-static")
+#
+# TARGET_TRIPLET, not VCPKG_TARGET_TRIPLET: the latter is what the vcpkg
+# toolchain file sets for a consuming project, and is not defined here in
+# portfile scope, so testing it silently builds wx without LTO.
+if(TARGET_TRIPLET STREQUAL "x86-mingw-static")
     string(APPEND c_flags " -flto")
     string(APPEND cxx_flags " -flto")
 endif()
