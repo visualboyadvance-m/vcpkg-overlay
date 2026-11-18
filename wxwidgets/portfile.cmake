@@ -186,6 +186,28 @@ if(VCPKG_TARGET_IS_WINDOWS)
     string(APPEND cxx_flags " -DWINVER=${win32_winnt} -D_WIN32_WINNT=${win32_winnt}")
 endif()
 
+# Build with LTO for the Windows XP release triplet.
+#
+# VBA-M's release build links its own objects with -flto there. GCC emits each
+# virtual thunk into a .gnu.linkonce.t.* COMDAT group, and when the only
+# definition it can see for one comes from LTO IR it discards the group; the
+# non-LTO objects in libwx still reference the thunk, and the link fails with
+# hundreds of
+#
+#   `__ZThn872_NK10wxTextCtrl11GetEditHWNDEv' ... defined in discarded
+#   section `.gnu.linkonce.t._ZNK10wxTextCtrl11GetEditHWNDEv'
+#
+# Compiling wx with -flto as well puts its definitions in the IR too, so the
+# whole link is LTO and the groups resolve. -ffat-lto-objects does not help:
+# the linker plugin claims the object and drops the precompiled half.
+#
+# Restricted to x86-mingw-static because that is the only triplet whose
+# consumer turns LTO on, and the only one this has been tested against.
+if(VCPKG_TARGET_TRIPLET STREQUAL "x86-mingw-static")
+    string(APPEND c_flags " -flto")
+    string(APPEND cxx_flags " -flto")
+endif()
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
