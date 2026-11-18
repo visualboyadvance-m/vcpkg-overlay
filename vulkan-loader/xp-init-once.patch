@@ -1,0 +1,38 @@
+--- a/loader/vk_loader_platform.h
++++ b/loader/vk_loader_platform.h
+@@ -270,9 +270,35 @@
+ #define LOADER_PLATFORM_THREAD_ONCE_EXTERN_DEFINITION(var) extern pthread_once_t var;
+ #define LOADER_PLATFORM_THREAD_ONCE(ctl, func) loader_platform_thread_once_fn(ctl, func);
+ #elif defined(WIN32)
++#if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600
++// Windows XP has no one-time initialization API: InitOnceExecuteOnce() is
++// Vista and later. It cannot be called behind a run-time version check
++// either, because the static import alone stops the image loading on XP.
++//
++// INIT_ONCE is a union of a single pointer and INIT_ONCE_STATIC_INIT zeroes
++// it, so the state fits in the object the callers already declare and the
++// surrounding macros stay unchanged. 0 means untouched, 1 means some thread
++// is inside func, 2 means func has returned. The thread that wins the
++// exchange runs func exactly once; the others spin until it is done, which
++// preserves the guarantee callers rely on, that initialization is complete
++// once this returns.
++static inline void loader_platform_thread_win32_once_fn(INIT_ONCE *ctl, PINIT_ONCE_FN func) {
++    for (;;) {
++        PVOID prev = InterlockedCompareExchangePointer(&ctl->Ptr, (PVOID)(ULONG_PTR)1, (PVOID)(ULONG_PTR)0);
++        if (prev == (PVOID)(ULONG_PTR)2) return;
++        if (prev == (PVOID)(ULONG_PTR)0) {
++            func(ctl, NULL, NULL);
++            InterlockedExchangePointer(&ctl->Ptr, (PVOID)(ULONG_PTR)2);
++            return;
++        }
++        Sleep(0);
++    }
++}
++#else
+ static inline void loader_platform_thread_win32_once_fn(INIT_ONCE *ctl, PINIT_ONCE_FN func) {
+     InitOnceExecuteOnce(ctl, func, NULL, NULL);
+ }
++#endif
+ #define LOADER_PLATFORM_THREAD_ONCE_DECLARATION(var) INIT_ONCE var = INIT_ONCE_STATIC_INIT;
+ #define LOADER_PLATFORM_THREAD_ONCE_EXTERN_DEFINITION(var) extern INIT_ONCE var;
+ #define LOADER_PLATFORM_THREAD_ONCE(ctl, func) loader_platform_thread_win32_once_fn(ctl, func);
