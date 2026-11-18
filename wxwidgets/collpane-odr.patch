@@ -1,0 +1,30 @@
+--- a/include/wx/xrc/xh_collpane.h	2026-11-18 17:42:12.499244500 +0000
++++ b/include/wx/xrc/xh_collpane.h	2026-11-18 17:42:12.791530800 +0000
+@@ -14,6 +14,13 @@
+ 
+ #if wxUSE_XRC && wxUSE_COLLPANE
+ 
++// wxCollapsiblePane is a macro for wxGenericCollapsiblePane, not a typedef
++// (see wx/collpane.h), so the forward declaration below declares a different
++// type depending on whether that header has already been seen. Include it so
++// the name always resolves the same way; without this m_collpane has two
++// different types across translation units and the class violates the ODR.
++#include "wx/collpane.h"
++
+ class WXDLLIMPEXP_FWD_CORE wxCollapsiblePane;
+ 
+ class WXDLLIMPEXP_XRC wxCollapsiblePaneXmlHandler : public wxXmlResourceHandler
+--- a/include/wx/generic/richmsgdlgg.h	2026-11-18 17:42:12.548546400 +0000
++++ b/include/wx/generic/richmsgdlgg.h	2026-11-18 17:42:12.849684300 +0000
+@@ -10,6 +10,11 @@
+ #ifndef _WX_GENERIC_RICHMSGDLGG_H_
+ #define _WX_GENERIC_RICHMSGDLGG_H_
+ 
++// See the note in wx/xrc/xh_collpane.h: wxCollapsiblePane is a macro, so the
++// forward declaration below needs wx/collpane.h to have been seen for the
++// name to mean the same type in every translation unit.
++#include "wx/collpane.h"
++
+ class WXDLLIMPEXP_FWD_CORE wxCheckBox;
+ class WXDLLIMPEXP_FWD_CORE wxCollapsiblePane;
+ class WXDLLIMPEXP_FWD_CORE wxCollapsiblePaneEvent;

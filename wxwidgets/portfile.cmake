@@ -9,6 +9,7 @@ set(wx_patches
     win-backcompat.patch
     force-exceptions.patch
     wx-macOS.patch
+    collpane-odr.patch
     wxWidgets-riscv64-magic.diff
 )
 
@@ -207,9 +208,18 @@ endif()
 # TARGET_TRIPLET, not VCPKG_TARGET_TRIPLET: the latter is what the vcpkg
 # toolchain file sets for a consuming project, and is not defined here in
 # portfile scope, so testing it silently builds wx without LTO.
+# Requested through CMAKE_INTERPROCEDURAL_OPTIMIZATION rather than by putting
+# -flto in the flags. A raw -flto leaves CMake archiving with plain ar and
+# ranlib, which cannot index the symbols inside slim LTO objects, and wx's own
+# wxrc.exe then fails to link against the archives just built:
+#
+#   undefined reference to `vtable for wxMBConv'
+#   undefined reference to `wxConvLibcPtr'
+#
+# CMAKE_INTERPROCEDURAL_OPTIMIZATION makes CMake use the compiler's wrappers,
+# gcc-ar and gcc-ranlib, which load the LTO plugin and index them properly.
 if(TARGET_TRIPLET STREQUAL "x86-mingw-static")
-    string(APPEND c_flags " -flto")
-    string(APPEND cxx_flags " -flto")
+    list(APPEND OPTIONS -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON)
 endif()
 
 vcpkg_cmake_configure(
