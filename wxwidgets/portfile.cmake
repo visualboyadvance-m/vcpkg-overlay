@@ -10,6 +10,7 @@ set(wx_patches
     force-exceptions.patch
     wx-macOS.patch
     collpane-odr.patch
+    thunk-comdat.patch
     wxWidgets-riscv64-magic.diff
 )
 
@@ -42,8 +43,8 @@ endif()
 # vcpkg-daily.ps1 rewrites these six by name and updates them together. Their
 # being set() rather than written into the calls below is what lets it do that
 # without counting lines.
-set(WX_REF        ec7a80f5f6a46ba1e066c24e3d56b8be8887e30b)
-set(WX_SHA512     fec36219337d5275cf5b64e431a0ce2b932ef0552c968bbe9ea111ed9cc9c4fd91b6b051be7444bf0f691df107da63094f700e87f9b1aabb35a5e5ffe300f1b6)
+set(WX_REF        f6a0dc859bfdd67b17d8f893be94d9025d0df0f8)
+set(WX_SHA512     60182865d30fd74cc5034fda33b4bbe148512a7dc2c297db56c63cf06df3b9209b2f746d18e52164d612aefc30aca06d7336800cf6e57401fbbad9e3f4721c03)
 set(LEXILLA_REF   e2b749b72440213e010e6c2c0b89a2e4c33fed2f)
 set(LEXILLA_SHA512 cdbb75d4be234b6ab9c0992470b0ec06641a2af1497ca162255b8c1d3c5be7bf19a2f61a636ec03b57adc5e18d1fd0e6234b10114b8e78deb11c4c8a92a0891b)
 set(SCINTILLA_REF 0b90f31ced23241054e8088abb50babe9a44ae67)
