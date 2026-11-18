@@ -1,0 +1,87 @@
+--- a/include/wx/textctrl.h
++++ b/include/wx/textctrl.h
+@@ -892,14 +892,11 @@
+     virtual bool SetDefaultStyle(const wxTextAttr& style) override;
+ 
+     // wxTextAreaBase overrides
+-    virtual wxString GetValue() const override
+-    {
+-       return wxTextEntry::GetValue();
+-    }
+-    virtual void SetValue(const wxString& value) override
+-    {
+-       wxTextEntry::SetValue(value);
+-    }
++    //
++    // Defined out of line, in src/common/textcmn.cpp, on purpose: see the
++    // comment there.
++    virtual wxString GetValue() const override;
++    virtual void SetValue(const wxString& value) override;
+ 
+     // wxWindow overrides
+     virtual wxVisualAttributes GetDefaultAttributes() const override
+--- a/include/wx/msw/combobox.h
++++ b/include/wx/msw/combobox.h
+@@ -82,8 +82,9 @@
+     virtual void Clear() override;
+     virtual wxString GetValue() const override;
+     virtual void SetValue(const wxString& value) override;
+-    virtual wxString GetStringSelection() const override
+-        { return wxChoice::GetStringSelection(); }
++    // Defined out of line, in src/msw/combobox.cpp, on purpose: see the
++    // comment there.
++    virtual wxString GetStringSelection() const override;
+     virtual void Popup() { MSWDoPopupOrDismiss(true); }
+     virtual void Dismiss() { MSWDoPopupOrDismiss(false); }
+     virtual void SetSelection(int n) override { wxChoice::SetSelection(n); }
+--- a/src/common/textcmn.cpp
++++ b/src/common/textcmn.cpp
+@@ -913,6 +913,30 @@
+     return true;
+ }
+ 
++// GetValue() and SetValue() override a virtual function inherited from two
++// different base classes at once -- wxTextAreaBase and wxTextEntry -- so the
++// compiler emits two non-virtual thunks for each of them, one per base, at two
++// different "this" adjustments.
++//
++// If they were defined inline in the header, as they used to be, every
++// translation unit would emit them into a COMDAT group keyed by the function
++// itself, with both thunks inside it. GCC's LTO writer names that group after
++// the target function rather than after each thunk, so two objects that need
++// different subsets of the thunks end up with same-named groups holding
++// different symbols, and the PE linker rejects them as multiple definitions
++// (GCC PR 94156, which is MinGW-only and still open). Defining them here
++// instead leaves a single definition of each thunk in this object, and every
++// other translation unit simply refers to it.
++wxString wxTextCtrlBase::GetValue() const
++{
++    return wxTextEntry::GetValue();
++}
++
++void wxTextCtrlBase::SetValue(const wxString& value)
++{
++    wxTextEntry::SetValue(value);
++}
++
+ // apply styling to text range
+ bool wxTextCtrlBase::SetStyle(long WXUNUSED(start), long WXUNUSED(end),
+                               const wxTextAttr& WXUNUSED(style))
+--- a/src/msw/combobox.cpp
++++ b/src/msw/combobox.cpp
+@@ -628,6 +628,15 @@
+ // wxComboBox text control-like methods
+ // ----------------------------------------------------------------------------
+ 
++// Defined here rather than inline in the header because it overrides a
++// virtual function inherited from both wxChoice and wxTextEntry, so it is
++// thunked at two different offsets. See the longer comment on
++// wxTextCtrlBase::GetValue() in src/common/textcmn.cpp.
++wxString wxComboBox::GetStringSelection() const
++{
++    return wxChoice::GetStringSelection();
++}
++
+ wxString wxComboBox::GetValue() const
+ {
+     return HasFlag(wxCB_READONLY) ? GetStringSelection()
