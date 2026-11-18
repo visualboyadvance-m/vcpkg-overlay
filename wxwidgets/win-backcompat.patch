@@ -916,8 +916,8 @@ diff --git a/src/msw/calctrl.cpp b/src/msw/calctrl.cpp
 index db47dad..36ddb02 100644
 --- a/src/msw/calctrl.cpp
 +++ b/src/msw/calctrl.cpp
-@@ -33,6 +33,50 @@
- #include "wx/msw/private/darkmode.h"
+@@ -34,6 +34,50 @@
+ #include "wx/renderer.h"
  #include <uxtheme.h>
  
 +// MCGRIDINFO and the part, flag and message constants that go with it are
