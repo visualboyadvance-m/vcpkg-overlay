@@ -10,6 +10,7 @@ vcpkg_from_github(
         003-fix-fmt-header.patch
         004-fix-libcxx-compatibility.patch
         xp-wc-err-invalid-chars.patch
+        libcxx-unique-ptr-operator-deref.patch
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
