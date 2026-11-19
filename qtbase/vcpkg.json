@@ -64,18 +64,11 @@
     "zlib"
   ],
   "default-features": [
-    {
-      "name": "appstore-compliant",
-      "platform": "uwp"
-    },
     "async-io",
-    "brotli",
-    "concurrent",
     {
       "name": "dbus",
-      "platform": "!(static & windows) & !android"
+      "platform": "linux"
     },
-    "dnslookup",
     "doubleconversion",
     {
       "name": "egl",
@@ -96,28 +89,17 @@
     },
     "gui",
     "harfbuzz",
-    "icu",
     "jpeg",
-    "network",
+    {
+      "name": "network",
+      "platform": "!android"
+    },
     {
       "name": "opengl",
       "platform": "!ios"
     },
-    {
-      "name": "openssl",
-      "platform": "!ios"
-    },
     "pcre2",
     "png",
-    {
-      "name": "securetransport",
-      "platform": "ios"
-    },
-    "sessionmanager",
-    "sql",
-    "sql-psql",
-    "sql-sqlite",
-    "testlib",
     "thread",
     "widgets",
     {
@@ -139,8 +121,7 @@
     {
       "name": "xrender",
       "platform": "linux"
-    },
-    "zstd"
+    }
   ],
   "features": {
     "appstore-compliant": {
