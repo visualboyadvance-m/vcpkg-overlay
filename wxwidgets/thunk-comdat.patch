@@ -1,6 +1,126 @@
---- a/include/wx/textctrl.h
-+++ b/include/wx/textctrl.h
-@@ -892,14 +892,11 @@
+diff -u -r a/include/wx/msw/combobox.h b/include/wx/msw/combobox.h
+--- a/include/wx/msw/combobox.h	2026-11-19 18:09:48.558356500 +0000
++++ b/include/wx/msw/combobox.h	2026-11-19 18:11:01.329671300 +0000
+@@ -82,14 +82,21 @@
+     virtual void Clear() override;
+     virtual wxString GetValue() const override;
+     virtual void SetValue(const wxString& value) override;
+-    virtual wxString GetStringSelection() const override
+-        { return wxChoice::GetStringSelection(); }
++    // Defined out of line, in src/msw/combobox.cpp, on purpose: see the
++    // comment there.
++    virtual wxString GetStringSelection() const override;
+     virtual void Popup() { MSWDoPopupOrDismiss(true); }
+     virtual void Dismiss() { MSWDoPopupOrDismiss(false); }
+-    virtual void SetSelection(int n) override { wxChoice::SetSelection(n); }
++    //
++    // Defined out of line, in src/msw/combobox.cpp, on purpose: see the
++    // comment there.
++    virtual void SetSelection(int n) override;
+     virtual void SetSelection(long from, long to) override
+         { wxTextEntry::SetSelection(from, to); }
+-    virtual int GetSelection() const override { return wxChoice::GetSelection(); }
++    //
++    // Defined out of line, in src/msw/combobox.cpp, on purpose: see the
++    // comment there.
++    virtual int GetSelection() const override;
+     virtual bool ContainsHWND(WXHWND hWnd) const override;
+     virtual void GetSelection(long *from, long *to) const override;
+ 
+diff -u -r a/include/wx/msw/radiobox.h b/include/wx/msw/radiobox.h
+--- a/include/wx/msw/radiobox.h	2026-11-19 18:09:48.896617100 +0000
++++ b/include/wx/msw/radiobox.h	2026-11-19 18:11:01.331440800 +0000
+@@ -84,7 +84,10 @@
+ 
+     // implement the radiobox interface
+     virtual void SetSelection(int n) override;
+-    virtual int GetSelection() const override { return m_selectedButton; }
++    //
++    // Defined out of line, in src/msw/radiobox.cpp, on purpose: see the
++    // comment there.
++    virtual int GetSelection() const override;
+     virtual unsigned int GetCount() const override;
+     virtual wxString GetString(unsigned int n) const override;
+     virtual void SetString(unsigned int n, const wxString& label) override;
+diff -u -r a/include/wx/msw/textctrl.h b/include/wx/msw/textctrl.h
+--- a/include/wx/msw/textctrl.h	2026-11-19 18:09:48.204390000 +0000
++++ b/include/wx/msw/textctrl.h	2026-11-19 18:11:01.321170200 +0000
+@@ -42,7 +42,10 @@
+ #if wxUSE_RICHEDIT
+     virtual wxString GetRTFValue() const override;
+     virtual void SetRTFValue(const wxString& val) override;
+-    virtual bool IsRTFSupported() override { return IsRich(); }
++    //
++    // Defined out of line, in src/msw/textctrl.cpp, on purpose: see the
++    // comment there.
++    virtual bool IsRTFSupported() override;
+     virtual wxTextSearchResult SearchText(const wxTextSearch& search) const override;
+ #endif // wxUSE_RICHEDIT
+ 
+@@ -97,12 +100,12 @@
+ 
+     virtual void ShowPosition(long pos) override;
+     virtual wxTextCtrlHitTestResult HitTest(const wxPoint& pt, long *pos) const override;
++    //
++    // Defined out of line, in src/msw/textctrl.cpp, on purpose: see the
++    // comment there.
+     virtual wxTextCtrlHitTestResult HitTest(const wxPoint& pt,
+                                             wxTextCoord *col,
+-                                            wxTextCoord *row) const override
+-    {
+-        return wxTextCtrlBase::HitTest(pt, col, row);
+-    }
++                                            wxTextCoord *row) const override;
+ 
+     virtual void SetLayoutDirection(wxLayoutDirection dir) override;
+     virtual wxLayoutDirection GetLayoutDirection() const override;
+@@ -291,14 +294,17 @@
+     int m_updatesCount;
+ 
+ private:
+-    virtual void EnableTextChangedEvents(bool enable) override
+-    {
+-        m_updatesCount = enable ? -1 : -2;
+-    }
++    //
++    // Defined out of line, in src/msw/textctrl.cpp, on purpose: see the
++    // comment there.
++    virtual void EnableTextChangedEvents(bool enable) override;
+ 
+     // implement wxTextEntry pure virtual: it implements all the operations for
+     // the simple EDIT controls
+-    virtual WXHWND GetEditHWND() const override { return m_hWnd; }
++    //
++    // Defined out of line, in src/msw/textctrl.cpp, on purpose: see the
++    // comment there.
++    virtual WXHWND GetEditHWND() const override;
+ 
+ #if wxUSE_OLE
+     virtual void MSWProcessSpecialKey(wxKeyEvent& event) override;
+diff -u -r a/include/wx/textctrl.h b/include/wx/textctrl.h
+--- a/include/wx/textctrl.h	2026-11-19 18:09:47.845462800 +0000
++++ b/include/wx/textctrl.h	2026-11-19 18:11:01.299814700 +0000
+@@ -809,14 +809,11 @@
+     wxTextCtrlIface() = default;
+ 
+     // wxTextAreaBase overrides
+-    virtual wxString GetValue() const override
+-    {
+-       return wxTextEntryBase::GetValue();
+-    }
+-    virtual void SetValue(const wxString& value) override
+-    {
+-       wxTextEntryBase::SetValue(value);
+-    }
++    //
++    // Defined out of line, in src/common/textcmn.cpp, on purpose: see the
++    // comment there.
++    virtual wxString GetValue() const override;
++    virtual void SetValue(const wxString& value) override;
+ 
+ protected:
+     virtual bool IsValidPosition(long pos) const override
+@@ -892,14 +889,11 @@
      virtual bool SetDefaultStyle(const wxTextAttr& style) override;
  
      // wxTextAreaBase overrides
@@ -20,23 +140,29 @@
  
      // wxWindow overrides
      virtual wxVisualAttributes GetDefaultAttributes() const override
---- a/include/wx/msw/combobox.h
-+++ b/include/wx/msw/combobox.h
-@@ -82,8 +82,9 @@
-     virtual void Clear() override;
-     virtual wxString GetValue() const override;
-     virtual void SetValue(const wxString& value) override;
--    virtual wxString GetStringSelection() const override
--        { return wxChoice::GetStringSelection(); }
-+    // Defined out of line, in src/msw/combobox.cpp, on purpose: see the
+@@ -944,13 +938,13 @@
+ #endif // wxHAS_TEXT_WINDOW_STREAM
+ 
+     // Another wxTextAreaBase override.
+-    virtual bool IsValidPosition(long pos) const override
+-    {
+-        return pos >= 0 && pos <= GetLastPosition();
+-    }
++    //
++    // Defined out of line, in src/common/textcmn.cpp, on purpose: see the
 +    // comment there.
-+    virtual wxString GetStringSelection() const override;
-     virtual void Popup() { MSWDoPopupOrDismiss(true); }
-     virtual void Dismiss() { MSWDoPopupOrDismiss(false); }
-     virtual void SetSelection(int n) override { wxChoice::SetSelection(n); }
---- a/src/common/textcmn.cpp
-+++ b/src/common/textcmn.cpp
-@@ -913,6 +913,30 @@
++    virtual bool IsValidPosition(long pos) const override;
+ 
+     // implement the wxTextEntry pure virtual method
+-    virtual wxWindow *GetEditableWindow() override { return this; }
++    virtual wxWindow *GetEditableWindow() override;
+ 
+ #if wxUSE_ACCEL
+     // Reserve the keys used for editing the text for this control instead of
+diff -u -r a/src/common/textcmn.cpp b/src/common/textcmn.cpp
+--- a/src/common/textcmn.cpp	2026-11-19 18:09:48.026056300 +0000
++++ b/src/common/textcmn.cpp	2026-11-19 18:11:22.463466500 +0000
+@@ -913,6 +913,51 @@
      return true;
  }
  
@@ -64,12 +190,34 @@
 +    wxTextEntry::SetValue(value);
 +}
 +
++bool wxTextCtrlBase::IsValidPosition(long pos) const
++{
++    return pos >= 0 && pos <= GetLastPosition();
++}
++
++wxWindow *wxTextCtrlBase::GetEditableWindow()
++{
++    return this;
++}
++
++// Out of line for the same reason, see above.
++wxString wxTextCtrlIface::GetValue() const
++{
++    return wxTextEntryBase::GetValue();
++}
++
++void wxTextCtrlIface::SetValue(const wxString& value)
++{
++    wxTextEntryBase::SetValue(value);
++}
++
  // apply styling to text range
  bool wxTextCtrlBase::SetStyle(long WXUNUSED(start), long WXUNUSED(end),
                                const wxTextAttr& WXUNUSED(style))
---- a/src/msw/combobox.cpp
-+++ b/src/msw/combobox.cpp
-@@ -628,6 +628,15 @@
+diff -u -r a/src/msw/combobox.cpp b/src/msw/combobox.cpp
+--- a/src/msw/combobox.cpp	2026-11-19 18:09:48.731710100 +0000
++++ b/src/msw/combobox.cpp	2026-11-19 18:11:22.464469500 +0000
+@@ -628,6 +628,25 @@
  // wxComboBox text control-like methods
  // ----------------------------------------------------------------------------
  
@@ -82,6 +230,106 @@
 +    return wxChoice::GetStringSelection();
 +}
 +
++void wxComboBox::SetSelection(int n)
++{
++    wxChoice::SetSelection(n);
++}
++
++int wxComboBox::GetSelection() const
++{
++    return wxChoice::GetSelection();
++}
++
  wxString wxComboBox::GetValue() const
  {
      return HasFlag(wxCB_READONLY) ? GetStringSelection()
+diff -u -r a/src/msw/radiobox.cpp b/src/msw/radiobox.cpp
+--- a/src/msw/radiobox.cpp	2026-11-19 18:09:49.064364400 +0000
++++ b/src/msw/radiobox.cpp	2026-11-19 18:11:22.465468300 +0000
+@@ -532,4 +532,31 @@
+     }
+ }
+ 
++// ----------------------------------------------------------------------------
++// out of line to keep its thunks out of a COMDAT group
++// ----------------------------------------------------------------------------
++
++// The definitions below are trivial one liners that belong in the header and
++// were written there until this patch. They cannot stay there. Each overrides
++// a virtual that is declared in more than one base class, so GCC emits a
++// non-virtual thunk at a different `this' adjustment per base. Its LTO writer
++// names a thunk's COMDAT group after the target function rather than after
++// each thunk, so two objects needing different subsets of the thunks produce
++// same-named groups holding different symbols. The PE linker then discards one
++// group and the references into it dangle:
++//
++//   `__ZThn428_NK10wxTextCtrl7HitTestERK7wxPointPlS3_' referenced in section
++//   `.rdata': defined in discarded section
++//   `.gnu.linkonce.t._ZNK10wxTextCtrl7HitTestERK7wxPointPlS3_'
++//
++// That is GCC PR 94156, MinGW-only and open since 2020. Defined out of line
++// there is no COMDAT group at all, so there is nothing to discard: one
++// definition of each thunk lives here and every other translation unit just
++// refers to it.
++
++int wxRadioBox::GetSelection() const
++{
++    return m_selectedButton;
++}
++
+ #endif // wxUSE_RADIOBOX
+diff -u -r a/src/msw/textctrl.cpp b/src/msw/textctrl.cpp
+--- a/src/msw/textctrl.cpp	2026-11-19 18:09:48.386355300 +0000
++++ b/src/msw/textctrl.cpp	2026-11-19 18:11:22.463466500 +0000
+@@ -4022,4 +4022,51 @@
+ 
+ #endif // wxUSE_RICHEDIT
+ 
++// ----------------------------------------------------------------------------
++// out of line to keep their thunks out of a COMDAT group
++// ----------------------------------------------------------------------------
++
++// The definitions below are trivial one liners that belong in the header and
++// were written there until this patch. They cannot stay there. Each overrides
++// a virtual that is declared in more than one base class, so GCC emits a
++// non-virtual thunk at a different `this' adjustment per base. Its LTO writer
++// names a thunk's COMDAT group after the target function rather than after
++// each thunk, so two objects needing different subsets of the thunks produce
++// same-named groups holding different symbols. The PE linker then discards one
++// group and the references into it dangle:
++//
++//   `__ZThn428_NK10wxTextCtrl7HitTestERK7wxPointPlS3_' referenced in section
++//   `.rdata': defined in discarded section
++//   `.gnu.linkonce.t._ZNK10wxTextCtrl7HitTestERK7wxPointPlS3_'
++//
++// That is GCC PR 94156, MinGW-only and open since 2020. Defined out of line
++// there is no COMDAT group at all, so there is nothing to discard: one
++// definition of each thunk lives here and every other translation unit just
++// refers to it.
++
++wxTextCtrlHitTestResult
++wxTextCtrl::HitTest(const wxPoint& pt, wxTextCoord *col, wxTextCoord *row) const
++{
++    return wxTextCtrlBase::HitTest(pt, col, row);
++}
++
++void wxTextCtrl::EnableTextChangedEvents(bool enable)
++{
++    m_updatesCount = enable ? -1 : -2;
++}
++
++WXHWND wxTextCtrl::GetEditHWND() const
++{
++    return m_hWnd;
++}
++
++#if wxUSE_RICHEDIT
++
++bool wxTextCtrl::IsRTFSupported()
++{
++    return IsRich();
++}
++
++#endif // wxUSE_RICHEDIT
++
+ #endif // wxUSE_TEXTCTRL

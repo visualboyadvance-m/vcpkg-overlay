@@ -188,39 +188,47 @@ if(VCPKG_TARGET_IS_WINDOWS)
     string(APPEND cxx_flags " -DWINVER=${win32_winnt} -D_WIN32_WINNT=${win32_winnt}")
 endif()
 
-# Build with LTO for the Windows XP release triplet.
+# Match the consumer's architecture baseline on the Windows XP release triplet.
 #
-# VBA-M's release build links its own objects with -flto there. GCC emits each
-# virtual thunk into a .gnu.linkonce.t.* COMDAT group, and when the only
-# definition it can see for one comes from LTO IR it discards the group; the
-# non-LTO objects in libwx still reference the thunk, and the link fails with
-# hundreds of
+# visualboyadvance-m builds this triplet for the Windows XP release with a
+# Pentium III baseline (see its cmake/Toolchain-gcc-clang.cmake) and links with
+# -flto, which merges wx's code into its own. wx compiled for plain i686 then
+# fails in LTRANS with
 #
-#   `__ZThn872_NK10wxTextCtrl11GetEditHWNDEv' ... defined in discarded
-#   section `.gnu.linkonce.t._ZNK10wxTextCtrl11GetEditHWNDEv'
+#   wx/strvararg.h: error: calling '__ct_base .constprop' with SSE calling
+#   convention without SSE/SSE2 enabled
 #
-# Compiling wx with -flto as well puts its definitions in the IR too, so the
-# whole link is LTO and the groups resolve. -ffat-lto-objects does not help:
-# the linker plugin claims the object and drops the precompiled half.
-#
-# Restricted to x86-mingw-static because that is the only triplet whose
-# consumer turns LTO on, and the only one this has been tested against.
+# Restricted to x86-mingw-static because that is the only triplet with an XP
+# baseline, and the only one this has been tested against.
 #
 # TARGET_TRIPLET, not VCPKG_TARGET_TRIPLET: the latter is what the vcpkg
 # toolchain file sets for a consuming project, and is not defined here in
-# portfile scope, so testing it silently builds wx without LTO.
-# Requested through CMAKE_INTERPROCEDURAL_OPTIMIZATION rather than by putting
-# -flto in the flags. A raw -flto leaves CMake archiving with plain ar and
-# ranlib, which cannot index the symbols inside slim LTO objects, and wx's own
-# wxrc.exe then fails to link against the archives just built:
+# portfile scope, so testing it silently does nothing at all.
 #
-#   undefined reference to `vtable for wxMBConv'
-#   undefined reference to `wxConvLibcPtr'
+# These go into c_flags and cxx_flags rather than VCPKG_C_FLAGS and
+# VCPKG_CXX_FLAGS. Those two are read into c_flags and cxx_flags near the top
+# of this file and never looked at again, because this port passes
+# CMAKE_C_FLAGS and CMAKE_CXX_FLAGS to vcpkg_cmake_configure() explicitly,
+# which overrides the CMAKE_<LANG>_FLAGS_INIT that vcpkg's mingw toolchain
+# appends them to. Setting them after this point reaches the cache but has no
+# effect whatsoever on what the compiler is invoked with.
 #
-# CMAKE_INTERPROCEDURAL_OPTIMIZATION makes CMake use the compiler's wrappers,
-# gcc-ar and gcc-ranlib, which load the LTO plugin and index them properly.
+# Note that wx must NOT be built with LTO itself. Doing so leaves its archives
+# holding only IR, with an empty .text, and every ordinary non-LTO consumer of
+# this triplet then fails to link with hundreds of
+#
+#   appbase.cpp.obj (symbol from plugin):(.gnu.linkonce.t._ZN8wxThread8OnDeleteEv):
+#   multiple definition of `wxThread::OnDelete()'
+#
+# for every inline function in wx, because LTO emits .gnu.linkonce.t.<name>
+# while plain objects use .text$<name> and the PE linker does not deduplicate
+# across the two. -ffat-lto-objects does not rescue it: the "(symbol from
+# plugin)" above shows the linker plugin claims wx's objects even when the
+# consumer is not using LTO, so it would take the IR half regardless. The LTO
+# consumer is made to work by thunk-comdat.patch instead.
 if(TARGET_TRIPLET STREQUAL "x86-mingw-static")
-    list(APPEND OPTIONS -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON)
+    string(APPEND c_flags   " -march=pentium3 -mmmx -msse -mfpmath=sse")
+    string(APPEND cxx_flags " -march=pentium3 -mmmx -msse -mfpmath=sse")
 endif()
 
 vcpkg_cmake_configure(
