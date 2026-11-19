@@ -95,6 +95,15 @@ in uxtheme.h and the types these are declared in terms of.
   of dark mode, and the message would in any case fail on a comctl32 that does
   not know it, leaving the zeroed WinStruct that both drawing paths already
   test for.
+- Declare MCM_GETCURRENTVIEW, MCM_GETCALENDARCOUNT and the MCMV_* view
+  identifiers in src/msw/calctrl.cpp for the same reason, and give its dark
+  mode mouse tracking a wxMCHITTESTINFO with the full Vista layout. The three
+  fields it reads -- iOffset, iRow and iCol -- were added to MCHITTESTINFO in
+  Vista behind that same NTDDI gate, and unlike a constant the structure
+  cannot be re-declared, because <commctrl.h> has already defined it without
+  them. wxCalendarCtrl::HitTest() keeps the structure the headers give it: it
+  runs on every version, and WinStruct sets cbSize from the type, which is how
+  comctl32 is told which layout it was handed.
 
 Co-Authored-By: Rafael Kitover <rkitover@gmail.com>
 Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
@@ -112,7 +121,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
  src/generic/printps.cpp                |  21 ++++-
  src/msw/app.cpp                        |   8 +-
  src/msw/artmsw.cpp                     |   6 +-
- src/msw/calctrl.cpp                    |  44 +++++++++
+ src/msw/calctrl.cpp                    |  89 ++++++++++++++++++++
  src/msw/darkmode.cpp                   |   2 +-
  src/msw/datectrl.cpp                   |  25 +++++
  src/msw/dirdlg.cpp                     |   6 +-
@@ -913,10 +922,9 @@ index 7c65e5a..b2e3468 100644
      return false;
  }
 diff --git a/src/msw/calctrl.cpp b/src/msw/calctrl.cpp
-index db47dad..36ddb02 100644
 --- a/src/msw/calctrl.cpp
 +++ b/src/msw/calctrl.cpp
-@@ -34,6 +34,50 @@
+@@ -34,6 +34,94 @@
  #include "wx/renderer.h"
  #include <uxtheme.h>
  
@@ -964,9 +972,62 @@ index db47dad..36ddb02 100644
 +
 +#endif // !MCM_GETCALENDARGRIDINFO
 +
++// The current view messages and the MCMV_* view identifiers are Vista in the
++// same way, and gated on the same NTDDI version.
++#ifndef MCM_GETCURRENTVIEW
++
++#define MCM_GETCURRENTVIEW   (MCM_FIRST+22)
++#define MCM_GETCALENDARCOUNT (MCM_FIRST+23)
++
++#define MCMV_MONTH   0
++#define MCMV_YEAR    1
++#define MCMV_DECADE  2
++#define MCMV_CENTURY 3
++
++#endif // !MCM_GETCURRENTVIEW
++
++// MCHITTESTINFO gained rc, iOffset, iRow and iCol in Vista, behind that same
++// gate. Unlike the constants above it cannot simply be re-declared, because
++// <commctrl.h> has already defined the structure without them. Give the code
++// that wants the new fields one of its own with the full layout instead.
++//
++// Only the dark mode mouse tracking below uses them, and it is unreachable on
++// XP, which has no dark mode. wxCalendarCtrl::HitTest() deliberately keeps the
++// structure the headers declare: it runs on every version, and WinStruct sets
++// cbSize from the type, which is what tells comctl32 which layout it was
++// handed.
++#if NTDDI_VERSION >= 0x06000000
++
++typedef MCHITTESTINFO wxMCHITTESTINFO;
++
++#else
++
++typedef struct
++{
++    UINT       cbSize;
++    POINT      pt;
++    UINT       uHit;
++    SYSTEMTIME st;
++    RECT       rc;
++    int        iOffset;
++    int        iRow;
++    int        iCol;
++} wxMCHITTESTINFO;
++
++#endif
++
  // ----------------------------------------------------------------------------
  // constants
  // ----------------------------------------------------------------------------
+@@ -517,7 +605,7 @@
+     if ( wxMSWDarkMode::IsActive() )
+     {
+         // Get mouse position as cell column and row.
+-        WinStruct<MCHITTESTINFO> ht;
++        WinStruct<wxMCHITTESTINFO> ht;
+         ht.pt.x = event.GetPosition().x;
+         ht.pt.y = event.GetPosition().y;
+         ::SendMessage(m_hWnd, MCM_HITTEST, 0, (LPARAM)&ht);
 diff --git a/src/msw/darkmode.cpp b/src/msw/darkmode.cpp
 index 652ea68..d40269f 100644
 --- a/src/msw/darkmode.cpp
