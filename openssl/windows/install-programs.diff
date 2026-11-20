@@ -1,8 +1,8 @@
 diff --git a/Configurations/windows-makefile.tmpl b/Configurations/windows-makefile.tmpl
-index b587212..c031cfb 100644
+index a337ce2..be35943 100644
 --- a/Configurations/windows-makefile.tmpl
 +++ b/Configurations/windows-makefile.tmpl
-@@ -134,7 +134,7 @@ INSTALL_FIPSMODULE={-
+@@ -121,7 +121,7 @@ INSTALL_FIPSMODULE={-
  -}
  INSTALL_FIPSMODULECONF=providers\fipsmodule.cnf
  INSTALL_PROGRAMS={-

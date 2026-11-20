@@ -1,0 +1,16 @@
+diff --git a/configdata.pm.in b/configdata.pm.in
+index a21fe68..9ac44e3 100644
+--- a/configdata.pm.in
++++ b/configdata.pm.in
+@@ -154,6 +154,11 @@ _____
+         my $create_configuration = sub {
+           my ($configuration_file, $configuration_file_in) = @_;
+ 
++          # Out-of-tree builds (e.g. with no-apps) may lack the target directory
++          require File::Basename;
++          require File::Path;
++          my $configuration_dir = File::Basename::dirname($configuration_file);
++          File::Path::mkpath($configuration_dir) unless -d $configuration_dir;
+           open CONFIGURATION, ">${configuration_file}.new"
+               or die "Trying to create ${configuration_file_in}.new: $!";
+           $tmpl = OpenSSL::Template->new(TYPE => 'FILE',

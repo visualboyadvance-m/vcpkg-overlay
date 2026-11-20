@@ -101,12 +101,13 @@ elseif(VCPKG_TARGET_IS_MINGW)
     elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
         set(OPENSSL_ARCH mingwarm64)
     else()
-        set(OPENSSL_ARCH mingw)
+        # Windows XP compatible target from openssl-4.1.0-winxp.diff:
+        # _WIN32_WINNT=0x0501 and no BCrypt (CryptoAPI seeding, no -lbcrypt).
+        set(OPENSSL_ARCH mingw-xp)
     endif()
 elseif(VCPKG_TARGET_IS_EMSCRIPTEN)
     set(OPENSSL_ARCH linux-x32)
     vcpkg_list(APPEND CONFIGURE_OPTIONS
-        no-engine
         no-asm
         no-sse2
         no-srtp
@@ -146,9 +147,6 @@ vcpkg_install_make(
 vcpkg_fixup_pkgconfig()
 
 if("tools" IN_LIST FEATURES)
-    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-    file(RENAME "${CURRENT_PACKAGES_DIR}/bin/c_rehash" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/c_rehash")
-    file(REMOVE "${CURRENT_PACKAGES_DIR}/debug/bin/c_rehash")
     vcpkg_copy_tools(TOOL_NAMES openssl AUTO_CLEAN)
 elseif(VCPKG_LIBRARY_LINKAGE STREQUAL "static" OR NOT VCPKG_TARGET_IS_WINDOWS)
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
@@ -165,13 +163,13 @@ file(REMOVE_RECURSE
 )
 
 # For consistency of mingw build with nmake build
-file(GLOB engines "${CURRENT_PACKAGES_DIR}/lib/ossl-modules/*.dll")
-if(NOT engines STREQUAL "")
-    file(COPY ${engines} DESTINATION "${CURRENT_PACKAGES_DIR}/bin")
+file(GLOB modules "${CURRENT_PACKAGES_DIR}/lib/ossl-modules/*.dll")
+if(NOT modules STREQUAL "")
+    file(COPY ${modules} DESTINATION "${CURRENT_PACKAGES_DIR}/bin")
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib/ossl-modules")
 endif()
-file(GLOB engines "${CURRENT_PACKAGES_DIR}/debug/lib/ossl-modules/*.dll")
-if(NOT engines STREQUAL "")
-    file(COPY ${engines} DESTINATION "${CURRENT_PACKAGES_DIR}/debug/bin")
+file(GLOB modules "${CURRENT_PACKAGES_DIR}/debug/lib/ossl-modules/*.dll")
+if(NOT modules STREQUAL "")
+    file(COPY ${modules} DESTINATION "${CURRENT_PACKAGES_DIR}/debug/bin")
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/lib/ossl-modules")
 endif()

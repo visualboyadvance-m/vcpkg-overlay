@@ -1,0 +1,132 @@
+diff --git a/Configurations/50-mingw-xp.conf b/Configurations/50-mingw-xp.conf
+new file mode 100644
+index 0000000..57deb1a
+--- /dev/null
++++ b/Configurations/50-mingw-xp.conf
+@@ -0,0 +1,34 @@
++## -*- mode: perl; -*-
++## Windows XP (NT 5.1) target, cross-compiled with the i686-pc-mingw32
++## (mingw-w64) toolchain.
++##
++## Usage:
++##     ./Configure mingw-xp --cross-compile-prefix=i686-pc-mingw32-
++##
++## What differs from the stock "mingw" target:
++##   * _WIN32_WINNT/WINVER are pinned to 0x0501 so that no Vista+ API
++##     (SRWLOCK, condition variables, InitOnce*, BCrypt*, ...) is selected
++##     at compile time.  include/internal/e_os.h would otherwise default to
++##     0x0600.
++##   * BCrypt is disabled: OPENSSL_WIN32_NO_BCRYPT forces rand_win.c onto
++##     the CryptoAPI (CryptGenRandom) seeding path and -lbcrypt is not
++##     linked, so nothing imports bcrypt.dll (which XP does not have).
++##   * Uses the Universal CRT (-mcrtdll=ucrt, ucrtbase.dll + api-ms-win-crt-*).
++##     XP has no UCRT out of the box: install the Visual C++ 2015-2019
++##     redistributable (x86, 14.27 or older still supports XP SP3) or deploy
++##     the UCRT DLLs app-local.  time_t is 64-bit.
++##   * PE OS/subsystem version 5.1 so the loader accepts the binaries.
++
++my %targets = (
++    "mingw-xp" => {
++        inherit_from     => [ "mingw" ],
++        cflags           => add("-mcrtdll=ucrt"),
++        cppflags         => add("-D_WIN32_WINNT=0x0501 -DWINVER=0x0501",
++                                "-DOPENSSL_WIN32_NO_BCRYPT"),
++        lflags           => add("-mcrtdll=ucrt",
++                                "-Wl,--major-os-version,5,--minor-os-version,1",
++                                "-Wl,--major-subsystem-version,5,--minor-subsystem-version,1"),
++        ex_libs          => "-lws2_32 -lgdi32 -lcrypt32",
++        shared_ldflag    => add("-mcrtdll=ucrt"),
++    },
++);
+diff --git a/NOTES-WINDOWS.md b/NOTES-WINDOWS.md
+index a7889cd..87f3796 100644
+--- a/NOTES-WINDOWS.md
++++ b/NOTES-WINDOWS.md
+@@ -242,6 +242,19 @@ MinGW offers an alternative way to build native OpenSSL, by cross compilation.
+    This requires that you've installed the necessary add-on packages for
+    mingw[64] cross compilation.
+ 
++ * Windows XP (NT 5.1) is supported through the `mingw-xp` target:
++
++       ./Configure mingw-xp --cross-compile-prefix=i686-pc-mingw32- ...
++
++   It pins `_WIN32_WINNT`/`WINVER` to `0x0501`, disables BCrypt
++   (`OPENSSL_WIN32_NO_BCRYPT`; seeding uses CryptoAPI `CryptGenRandom` and
++   `bcrypt.dll` is never linked), links against the Universal CRT
++   (`-mcrtdll=ucrt`, 64-bit `time_t`), and stamps the PE headers with
++   OS/subsystem version 5.1.  XP does not ship the UCRT: install the
++   Visual C++ 2015-2019 x86 redistributable (14.27 or older still installs
++   on XP SP3) or deploy the UCRT DLLs app-local.  Applications must also be
++   built against UCRT.
++
+ Linking native applications
+ ===========================
+ 
+diff --git a/providers/implementations/rands/seeding/rand_win.c b/providers/implementations/rands/seeding/rand_win.c
+index 663246c..efde85a 100644
+--- a/providers/implementations/rands/seeding/rand_win.c
++++ b/providers/implementations/rands/seeding/rand_win.c
+@@ -20,8 +20,12 @@
+ #error "Unsupported seeding method configured; must be os"
+ #endif
+ 
+-/* On Windows Vista or higher use BCrypt instead of the legacy CryptoAPI */
+-#if defined(_WIN32_WINNT) && _WIN32_WINNT >= 0x0600 \
++/*
++ * On Windows Vista or higher use BCrypt instead of the legacy CryptoAPI,
++ * unless the build explicitly opts out (e.g. the mingw-xp target).
++ */
++#if !defined(OPENSSL_WIN32_NO_BCRYPT)                \
++    && defined(_WIN32_WINNT) && _WIN32_WINNT >= 0x0600 \
+     && ((defined(_MSC_VER) && _MSC_VER > 1500)      \
+         || (defined(__MINGW64_VERSION_MAJOR) && __MINGW64_VERSION_MAJOR >= 2))
+ #define USE_BCRYPTGENRANDOM
+diff --git a/test/quicapitest.c b/test/quicapitest.c
+index 9413361..90ad3c7 100644
+--- a/test/quicapitest.c
++++ b/test/quicapitest.c
+@@ -26,6 +26,7 @@
+ #include "internal/quic_ssl.h"
+ #include "internal/quic_port.h"
+ #include "internal/quic_txp.h"
++#include <openssl/x509v3.h>
+ 
+ static OSSL_LIB_CTX *libctx = NULL;
+ static char *propq = NULL;
+@@ -4396,6 +4397,25 @@ err:
+     return ret;
+ }
+ 
++/*
++ * Portable stand-in for inet_pton(), which Windows only provides from
++ * Vista onwards (not available when building for Windows XP).
++ * Returns 1 on success, 0 if |str| is not a valid address of |family|.
++ */
++static int test_pton(int family, const char *str, unsigned char *out)
++{
++    ASN1_OCTET_STRING *a = a2i_IPADDRESS(str);
++    size_t want = (family == AF_INET) ? 4 : 16;
++    int ok = 0;
++
++    if (a != NULL && ASN1_STRING_get_length(a) == want) {
++        memcpy(out, ASN1_STRING_get0_data(a), want);
++        ok = 1;
++    }
++    ASN1_OCTET_STRING_free(a);
++    return ok;
++}
++
+ /* Parameterized test: family=AF_INET/AF_INET6, e.g. "127.0.0.1" / "::1" */
+ static int test_quic_peer_addr_common(int family,
+     const char *srv_str, uint16_t srv_port,
+@@ -4413,8 +4433,8 @@ static int test_quic_peer_addr_common(int family,
+     BIO_sock_init();
+ #endif
+ 
+-    if (!TEST_int_eq(inet_pton(family, srv_str, srv_ip), 1)
+-        || !TEST_int_eq(inet_pton(family, cli_str, cli_ip), 1))
++    if (!TEST_int_eq(test_pton(family, srv_str, srv_ip), 1)
++        || !TEST_int_eq(test_pton(family, cli_str, cli_ip), 1))
+         goto err;
+ 
+     if (!TEST_ptr(sctx = create_server_ctx())
