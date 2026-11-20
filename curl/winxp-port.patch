@@ -1,0 +1,554 @@
+--- curl-8.23.0/CMakeLists.txt	2026-10-14 07:54:05
++++ curl-8.23.0-xp/CMakeLists.txt	2026-11-20 10:34:34
+@@ -192,9 +192,9 @@
+   endif()
+   if(ENABLE_UNICODE)
+     set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS "UNICODE" "_UNICODE")
+-    if(MINGW)
+-      set_property(DIRECTORY APPEND PROPERTY COMPILE_OPTIONS "-municode")
+-    endif()
++#    if(MINGW)
++#      set_property(DIRECTORY APPEND PROPERTY COMPILE_OPTIONS "-municode")
++#    endif()
+   endif()
+ 
+   # Apply to all feature checks
+@@ -1510,9 +1510,9 @@
+   list(APPEND CURL_INCLUDES "winsock2.h")
+   list(APPEND CURL_INCLUDES "ws2tcpip.h")
+ 
+-  if(HAVE_WIN32_WINNT AND HAVE_WIN32_WINNT LESS 0x0600)
+-    # Windows Vista is required for freeaddrinfo, getaddrinfo, if_nametoindex
+-    message(FATAL_ERROR "Building for Windows Vista or newer is required.")
++  if(HAVE_WIN32_WINNT AND HAVE_WIN32_WINNT LESS 0x0501)
++    # Windows XP is required for freeaddrinfo, getaddrinfo
++    message(FATAL_ERROR "Building for Windows XP or newer is required.")
+   endif()
+ endif()
+ 
+@@ -1835,6 +1835,7 @@
+     list(APPEND CURL_NETWORK_AND_TIME_LIBS "iphlpapi")  # for if_nametoindex()
+   endif()
+   list(APPEND CURL_LIBS "bcrypt")  # for BCryptGenRandom()
++  list(APPEND CURL_LIBS "advapi32")  # for SystemFunction036() (RtlGenRandom) on Windows XP
+ 
+   # We use crypto functions that are not available for UWP apps
+   if(NOT WINDOWS_STORE)
+opdiff -ruN -x build-winxp -x winxp-port.patch curl-orig/configure.ac curl-8.23.0/configure.ac
+--- curl-orig/configure.ac	2026-11-20 09:56:05
++++ curl-8.23.0/configure.ac	2026-11-20 10:03:12
+@@ -624,12 +624,12 @@
+     *-DWINSTORECOMPAT*) curl_cv_winuwp='yes';;
+   esac
+ 
+-  AC_MSG_CHECKING([if building for Windows Vista or newer])
++  AC_MSG_CHECKING([if building for Windows XP or newer])
+   AC_COMPILE_IFELSE([
+     AC_LANG_PROGRAM([[
+       #include <windows.h>
+     ]],[[
+-      #if (_WIN32_WINNT < 0x600)
++      #if (_WIN32_WINNT < 0x501)
+       #error
+       #endif
+     ]])
+@@ -637,7 +637,7 @@
+     AC_MSG_RESULT([yes])
+   ],[
+     AC_MSG_RESULT([no])
+-    AC_MSG_ERROR([Building for Windows Vista or newer is required.])
++    AC_MSG_ERROR([Building for Windows XP or newer is required.])
+   ])
+ fi
+ 
+@@ -2130,8 +2130,9 @@
+ fi
+ 
+ if test "$curl_cv_native_windows" = "yes"; then
+-  dnl for BCryptGenRandom()
+-  LIBS="-lbcrypt $LIBS"
++  dnl for BCryptGenRandom(), and SystemFunction036() (RtlGenRandom) when
++  dnl targeting Windows XP. Unused import libraries add no DLL dependency.
++  LIBS="-lbcrypt -ladvapi32 $LIBS"
+ fi
+ 
+ case "x$SSL_DISABLED$OPENSSL_ENABLED$GNUTLS_ENABLED$MBEDTLS_ENABLED$WOLFSSL_ENABLED$SCHANNEL_ENABLED$RUSTLS_ENABLED" in
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/curl_setup.h curl-8.23.0/lib/curl_setup.h
+--- curl-orig/lib/curl_setup.h	2026-11-20 09:56:07
++++ curl-8.23.0/lib/curl_setup.h	2026-11-20 10:00:40
+@@ -33,6 +33,13 @@
+ #include <_mingw.h>
+ #endif
+ 
++/* When targeting Windows XP, assume Service Pack 3. It is the only XP
++   release that ships SHA-2 support in CryptoAPI and Schannel. */
++#if defined(_WIN32) && defined(_WIN32_WINNT) && (_WIN32_WINNT == 0x0501) && \
++  !defined(NTDDI_VERSION)
++#define NTDDI_VERSION 0x05010300  /* NTDDI_WINXPSP3 */
++#endif
++
+ /* Workaround for Homebrew gcc 12.4.0, 13.3.0, 14.1.0, 14.2.0 (initial build)
+    that started advertising the `availability` attribute, which then gets used
+    by Apple SDK, but, in a way incompatible with gcc, resulting in misc errors
+@@ -151,11 +158,18 @@
+ #endif /* HAVE_CONFIG_H */
+ 
+ #ifdef _WIN32
+-#  if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x0600)
+-#    error The minimum build target is Windows Vista (0x0600)
++#  if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x0501)
++#    error The minimum build target is Windows XP (0x0501)
+ #  endif
+ 
+-#  if !defined(CURL_WINDOWS_UWP) && (defined(_MSC_VER) || defined(__MINGW32__))
++#  if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x0600)
++/* Windows XP / Server 2003 target: avoid linking to APIs introduced in
++   Windows Vista. Features that need them are either emulated or looked up
++   at runtime. */
++#    define CURL_WINDOWS_XP
++#    undef HAVE_IF_NAMETOINDEX
++#  elif !defined(CURL_WINDOWS_UWP) && \
++     (defined(_MSC_VER) || defined(__MINGW32__))
+ #    ifndef HAVE_IF_NAMETOINDEX
+ #    define HAVE_IF_NAMETOINDEX
+ #    endif
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/curl_sspi.c curl-8.23.0/lib/curl_sspi.c
+--- curl-orig/lib/curl_sspi.c	2026-11-20 09:56:07
++++ curl-8.23.0/lib/curl_sspi.c	2026-11-20 10:09:24
+@@ -142,12 +142,18 @@
+     curlx_free(useranddomain.tchar_ptr);
+     return CURLE_OUT_OF_MEMORY;
+   }
++#ifdef CURL_WINDOWS_XP
++  /* _tcsncpy_s() is missing from the Windows XP msvcrt.dll */
++  memcpy(dup_domain.tchar_ptr, domain.tchar_ptr, sizeof(TCHAR) * domlen);
++  dup_domain.tchar_ptr[domlen] = 0;
++#else
+   if(_tcsncpy_s(dup_domain.tchar_ptr, domlen + 1, domain.tchar_ptr, domlen)) {
+     curlx_free(dup_user.tchar_ptr);
+     curlx_free(dup_domain.tchar_ptr);
+     curlx_free(useranddomain.tchar_ptr);
+     return CURLE_OUT_OF_MEMORY;
+   }
++#endif
+ 
+   curlx_free(useranddomain.tchar_ptr);
+ 
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/curl_threads.c curl-8.23.0/lib/curl_threads.c
+--- curl-orig/lib/curl_threads.c	2026-11-20 09:56:06
++++ curl-8.23.0/lib/curl_threads.c	2026-11-20 10:09:24
+@@ -138,6 +138,83 @@
+ 
+ #ifdef _WIN32
+ 
++#ifdef CURL_WINDOWS_XP
++
++void Curl_cond_init(curl_cond_t *c)
++{
++  InitializeCriticalSection(&c->lock);
++  c->sema = CreateSemaphore(NULL, 0, LONG_MAX, NULL);
++  c->waiters = 0;
++}
++
++void Curl_cond_destroy(curl_cond_t *c)
++{
++  if(c->sema) {
++    CloseHandle(c->sema);
++    c->sema = NULL;
++  }
++  DeleteCriticalSection(&c->lock);
++}
++
++void Curl_cond_signal(curl_cond_t *c)
++{
++  EnterCriticalSection(&c->lock);
++  if(c->waiters > 0) {
++    /* hand exactly one token to one waiter */
++    c->waiters--;
++    ReleaseSemaphore(c->sema, 1, NULL);
++  }
++  LeaveCriticalSection(&c->lock);
++}
++
++/* Returns WAIT_OBJECT_0 when signalled, WAIT_TIMEOUT or WAIT_FAILED */
++static DWORD cond_wait_ms(curl_cond_t *c, CRITICAL_SECTION *m, DWORD ms)
++{
++  DWORD rc;
++
++  if(!c->sema)
++    return WAIT_FAILED;
++
++  EnterCriticalSection(&c->lock);
++  c->waiters++;
++  LeaveCriticalSection(&c->lock);
++
++  LeaveCriticalSection(m);
++  rc = WaitForSingleObject(c->sema, ms);
++
++  if(rc != WAIT_OBJECT_0) {
++    EnterCriticalSection(&c->lock);
++    /* A signal may have arrived between the timeout and taking the lock.
++       If so, a token is waiting for us and our waiter count is already
++       gone: consume it and report success. Otherwise unregister. */
++    if(WaitForSingleObject(c->sema, 0) == WAIT_OBJECT_0)
++      rc = WAIT_OBJECT_0;
++    else
++      c->waiters--;
++    LeaveCriticalSection(&c->lock);
++  }
++
++  EnterCriticalSection(m);
++  return rc;
++}
++
++void Curl_cond_wait(curl_cond_t *c, CRITICAL_SECTION *m)
++{
++  (void)cond_wait_ms(c, m, INFINITE);
++}
++
++CURLcode Curl_cond_timedwait(curl_cond_t *c, CRITICAL_SECTION *m,
++                             uint32_t timeout_ms)
++{
++  DWORD rc = cond_wait_ms(c, m, (DWORD)timeout_ms);
++  if(rc == WAIT_OBJECT_0)
++    return CURLE_OK;
++  return (rc == WAIT_TIMEOUT) ?
++         CURLE_OPERATION_TIMEDOUT : CURLE_UNRECOVERABLE_POLL;
++}
++
++#else /* !CURL_WINDOWS_XP */
++
+ void Curl_cond_signal(CONDITION_VARIABLE *c)
+ {
+   WakeConditionVariable(c);
+@@ -158,6 +235,8 @@
+   }
+   return CURLE_OK;
+ }
++
++#endif /* CURL_WINDOWS_XP */
+ 
+ curl_thread_id_t Curl_thread_get_current_id(void)
+ {
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/curl_threads.h curl-8.23.0/lib/curl_threads.h
+--- curl-orig/lib/curl_threads.h	2026-11-20 09:56:07
++++ curl-8.23.0/lib/curl_threads.h	2026-11-20 09:57:37
+@@ -33,13 +33,27 @@
+ #  define curl_thread_t          HANDLE
+ #  define curl_thread_id_t       DWORD
+ #  define curl_thread_t_null     (HANDLE)0
+-#  define Curl_mutex_init(m)     InitializeCriticalSectionEx(m, 0, 1)
+ #  define Curl_mutex_acquire(m)  EnterCriticalSection(m)
+ #  define Curl_mutex_release(m)  LeaveCriticalSection(m)
+ #  define Curl_mutex_destroy(m)  DeleteCriticalSection(m)
++#  ifdef CURL_WINDOWS_XP
++/* Windows XP has neither InitializeCriticalSectionEx() nor native
++   condition variables. Emulate the latter with a semaphore. */
++#  define Curl_mutex_init(m)     InitializeCriticalSection(m)
++typedef struct {
++  CRITICAL_SECTION lock;  /* protects 'waiters' */
++  HANDLE sema;            /* one token per signalled waiter */
++  LONG waiters;           /* threads blocked and not yet signalled */
++} curl_win32_cond_t;
++#  define curl_cond_t            curl_win32_cond_t
++void Curl_cond_init(curl_cond_t *c);
++void Curl_cond_destroy(curl_cond_t *c);
++#  else
++#  define Curl_mutex_init(m)     InitializeCriticalSectionEx(m, 0, 1)
+ #  define curl_cond_t            CONDITION_VARIABLE
+ #  define Curl_cond_init(c)      InitializeConditionVariable(c)
+ #  define Curl_cond_destroy(c)   (void)(c)
++#  endif
+ #elif defined(HAVE_THREADS_POSIX)
+ #  define CURL_THREAD_RETURN_T   unsigned int
+ #  define CURL_STDCALL
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/curlx/win32-fopen.c curl-8.23.0/lib/curlx/win32-fopen.c
+--- curl-orig/lib/curlx/win32-fopen.c	2026-11-20 09:56:07
++++ curl-8.23.0/lib/curlx/win32-fopen.c	2026-11-20 10:09:24
+@@ -81,6 +81,80 @@
+ }
+ #endif
+ 
++#ifdef CURL_WINDOWS_XP
++/* The msvcrt.dll shipped with Windows XP lacks the "secure" CRT functions
++   (*_s), they appeared in the Vista version. Provide minimal equivalents
++   with the semantics used in this file. */
++static errno_t xp_mbstowcs_s(size_t *ret, wchar_t *dst, size_t dstsz,
++                             const char *src, size_t max)
++{
++  size_t n;
++  if(!dst) {
++    n = mbstowcs(NULL, src, 0);
++    if(n == (size_t)-1)
++      return EILSEQ;
++    *ret = n + 1;
++    return 0;
++  }
++  if(!dstsz)
++    return EINVAL;
++  n = mbstowcs(dst, src, (max < dstsz) ? max : dstsz - 1);
++  if(n == (size_t)-1)
++    return EILSEQ;
++  dst[n] = 0;
++  *ret = n + 1;
++  return 0;
++}
++
++static errno_t xp_wcstombs_s(size_t *ret, char *dst, size_t dstsz,
++                             const wchar_t *src, size_t max)
++{
++  size_t n;
++  if(!dst) {
++    n = wcstombs(NULL, src, 0);
++    if(n == (size_t)-1)
++      return EILSEQ;
++    *ret = n + 1;
++    return 0;
++  }
++  if(!dstsz)
++    return EINVAL;
++  n = wcstombs(dst, src, (max < dstsz) ? max : dstsz - 1);
++  if(n == (size_t)-1)
++    return EILSEQ;
++  dst[n] = 0;
++  *ret = n + 1;
++  return 0;
++}
++
++static errno_t xp_wcsncpy_s(wchar_t *dst, size_t dstsz,
++                            const wchar_t *src, size_t count)
++{
++  size_t n = wcslen(src);
++  if(n > count)
++    n = count;
++  if(!dst || n >= dstsz)
++    return ERANGE;
++  memcpy(dst, src, n * sizeof(wchar_t));
++  dst[n] = 0;
++  return 0;
++}
++
++static errno_t xp_wcscpy_s(wchar_t *dst, size_t dstsz, const wchar_t *src)
++{
++  size_t n = wcslen(src);
++  if(!dst || n >= dstsz)
++    return ERANGE;
++  memcpy(dst, src, (n + 1) * sizeof(wchar_t));
++  return 0;
++}
++
++#define mbstowcs_s xp_mbstowcs_s
++#define wcstombs_s xp_wcstombs_s
++#define wcsncpy_s  xp_wcsncpy_s
++#define wcscpy_s   xp_wcscpy_s
++#endif /* CURL_WINDOWS_XP */
++
+ /* declare GetFullPathNameW for mingw-w64 UWP builds targeting old Windows */
+ #if defined(CURL_WINDOWS_UWP) && defined(__MINGW32__) && \
+   (_WIN32_WINNT < _WIN32_WINNT_WIN10)
+@@ -348,7 +422,11 @@
+       target = fixed;
+     else
+       target = filename_w;
++#ifdef CURL_WINDOWS_XP
++    res = _wsopen(target, oflag, _SH_DENYNO, pmode);
++#else
+     errno = _wsopen_s(&res, target, oflag, _SH_DENYNO, pmode);
++#endif
+     CURLX_FREE(filename_w);
+   }
+   else
+@@ -359,8 +437,12 @@
+     target = fixed;
+   else
+     target = filename;
++#ifdef CURL_WINDOWS_XP
++  res = _sopen(target, oflag, _SH_DENYNO, pmode);
++#else
+   errno = _sopen_s(&res, target, oflag, _SH_DENYNO, pmode);
+ #endif
++#endif
+ 
+   CURLX_FREE(fixed);
+   return res;
+@@ -418,7 +500,11 @@
+       target = fixed;
+     else
+       target = filename_w;
++#ifdef CURL_WINDOWS_XP
++    file = _wfreopen(target, mode_w, fp);
++#else
+     errno = _wfreopen_s(&file, target, mode_w, fp);
++#endif
+   }
+   else
+     /* !checksrc! disable ERRNOVAR 1 */
+@@ -430,7 +516,11 @@
+     target = fixed;
+   else
+     target = filename;
++#ifdef CURL_WINDOWS_XP
++  file = freopen(target, mode, fp);
++#else
+   errno = freopen_s(&file, target, mode, fp);
++#endif
+ #endif
+ 
+   CURLX_FREE(fixed);
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/curlx/winapi.c curl-8.23.0/lib/curlx/winapi.c
+--- curl-orig/lib/curlx/winapi.c	2026-11-20 09:56:07
++++ curl-8.23.0/lib/curlx/winapi.c	2026-11-20 10:09:24
+@@ -106,6 +106,30 @@
+ 
+ #ifndef WITHOUT_LIBCURL
+ 
++#ifdef CURL_WINDOWS_XP
++/* bcrypt.dll does not exist before Windows Vista. RtlGenRandom (exported
++   from advapi32.dll as SystemFunction036) is available since Windows XP
++   and is what CryptGenRandom uses internally. */
++#ifdef __cplusplus
++extern "C"
++#endif
++BOOLEAN NTAPI SystemFunction036(PVOID RandomBuffer, ULONG RandomBufferLength);
++
++CURLcode curlx_win32_random(unsigned char *entropy, size_t length)
++{
++  memset(entropy, 0, length);
++
++  while(length) {
++    ULONG chunk = (length > 0x10000) ? 0x10000 : (ULONG)length;
++    if(!SystemFunction036(entropy, chunk))
++      return CURLE_FAILED_INIT;
++    entropy += chunk;
++    length -= chunk;
++  }
++
++  return CURLE_OK;
++}
++#else
+ #include <bcrypt.h>
+ #ifndef STATUS_SUCCESS
+ #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
+@@ -121,6 +145,7 @@
+ 
+   return CURLE_OK;
+ }
++#endif /* CURL_WINDOWS_XP */
+ #endif /* WITHOUT_LIBCURL */
+ 
+ #endif /* _WIN32 */
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/easy_lock.h curl-8.23.0/lib/easy_lock.h
+--- curl-orig/lib/easy_lock.h	2026-11-20 09:56:07
++++ curl-8.23.0/lib/easy_lock.h	2026-11-20 10:00:04
+@@ -27,7 +27,28 @@
+ 
+ #define GLOBAL_INIT_IS_THREADSAFE
+ 
+-#ifdef _WIN32
++#if defined(_WIN32) && defined(CURL_WINDOWS_XP)
++
++/* SRW locks need Windows Vista. A statically initializable spinlock built
++   on Interlocked operations works on Windows XP. */
++#define curl_simple_lock      LONG
++#define CURL_SIMPLE_LOCK_INIT 0
++
++static CURL_INLINE void curl_simple_lock_lock(curl_simple_lock *lock)
++{
++  while(InterlockedCompareExchange(lock, 1, 0)) {
++    /* Reduce cache coherency traffic, give the holder a chance to run */
++    while(*(volatile LONG *)lock)
++      Sleep(0);
++  }
++}
++
++static CURL_INLINE void curl_simple_lock_unlock(curl_simple_lock *lock)
++{
++  (void)InterlockedExchange(lock, 0);
++}
++
++#elif defined(_WIN32)
+ 
+ #define curl_simple_lock      SRWLOCK
+ #define CURL_SIMPLE_LOCK_INIT SRWLOCK_INIT
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/peer.c curl-8.23.0/lib/peer.c
+--- curl-orig/lib/peer.c	2026-11-20 09:56:07
++++ curl-8.23.0/lib/peer.c	2026-11-20 10:09:24
+@@ -64,6 +64,39 @@
+ #include <iphlpapi.h>
+ #endif
+ 
++#if defined(CURL_WINDOWS_XP) && defined(USE_IPV6)
++/* if_nametoindex() exists since Windows Vista. Look it up at runtime so
++   that an XP-targeted build still supports named zone ids where the OS
++   offers it. Load from the system directory to avoid DLL planting. */
++typedef ULONG (WINAPI *peer_if_nametoindex_fn)(PCSTR);
++
++static unsigned int peer_if_nametoindex(const char *name)
++{
++  static peer_if_nametoindex_fn fn = NULL;
++  static bool tried = FALSE;
++
++  if(!tried) {
++    char path[MAX_PATH];
++    UINT len = GetSystemDirectoryA(path, MAX_PATH);
++    static const char dll[] = "\\iphlpapi.dll";
++    if(len && (len + sizeof(dll) <= MAX_PATH)) {
++      HMODULE h;
++      memcpy(&path[len], dll, sizeof(dll));
++      h = LoadLibraryA(path);
++      if(h)
++        fn = CURLX_FUNCTION_CAST(peer_if_nametoindex_fn,
++                                 GetProcAddress(h, "if_nametoindex"));
++    }
++    tried = TRUE;
++  }
++  return fn ? (unsigned int)fn(name) : 0;
++}
++#define HAVE_PEER_IF_NAMETOINDEX
++#define if_nametoindex(n) peer_if_nametoindex(n)
++#elif defined(HAVE_IF_NAMETOINDEX)
++#define HAVE_PEER_IF_NAMETOINDEX
++#endif
++
+ #include "curl_addrinfo.h"
+ #include "curl_trc.h"
+ #include "protocol.h"
+@@ -155,7 +188,7 @@
+         /* A plain number, use it directly as a scope id. */
+         peer->scopeid = (uint32_t)scope;
+       }
+-#ifdef HAVE_IF_NAMETOINDEX
++#ifdef HAVE_PEER_IF_NAMETOINDEX
+       else {
+         /* Zone identifier is not fully numeric */
+         unsigned int idx = 0;
+@@ -167,7 +200,7 @@
+           /* Do we want to return an error here? */
+         }
+       }
+-#endif /* HAVE_IF_NAMETOINDEX */
++#endif /* HAVE_PEER_IF_NAMETOINDEX */
+     }
+ #endif /* USE_IPV6 */
+   }
+diff -ruN -x build-winxp -x winxp-port.patch curl-orig/lib/vtls/schannel.c curl-8.23.0/lib/vtls/schannel.c
+--- curl-orig/lib/vtls/schannel.c	2026-11-20 09:56:07
++++ curl-8.23.0/lib/vtls/schannel.c	2026-11-20 10:09:24
+@@ -269,12 +269,17 @@
+   CIPHEROPTION(CALG_SHA_256),
+   CIPHEROPTION(CALG_SHA_384),
+   CIPHEROPTION(CALG_SHA_512),
++/* Not offered by headers when targeting Windows XP */
++#ifdef CALG_ECDH
+   CIPHEROPTION(CALG_ECDH),
++#endif
+ /* Offered by mingw-w64 v4+, MS SDK 6.0A/VS2008+ */
+ #ifdef CALG_ECMQV
+   CIPHEROPTION(CALG_ECMQV),
+ #endif
++#ifdef CALG_ECDSA
+   CIPHEROPTION(CALG_ECDSA),
++#endif
+ /* Offered by mingw-w64 v7+, MS SDK 7.0A/VS2010+ */
+ #ifdef CALG_ECDH_EPHEM
+   CIPHEROPTION(CALG_ECDH_EPHEM),
