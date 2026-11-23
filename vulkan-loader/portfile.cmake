@@ -10,6 +10,7 @@ vcpkg_from_github(
         link-directfb.patch
         fix-marmasm-conditional-assembly.patch
         xp-init-once.patch
+        fix-msvc-cross-asm-offset.patch
 )
 
 vcpkg_find_acquire_program(PYTHON3)
